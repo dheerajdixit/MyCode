@@ -1,0 +1,12 @@
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\TechnicalControls.vbprojAssemblyReference.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.Resources.resources
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\TechnicalControls.vbproj.GenerateResource.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\TechnicalControls.vbproj.CoreCompileInputs.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\bin\Debug\WindowsControlLibrary1.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\bin\Debug\WindowsControlLibrary1.pdb
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\bin\Debug\WindowsControlLibrary1.xml
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.xml
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.pdb
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.MACD.resources
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsControlLibrary1\obj\Debug\WindowsControlLibrary1.dll.licenses

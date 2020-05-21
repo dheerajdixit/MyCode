@@ -1,0 +1,999 @@
+[
+    {
+        "StockName": "ICICIBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RCOM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RAMCOCEM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IGL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MCDOWELL-N",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JINDALSTEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CEATLTD",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INDIGO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INFRATEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ICICIPRULI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HAVELLS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HINDZINC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RAYMOND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "APOLLOHOSP",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "KOTAKBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IDBI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATAMOTORS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INFIBEAM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PVR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IBULHSGFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TECHM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JUBLFOOD",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "OIL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "VOLTAS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BAJAJFINSV",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BERGEPAINT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "VGUARD",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "KSCL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NIITTECH",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "WIPRO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HDFC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SHREECEM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "YESBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATAMTRDVR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DISHTV",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IDEA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TVSMOTOR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PIDILITIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BHEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NATIONALUM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "EICHERMOT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MRF",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATASTEEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATAGLOBAL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ADANIPORTS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HINDUNILVR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RECLTD",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BPCL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NESTLEIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IDFC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CONCOR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "WOCKPHARMA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DCBBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JUSTDIAL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JSWSTEEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INDIACEM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DRREDDY",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "APOLLOTYRE",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "VEDL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SUNTV",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TCS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BALKRISIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GODREJIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GODFRYPHLP",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GLENMARK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BIOCON",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MRPL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ASHOKLEY",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GODREJCP",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GAIL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NTPC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATACHEM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PFC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ACC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "REPCOHOME",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MUTHOOTFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GRANULES",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HDIL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HCC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ESCORTS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ONGC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HINDPETRO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MANAPPURAM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "UJJIVAN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MARICO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CUMMINSIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IOC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "AMARAJABAT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "KAJARIACER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CESC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HEROMOTOCO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MARUTI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TITAN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "EXIDEIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HDFCBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BAJAJ-AUTO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CANBK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CANFINHOME",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TV18BRDCST",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "AMBUJACEM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NHPC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HINDALCO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CADILAHC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "FEDERALBNK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "UBL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NMDC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CIPLA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATAELXSI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BATAINDIA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "AUROPHARMA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SAIL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "LUPIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ASIANPAINT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HCLTECH",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MOTHERSUMI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DHFL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "KTKBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RELCAPITAL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "HEXAWARE",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATAPOWER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MFSL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NBCC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CHENNPETRO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ZEEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DABUR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BHARTIARTL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "UPL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INFY",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "POWERGRID",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "LICHSGFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RBLBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BHARATFORG",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GRASIM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JISLJALEQS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MGL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SYNDIBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "STAR",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IFCI",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "NCC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "IRB",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "AXISBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SRTRANSFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SUZLON",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BAJFINANCE",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CHOLAFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BRITANNIA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RELIANCE",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "LT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PEL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SUNPHARMA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BOSCHLTD",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SBIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CGPOWER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INDUSINDBK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RELINFRA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BHARATFIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "AJANTPHARM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "COALINDIA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ITC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CASTROLIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PTC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SIEMENS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SRF",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "OFSS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TORNTPOWER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BALRAMCHIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BEML",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PCJEWELLER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TATACOMM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "JPASSOCIAT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ARVIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DLF",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "EQUITAS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "DIVISLAB",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "COLPAL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SREINFRA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "CENTURYTEX",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ULTRACEMCO",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "SOUTHBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RPOWER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PAGEIND",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ORIENTBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PETRONET",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "MINDTREE",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ADANIPOWER",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ENGINERSIN",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "GSFC",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "RNAVAL",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "TORNTPHARM",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ANDHRABANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ADANIENT",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BANKBARODA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "INDIANB",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "PNB",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "FORTIS",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "BANKINDIA",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "UNIONBANK",
+        "IsSelected": 1,
+        "Use": true
+    },
+    {
+        "StockName": "ALBK",
+        "IsSelected": 1,
+        "Use": true
+    }
+]
+
+

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<users>
+  <user id="XW3723" risk="2000" password="Mummy@2018" Q1="PIN" A1="123456" name="Dheeraj">
+    <apikey>253tendzrkq911h2</apikey>
+    <apisecret>g0wzr0vk9cmpypexzhfzkslwn351x0n1</apisecret>
+    <requestToken>fDv8sF4lYEAqHacyW4x52BimoshS47B8</requestToken>
+  </user>
+  <!--<user id="XR9497" risk="1500" password="Jmlc2hf22" Q1="In which month does your father's birthday come? (e.g. July, May., etc)" A1="April" Q2="In which month did you get married? (e.g. July, May, etc)" A2="July" Q3="What is your mother's name?" A3="Nayana" Q4="What is your vehicle registration number? (e.g. 478, 786, etc)" A4="2797" Q5="What is your birth place?" A5="Samparu" name="Suvashree">
+    <apikey>253tendzrkq911h2</apikey>
+    <apisecret>g0wzr0vk9cmpypexzhfzkslwn351x0n1</apisecret>
+    <requestToken>BsAJYoTI70VVJOIX5MoRaa700wsEC4Fz</requestToken>
+  </user>-->
+</users>

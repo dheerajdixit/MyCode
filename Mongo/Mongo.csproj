@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+  <PropertyGroup>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <ProjectGuid>{C1383CEA-A07E-466A-864E-0CCE3878AFEA}</ProjectGuid>
+  </PropertyGroup>
+</Project>

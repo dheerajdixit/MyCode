@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard4.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\..\..\net452\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\..\net452\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core">
+      <HintPath>..\..\..\net452\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.GridFS">
+      <HintPath>..\..\..\net452\MongoDB.Driver.GridFS.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Legacy">
+      <HintPath>..\..\..\net452\MongoDB.Driver.Legacy.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

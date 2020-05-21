@@ -1,0 +1,15 @@
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.csprojAssemblyReference.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.csproj.CoreCompileInputs.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.AssemblyInfoInputs.cache
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.AssemblyInfo.cs
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\Mongo.deps.json
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\Mongo.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\Mongo.pdb
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\MongoDB.Bson.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\MongoDB.Driver.Core.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\MongoDB.Driver.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\MongoDB.Driver.GridFS.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\bin\Debug\netstandard2.0\MongoDB.Driver.Legacy.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.csproj.CopyComplete
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.dll
+C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Mongo\obj\Debug\netstandard2.0\Mongo.pdb

@@ -133,3 +133,4 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.exe
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csprojResolveAssemblyReference.cache

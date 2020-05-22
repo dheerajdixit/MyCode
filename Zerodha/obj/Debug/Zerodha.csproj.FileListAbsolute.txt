@@ -21,3 +21,4 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csprojResolveAssemblyReference.cache

@@ -20,10 +20,11 @@ namespace BAL
             List<ConcurrentBag<Candle>> list = source.ToList<ConcurrentBag<Candle>>();
             Queue<double> lowest = new Queue<double>();
             Queue<double> highest = new Queue<double>();
-            list.ForEach(delegate (ConcurrentBag<Candle> i) {
+            list.ForEach(delegate (ConcurrentBag<Candle> i)
+            {
                 IOrderedEnumerable<Candle> enumerable = from a in i
-                    orderby a.TimeStamp
-                    select a;
+                                                        orderby a.TimeStamp
+                                                        select a;
                 Candle candle = new Candle();
                 foreach (Candle candle2 in enumerable)
                 {
@@ -31,8 +32,8 @@ namespace BAL
                     highest.Enqueue(candle2.High);
                     candle2.PreviousCandle = candle;
                     candle = candle2;
-                    candle2.Lowest = ((IEnumerable<double>) lowest).Min();
-                    candle2.Highest = ((IEnumerable<double>) highest).Max();
+                    candle2.Lowest = ((IEnumerable<double>)lowest).Min();
+                    candle2.Highest = ((IEnumerable<double>)highest).Max();
                     if (lowest.Count > 150)
                     {
                         lowest.Dequeue();
@@ -54,10 +55,11 @@ namespace BAL
             List<ConcurrentBag<Candle>> list = source.ToList<ConcurrentBag<Candle>>();
             Queue<double> lowest = new Queue<double>();
             Queue<double> highest = new Queue<double>();
-            list.ForEach(delegate (ConcurrentBag<Candle> i) {
+            list.ForEach(delegate (ConcurrentBag<Candle> i)
+            {
                 IOrderedEnumerable<Candle> enumerable = from a in i
-                    orderby a.TimeStamp
-                    select a;
+                                                        orderby a.TimeStamp
+                                                        select a;
                 Candle candle = new Candle();
                 foreach (Candle candle2 in enumerable)
                 {
@@ -65,8 +67,8 @@ namespace BAL
                     highest.Enqueue(candle2.High);
                     candle2.PreviousCandle = candle;
                     candle = candle2;
-                    candle2.Lowest = ((IEnumerable<double>) lowest).Min();
-                    candle2.Highest = ((IEnumerable<double>) highest).Max();
+                    candle2.Lowest = ((IEnumerable<double>)lowest).Min();
+                    candle2.Highest = ((IEnumerable<double>)highest).Max();
                     if (lowest.Count > 150)
                     {
                         lowest.Dequeue();
@@ -78,17 +80,17 @@ namespace BAL
             return result;
         }
 
-        public double GetRange(Candle b, Range r) => 
-            ((r != Range.Gap) ? ((r != Range.Normal) ? ((r != Range.Gap) ? 0.0 : (Math.Abs((double) (b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close)) : (Math.Abs((double) (b.Open - b.Close)) / b.PreviousCandle.Close)) : ((Math.Abs((double) (b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0));
+        public double GetRange(Candle b, Range r) =>
+            ((r != Range.Gap) ? ((r != Range.Normal) ? ((r != Range.Gap) ? 0.0 : (Math.Abs((double)(b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close)) : (Math.Abs((double)(b.Open - b.Close)) / b.PreviousCandle.Close)) : ((Math.Abs((double)(b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0));
 
         public Time GetTime(Idea i)
         {
             Time time = new Time();
             int hour = 9;
             DateTime time2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, 15, 0);
-            time2 = time2.AddMinutes((double) ((i.EntryStartCandle - 1) * i.Interval));
+            time2 = time2.AddMinutes((double)((i.EntryStartCandle - 1) * i.Interval));
             DateTime time3 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 9, 15, 0);
-            time3 = time3.AddMinutes((double) ((i.EntryFinishCandle - 1) * i.Interval));
+            time3 = time3.AddMinutes((double)((i.EntryFinishCandle - 1) * i.Interval));
             time.StartHour = time2.Hour;
             time.StartMinute = time2.Minute;
             time.EndHour = time3.Hour;
@@ -100,33 +102,30 @@ namespace BAL
         {
             Time t = this.GetTime(selectedIdea);
             ConcurrentBag<List<StrategyModel>> filter1 = new ConcurrentBag<List<StrategyModel>>();
-            return new Dictionary<Guid, StrategyModel>();
-            /*Parallel.ForEach<KeyValuePair<string, List<Candle>>>(myTestData, delegate (KeyValuePair<string, List<Candle>> stock) {
-                Func<Candle, StrategyModel> <>9__2;
+            
+            Parallel.ForEach<KeyValuePair<string, List<Candle>>>(myTestData, delegate (KeyValuePair<string, List<Candle>> stock)
+            {
+
                 List<Candle> allCandles = stock.Value;
                 myProgres($"Collecting first candle for all days for {stock.Key}");
-                Func<Candle, StrategyModel> selector = <>9__2;
-                if (<>9__2 == null)
-                {
-                    Func<Candle, StrategyModel> local1 = <>9__2;
-                    selector = <>9__2 = delegate (Candle b) {
-                        StrategyModel model1 = new StrategyModel();
-                        model1.Stock = b.Stock;
-                        model1.Volume = b.Volume * b.Close;
-                        model1.Range = this.GetRange(b, selectedIdea.Range);
-                        model1.Date = b.TimeStamp;
-                        model1.Close = b.Close;
-                        model1.High = b.High;
-                        model1.Low = b.Low;
-                        model1.Open = b.Open;
-                        model1.PreviousClose = b.PreviousCandle.Close;
-                        model1.Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0;
-                        StrategyModel local1 = model1;
-                        local1.CurrentCandle = b;
-                        return local1;
-                    };
-                }
-                filter1.Add(this.PrepareFirstLevelOfFiltering(allCandles, selectedIdea, t).Select<Candle, StrategyModel>(selector).ToList<StrategyModel>());
+
+                List<StrategyModel> selector = new List<StrategyModel>();
+
+                filter1.Add(this.PrepareFirstLevelOfFiltering(allCandles, selectedIdea, t).Select(b =>
+                    new StrategyModel
+                    {
+                        Stock = b.Stock,
+                        Volume = b.Volume * b.Close,
+                        Range = this.GetRange(b, selectedIdea.Range),
+                        Date = b.TimeStamp,
+                        Close = b.Close,
+                        High = b.High,
+                        Low = b.Low,
+                        Open = b.Open,
+                        PreviousClose = b.PreviousCandle.Close,
+                        Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0
+
+                    }).ToList());
             });
             Dictionary<DateTime, List<StrategyModel>> dictionary = new Dictionary<DateTime, List<StrategyModel>>();
             foreach (DateTime myDate in (from a in myTestData.First<KeyValuePair<string, List<Candle>>>().Value select a.TimeStamp.Date).Distinct<DateTime>())
@@ -134,15 +133,11 @@ namespace BAL
                 List<StrategyModel> list = new List<StrategyModel>();
                 foreach (List<StrategyModel> list2 in filter1)
                 {
-                    Func<StrategyModel, bool> <>9__3;
+
                     myProgres($"Arranging stock date wise for {myDate.Date}");
-                    Func<StrategyModel, bool> predicate = <>9__3;
-                    if (<>9__3 == null)
-                    {
-                        Func<StrategyModel, bool> local2 = <>9__3;
-                        predicate = <>9__3 = obj => obj.Date.Date == myDate.Date;
-                    }
-                    IEnumerable<StrategyModel> source = list2.Where<StrategyModel>(predicate);
+
+
+                    IEnumerable<StrategyModel> source = list2.Where<StrategyModel>(a => a.Date == myDate.Date);
                     if ((source != null) && (source.Count<StrategyModel>() >= 1))
                     {
                         list.Add(source.First<StrategyModel>());
@@ -158,21 +153,21 @@ namespace BAL
                 {
                     int num = 0;
                     foreach (IGrouping<DateTime, StrategyModel> j in from a in pair2.Value
-                        orderby a.Date
-                        group a by a.Date)
+                                                                     orderby a.Date
+                                                                     group a by a.Date)
                     {
-                        Func<StrategyModel, bool> <>9__6;
-                        Func<StrategyModel, bool> predicate = <>9__6;
-                        if (<>9__6 == null)
+                        Func < StrategyModel, bool> p2 =null;
+                        Func<StrategyModel, bool> predicate = p2;
+                        if (p2 == null)
                         {
-                            Func<StrategyModel, bool> local5 = <>9__6;
-                            predicate = <>9__6 = b => b.Date == j.Key;
+                            Func<StrategyModel, bool> local5 = p2;
+                            predicate = p2 = b => b.Date == j.Key;
                         }
                         foreach (StrategyModel model in (from a in (from b in pair2.Value.Where<StrategyModel>(predicate)
-                            orderby b.Volume descending
-                            select b).Take<StrategyModel>(selectedIdea.FilterByVolume)
-                            orderby a.Range descending
-                            select a).Take<StrategyModel>(selectedIdea.TradePerSession))
+                                                                    orderby b.Volume descending
+                                                                    select b).Take<StrategyModel>(selectedIdea.FilterByVolume)
+                                                         orderby a.Range descending
+                                                         select a).Take<StrategyModel>(selectedIdea.TradePerSession))
                         {
                             dictionary2.Add(Guid.NewGuid(), model);
                             num++;
@@ -190,20 +185,20 @@ namespace BAL
                 }
                 int num2 = 0;
                 foreach (IGrouping<DateTime, StrategyModel> grouping1 in from a in pair2.Value
-                    orderby a.Date
-                    group a by a.Date)
+                                                                         orderby a.Date
+                                                                         group a by a.Date)
                 {
-                    Func<StrategyModel, bool> <>9__11;
-                    Func<StrategyModel, bool> predicate = <>9__11;
-                    if (<>9__11 == null)
+                    Func<StrategyModel, bool> p1 = null;
+                    Func<StrategyModel, bool> predicate = p1;
+                    if (p1 == null)
                     {
-                        Func<StrategyModel, bool> local10 = <>9__11;
-                        predicate = <>9__11 = b => b.Date == grouping1.Key;
+                        Func<StrategyModel, bool> local10 = p1;
+                        predicate = p1 = b => b.Date == grouping1.Key;
                     }
                     foreach (StrategyModel model2 in (from b in pair2.Value.Where<StrategyModel>(predicate)
-                        orderby b.Range
-                        orderby b.Volume descending
-                        select b).Take<StrategyModel>(selectedIdea.FilterByVolume).Take<StrategyModel>(selectedIdea.TradePerSession))
+                                                      orderby b.Range
+                                                      orderby b.Volume descending
+                                                      select b).Take<StrategyModel>(selectedIdea.FilterByVolume).Take<StrategyModel>(selectedIdea.TradePerSession))
                     {
                         dictionary2.Add(Guid.NewGuid(), model2);
                         num2++;
@@ -218,7 +213,7 @@ namespace BAL
                     }
                 }
             }
-            return dictionary2;*/
+            return dictionary2;
         }
 
         public void InsertHistory(string collectionName, int period, string json)
@@ -229,14 +224,14 @@ namespace BAL
         public IEnumerable<Candle> PrepareFirstLevelOfFiltering(List<Candle> allCandles, Idea selctedIdea, Time t)
         {
             IEnumerable<Candle> enumerable = from b in allCandles
-                where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
-                where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
-                select b;
+                                             where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
+                                             where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
+                                             select b;
             if (selctedIdea.TI.Contains(Technical.SuperTrend) && selctedIdea.TI.Contains(Technical.SimpleMovingAverage))
             {
                 enumerable = from b in enumerable
-                    where (b.Open == b.High) || (b.Open == b.Low)
-                    select b;
+                             where (b.Open == b.High) || (b.Open == b.Low)
+                             select b;
             }
             else if (selctedIdea.TI.Contains(Technical.SuperTrend))
             {
@@ -244,8 +239,8 @@ namespace BAL
             if (selctedIdea.CandleType == CandleType.Solid)
             {
                 enumerable = from b in enumerable
-                    where ((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))
-                    select b;
+                             where ((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))
+                             select b;
             }
             else if (selctedIdea.CandleType == CandleType.ThreeCandle)
             {
@@ -262,25 +257,26 @@ namespace BAL
         public List<PNL> TradeStocks(Dictionary<Guid, StrategyModel> filter3, Dictionary<string, List<Candle>> myTestData, Idea selectedIdea, ProgressDelegate myProgres)
         {
             ConcurrentBag<PNL> finalAmount = new ConcurrentBag<PNL>();
-            Parallel.ForEach<KeyValuePair<Guid, StrategyModel>>(filter3, delegate (KeyValuePair<Guid, StrategyModel> gap) {
+            Parallel.ForEach<KeyValuePair<Guid, StrategyModel>>(filter3, delegate (KeyValuePair<Guid, StrategyModel> gap)
+            {
                 if (gap.Value != null)
                 {
                     StopTarget target = new StopTarget(gap.Value, selectedIdea);
                     double close = gap.Value.Close;
                     double num2 = 0.0;
                     double stopLossRange = target.StopLossRange;
-                    int num4 = Convert.ToInt32((double) (selectedIdea.Risk / stopLossRange));
+                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange));
                     int num5 = num4;
                     double stoploss = target.Stoploss;
                     double num7 = stoploss;
                     double num8 = target.BookProfit1;
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
-                        where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
-                        select b).ToList<Candle>();
+                                         where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
+                                         select b).ToList<Candle>();
                     List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
-                        where b.TimeStamp.Date == gap.Value.Date.Date
-                        select b).ToList<Candle>();
+                                          where b.TimeStamp.Date == gap.Value.Date.Date
+                                          select b).ToList<Candle>();
                     bool flag2 = false;
                     bool flag3 = false;
                     if (gap.Value.CandleType != "G")
@@ -414,14 +410,14 @@ namespace BAL
                 }
             });
             List<PNL> source = (from a in finalAmount
-                orderby a.Date descending
-                select a).ToList<PNL>();
+                                orderby a.Date descending
+                                select a).ToList<PNL>();
             double num = source.Sum<PNL>(a => a.Amount);
             myProgres($"Total PNL is : {num}");
             return source;
         }
 
-      
+
     }
 }
 

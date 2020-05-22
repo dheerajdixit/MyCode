@@ -18,3 +18,4 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Busines
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\bin\Debug\Zerodha.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.csprojResolveAssemblyReference.cache

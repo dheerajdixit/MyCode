@@ -31,4 +31,3 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoDa
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.pdb
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csprojResolveAssemblyReference.cache

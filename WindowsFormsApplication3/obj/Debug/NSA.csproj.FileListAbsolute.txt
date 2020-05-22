@@ -41,7 +41,7 @@ C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsFormsApplication3\
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\NSA.exe.config
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\NSA.exe
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\NSA.pdb
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\BAL.dll
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\BusinessLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Common.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\HtmlAgilityPack.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\KiteConnect.dll
@@ -102,7 +102,6 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\TelerikExport.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\TelerikProviderForGoogleAnalytics.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\VisualStyleBuilder.Design.dll
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\DAL.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\MongoDB.Driver.Core.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\MongoDB.Bson.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Microsoft.mshtml.dll
@@ -115,13 +114,13 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.8.0.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Microsoft.MSXML.dll
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\BAL.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\BusinessLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Common.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Model.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Newtonsoft.Json.xml
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\DAL.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\MongoData.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\Zerodha.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csprojResolveAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.DialogBoxes.TechnicalParameters.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.StockSelection.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\_15MCE.IdeaCreator.resources
@@ -133,4 +132,5 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.exe
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.pdb
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csprojResolveAssemblyReference.cache
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\DataLayer.dll
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\DataLayer.pdb

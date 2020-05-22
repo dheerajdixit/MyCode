@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F84A9F69-2AE6-43A6-A05D-76D279867C33}</ProjectGuid>
+    <ProjectGuid>{F751E274-F659-47E3-9D4D-D568D3179BC7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BAL</RootNamespace>
-    <AssemblyName>BAL</AssemblyName>
+    <RootNamespace>BusinessLayer</RootNamespace>
+    <AssemblyName>BusinessLayer</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\..\NSATillDate-master\NSATillDate-master\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="DAL">
+      <HintPath>..\..\..\NSATillDate-master\NSATillDate-master\DAL.dll</HintPath>
+    </Reference>
+    <Reference Include="Model">
+      <HintPath>..\..\..\NSATillDate-master\NSATillDate-master\Model.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,26 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllTechnicals.cs" />
-    <Compile Include="CircularList.cs" />
+    <Compile Include="CircularList!1.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="IMovingAverage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleMovingAverage.cs" />
     <Compile Include="StockOHLC.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TechnicalIndicators.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\CommonFeatures.csproj">
-      <Project>{961CC938-A59E-48CD-BBDE-8FF6C8A7E69B}</Project>
-      <Name>CommonFeatures</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DAL\DAL.csproj">
-      <Project>{e3c53fab-e49c-46dc-82e9-277b098f4817}</Project>
-      <Name>DAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Model\Model.csproj">
-      <Project>{4989ECBA-A7C6-49F5-956F-C64BADF22F19}</Project>
-      <Name>Model</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

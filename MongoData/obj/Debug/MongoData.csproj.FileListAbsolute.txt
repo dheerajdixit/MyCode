@@ -15,9 +15,6 @@ C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\MongoData\bin\Debug\Model
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\MongoData\obj\Debug\MongoData.csproj.CopyComplete
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\MongoData\obj\Debug\MongoData.dll
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\MongoData\obj\Debug\MongoData.pdb
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.dll
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\MongoData.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\MongoData.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\Common.dll
@@ -31,3 +28,6 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoDa
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\Common.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\Model.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\bin\Debug\Newtonsoft.Json.xml
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.dll
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.pdb

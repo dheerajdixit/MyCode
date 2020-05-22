@@ -33,7 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BAL">
+    <Reference Include="BAL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\NSATillDate-master\NSATillDate-master\BAL.dll</HintPath>
     </Reference>
     <Reference Include="Common">

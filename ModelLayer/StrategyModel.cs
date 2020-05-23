@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Model
 {
-  
+
     public class StrategyModel
     {
         public string Stock { get; set; }
@@ -25,11 +25,20 @@ namespace Model
         public string CandleType =>
             ((this.Close <= this.Open) ? ((this.Close >= this.Open) ? "D" : "R") : "G");
 
+        public Trade Trade { get; set; }
+
         public double PreviousClose { get; set; }
 
         public double Imp1 { get; set; }
 
         public Candle CurrentCandle { get; set; }
+
+        
+    }
+    public enum Trade
+    {
+        BUY,
+        SELL
     }
 }
 

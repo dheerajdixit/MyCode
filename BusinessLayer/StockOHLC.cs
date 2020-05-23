@@ -257,12 +257,19 @@ namespace BAL
             if (selctedIdea.Name == "MyNewIdea")
             {
 
-
-
                 enumerable = from b in enumerable
-                             where ((b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close> b.PreviousCandle.Close && b.Close< b.PreviousCandle.High)
+                             where ((b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
                              || (b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
                              select b;
+
+                foreach (var c in enumerable)
+                {
+                    if (c.Close > c.PreviousCandle.Close)
+                        c.Trade = Trade.SELL;
+                    else
+                        c.Trade = Trade.BUY;
+                }
+
             }
             if (selctedIdea.TI.Contains(Technical.MACD))
             {
@@ -332,10 +339,10 @@ namespace BAL
                                           select b).ToList<Candle>();
                     bool flag2 = false;
                     bool flag3 = false;
-                    
-                    if (gap.Value.CandleType != "G")
+
+                    if (gap.Value.Trade != Trade.BUY)
                     {
-                        if (gap.Value.CandleType == "R")
+                        if (gap.Value.Trade == Trade.SELL)
                         {
                             int num11 = 0;
                             foreach (Candle candle2 in list)
@@ -456,7 +463,7 @@ namespace BAL
                     pnl1.Stock = gap.Value.Stock;
                     pnl1.Entry = close;
                     pnl1.Quantity = num5;
-                    pnl1.Direction = (gap.Value.CandleType == "G") ? "BUY" : "SELL";
+                    pnl1.Direction = gap.Value.Trade == Trade.BUY ? "BUY" : "SELL";
                     PNL item = pnl1;
                     item.Stoploss = num7;
                     finalAmount.Add(item);

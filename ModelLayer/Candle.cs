@@ -79,6 +79,12 @@ namespace Model
         public DateTime TimeStamp { get; set; }
 
         public SuperTrendInd STrend { get; set; }
+
+        public Trade Trade { get; set; }
     }
+
+    
+
+
 }
 

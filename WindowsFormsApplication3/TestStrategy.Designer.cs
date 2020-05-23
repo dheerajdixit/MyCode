@@ -271,7 +271,7 @@ namespace _15MCE
             this.radDropDownList1.DropDownAnimationEnabled = false;
             this.radDropDownList1.Location = new System.Drawing.Point(46, 10);
             this.radDropDownList1.Name = "radDropDownList1";
-            this.radDropDownList1.Size = new System.Drawing.Size(125, 20);
+            this.radDropDownList1.Size = new System.Drawing.Size(125, 24);
             this.radDropDownList1.TabIndex = 5;
             this.radDropDownList1.Text = "radDropDownList1";
             // 
@@ -298,28 +298,34 @@ namespace _15MCE
             gridViewTextBoxColumn1.FieldName = "Stock";
             gridViewTextBoxColumn1.HeaderText = "Stock";
             gridViewTextBoxColumn1.Name = "Stock";
+            gridViewTextBoxColumn1.ReadOnly = true;
             gridViewTextBoxColumn1.Width = 70;
             gridViewTextBoxColumn2.DataType = typeof(double);
             gridViewTextBoxColumn2.FieldName = "Amount";
             gridViewTextBoxColumn2.HeaderText = "Profit/Loss";
             gridViewTextBoxColumn2.Name = "Amount";
+            gridViewTextBoxColumn2.ReadOnly = true;
             gridViewTextBoxColumn2.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
             gridViewTextBoxColumn2.Width = 80;
             gridViewTextBoxColumn3.Expression = "";
             gridViewTextBoxColumn3.FieldName = "Date";
             gridViewTextBoxColumn3.HeaderText = "Date";
             gridViewTextBoxColumn3.Name = "Date";
+            gridViewTextBoxColumn3.ReadOnly = true;
             gridViewTextBoxColumn3.Width = 150;
             gridViewTextBoxColumn4.FieldName = "Entry";
             gridViewTextBoxColumn4.HeaderText = "Entry";
             gridViewTextBoxColumn4.Name = "entry";
+            gridViewTextBoxColumn4.ReadOnly = true;
             gridViewTextBoxColumn5.FieldName = "Quantity";
             gridViewTextBoxColumn5.HeaderText = "Quantity";
             gridViewTextBoxColumn5.Name = "quantity";
+            gridViewTextBoxColumn5.ReadOnly = true;
             gridViewTextBoxColumn5.Width = 80;
             gridViewTextBoxColumn6.FieldName = "Direction";
             gridViewTextBoxColumn6.HeaderText = "Direction";
             gridViewTextBoxColumn6.Name = "direction";
+            gridViewTextBoxColumn6.ReadOnly = true;
             gridViewTextBoxColumn6.Width = 100;
             this.rgvStocks.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn1,
@@ -344,6 +350,7 @@ namespace _15MCE
             this.rgvStocks.TabIndex = 7;
             this.rgvStocks.Text = "rgvStocks";
             this.rgvStocks.ThemeName = "TelerikMetroBlue";
+            this.rgvStocks.CellDoubleClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.rgvStocks_CellDoubleClick);
             // 
             // btnExports
             // 
@@ -422,7 +429,7 @@ namespace _15MCE
             this.ddlStartDate.Items.Add(radListDataItem31);
             this.ddlStartDate.Location = new System.Drawing.Point(271, 12);
             this.ddlStartDate.Name = "ddlStartDate";
-            this.ddlStartDate.Size = new System.Drawing.Size(55, 20);
+            this.ddlStartDate.Size = new System.Drawing.Size(55, 24);
             this.ddlStartDate.TabIndex = 8;
             // 
             // ddlStartMonth
@@ -454,7 +461,7 @@ namespace _15MCE
             this.ddlStartMonth.Items.Add(radListDataItem43);
             this.ddlStartMonth.Location = new System.Drawing.Point(332, 12);
             this.ddlStartMonth.Name = "ddlStartMonth";
-            this.ddlStartMonth.Size = new System.Drawing.Size(55, 20);
+            this.ddlStartMonth.Size = new System.Drawing.Size(55, 24);
             this.ddlStartMonth.TabIndex = 9;
             // 
             // ddlStartYear
@@ -474,7 +481,7 @@ namespace _15MCE
             this.ddlStartYear.Items.Add(radListDataItem49);
             this.ddlStartYear.Location = new System.Drawing.Point(393, 12);
             this.ddlStartYear.Name = "ddlStartYear";
-            this.ddlStartYear.Size = new System.Drawing.Size(55, 20);
+            this.ddlStartYear.Size = new System.Drawing.Size(55, 24);
             this.ddlStartYear.TabIndex = 10;
             // 
             // ddlEndYear
@@ -494,7 +501,7 @@ namespace _15MCE
             this.ddlEndYear.Items.Add(radListDataItem55);
             this.ddlEndYear.Location = new System.Drawing.Point(724, 10);
             this.ddlEndYear.Name = "ddlEndYear";
-            this.ddlEndYear.Size = new System.Drawing.Size(55, 20);
+            this.ddlEndYear.Size = new System.Drawing.Size(55, 24);
             this.ddlEndYear.TabIndex = 13;
             // 
             // ddlEndMonth
@@ -526,7 +533,7 @@ namespace _15MCE
             this.ddlEndMonth.Items.Add(radListDataItem67);
             this.ddlEndMonth.Location = new System.Drawing.Point(663, 10);
             this.ddlEndMonth.Name = "ddlEndMonth";
-            this.ddlEndMonth.Size = new System.Drawing.Size(55, 20);
+            this.ddlEndMonth.Size = new System.Drawing.Size(55, 24);
             this.ddlEndMonth.TabIndex = 12;
             // 
             // radLabel2
@@ -632,12 +639,12 @@ namespace _15MCE
             this.ddlEndDate.Items.Add(radListDataItem98);
             this.ddlEndDate.Location = new System.Drawing.Point(602, 9);
             this.ddlEndDate.Name = "ddlEndDate";
-            this.ddlEndDate.Size = new System.Drawing.Size(55, 20);
+            this.ddlEndDate.Size = new System.Drawing.Size(55, 24);
             this.ddlEndDate.TabIndex = 16;
             // 
             // TestStrategy
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(954, 480);
             this.Controls.Add(this.ddlEndDate);

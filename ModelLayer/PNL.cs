@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Model
@@ -31,6 +32,8 @@ namespace Model
         public string Direction { get; set; }
 
         public int Quantity { get; set; }
+
+        public List<Candle> ChartData { get; set; }
     }
 }
 

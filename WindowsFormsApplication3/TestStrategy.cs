@@ -20,6 +20,7 @@ using BAL;
 using Telerik.WinControls.Export;
 using System.Windows.Forms;
 using System.Collections.Concurrent;
+using Model;
 
 namespace _15MCE
 {
@@ -226,9 +227,9 @@ namespace _15MCE
                 }
                 else
                 {
-                    cc=0;
+                    cc = 0;
                 }
-                
+
 
             }
 
@@ -1081,6 +1082,58 @@ namespace _15MCE
         private void RadButton3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void rgvStocks_CellDoubleClick(object sender, GridViewCellEventArgs e)
+        {
+            List<Candle> cd = (rgvStocks.DataSource as List<Model.PNL>)[e.RowIndex].ChartData;
+
+            //jsfidler
+            StringBuilder cdTransformation = new StringBuilder();
+            foreach (var c in cd)
+            {
+                if (c.CandleType == "G")
+                {
+                    cdTransformation.Append("[");
+                    cdTransformation.Append("'");
+                    cdTransformation.Append(c.TimeStamp);
+                    cdTransformation.Append("'");
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Low);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Open);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Close);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.High);
+                    cdTransformation.Append("]");
+                    cdTransformation.Append(",");
+                }
+                else
+                {
+                    cdTransformation.Append("[");
+                    cdTransformation.Append("'");
+                    cdTransformation.Append(c.TimeStamp);
+                    cdTransformation.Append("'");
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.High);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Open);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Close);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Low);
+                    cdTransformation.Append("]");
+                    cdTransformation.Append(",");
+                }
+            }
+
+            string s = File.ReadAllText(@"C:\Jai Sri Thakur Ji\Chart.html");
+            s = s.Replace("__chartdata", cdTransformation.ToString());
+            string fileName = Guid.NewGuid().ToString();
+           
+            File.WriteAllText(@"file:///C:/Jai%20Sri%20Thakur%20Ji/" + fileName + ".html", s);
+            System.Diagnostics.Process.Start(@"file:///C:/Jai%20Sri%20Thakur%20Ji/" + fileName + ".html");
         }
     }
 }

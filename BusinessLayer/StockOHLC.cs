@@ -464,8 +464,10 @@ namespace BAL
                     pnl1.Entry = close;
                     pnl1.Quantity = num5;
                     pnl1.Direction = gap.Value.Trade == Trade.BUY ? "BUY" : "SELL";
+                    pnl1.ChartData = list2;
                     PNL item = pnl1;
                     item.Stoploss = num7;
+
                     finalAmount.Add(item);
                     myProgres($"PNL for stock {gap.Value.Stock} for Day{gap.Value.Date.Date} is : {num2}");
                 }

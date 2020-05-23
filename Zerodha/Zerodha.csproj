@@ -31,14 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\NSATillDate-master\NSATillDate-master\Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\BAL\bin\Debug\Model.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,6 +44,16 @@
     <Compile Include="ZerodhaOperations.cs" />
     <Compile Include="ZerodhaStock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonLayer\CommonLayer.csproj">
+      <Project>{4620120b-b5e2-40d0-af31-99ada4a728c4}</Project>
+      <Name>CommonLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModelLayer\ModelLayer.csproj">
+      <Project>{8623ad45-3b7a-4f45-b1ee-090688641a58}</Project>
+      <Name>ModelLayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -332,6 +332,7 @@ namespace BAL
                                           select b).ToList<Candle>();
                     bool flag2 = false;
                     bool flag3 = false;
+                    
                     if (gap.Value.CandleType != "G")
                     {
                         if (gap.Value.CandleType == "R")

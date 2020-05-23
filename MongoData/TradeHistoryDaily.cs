@@ -13,6 +13,7 @@ namespace MongoData
     public class TradeHistoryDaily : IHistory
     {
         public override string databaseName => "TradeHistoryDaily";
+        public override string folderName => @"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\\BackupDaily\";
 
     }
 

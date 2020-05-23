@@ -15,12 +15,14 @@ namespace BAL
     {
         public Dictionary<string, List<Candle>> GetOHLC(DateTime startDate, DateTime endDate, int period, ProgressDelegate myProgres)
         {
-            ConcurrentBag<ConcurrentBag<Candle>> source = new DataAcess().GetHistory(myProgres, period, startDate, endDate);
+            //ConcurrentBag<ConcurrentBag<Candle>> source = new DataAcess().GetHistory(myProgres, period, startDate, endDate);
+
+            ConcurrentBag<List<Candle>> source = new DataAcess().GetHistoryFromFile(myProgres, period, startDate, endDate);
             Dictionary<string, List<Candle>> result = new Dictionary<string, List<Candle>>();
-            List<ConcurrentBag<Candle>> list = source.ToList<ConcurrentBag<Candle>>();
+            List<List<Candle>> list = source.ToList<List<Candle>>();
             Queue<double> lowest = new Queue<double>();
             Queue<double> highest = new Queue<double>();
-            list.ForEach(delegate (ConcurrentBag<Candle> i)
+            list.ForEach(delegate (List<Candle> i)
             {
                 IOrderedEnumerable<Candle> enumerable = from a in i
                                                         orderby a.TimeStamp
@@ -102,7 +104,7 @@ namespace BAL
         {
             Time t = this.GetTime(selectedIdea);
             ConcurrentBag<List<StrategyModel>> filter1 = new ConcurrentBag<List<StrategyModel>>();
-            
+
             Parallel.ForEach<KeyValuePair<string, List<Candle>>>(myTestData, delegate (KeyValuePair<string, List<Candle>> stock)
             {
 
@@ -133,11 +135,15 @@ namespace BAL
                 List<StrategyModel> list = new List<StrategyModel>();
                 foreach (List<StrategyModel> list2 in filter1)
                 {
-
+                    Func<StrategyModel, bool> pf = null;
                     myProgres($"Arranging stock date wise for {myDate.Date}");
-
-
-                    IEnumerable<StrategyModel> source = list2.Where<StrategyModel>(a => a.Date == myDate.Date);
+                    Func<StrategyModel, bool> predicate = pf;
+                    if (pf == null)
+                    {
+                        Func<StrategyModel, bool> local2 = pf;
+                        predicate = pf = obj => obj.Date.Date == myDate.Date;
+                    }
+                    IEnumerable<StrategyModel> source = list2.Where<StrategyModel>(predicate);
                     if ((source != null) && (source.Count<StrategyModel>() >= 1))
                     {
                         list.Add(source.First<StrategyModel>());
@@ -156,7 +162,7 @@ namespace BAL
                                                                      orderby a.Date
                                                                      group a by a.Date)
                     {
-                        Func < StrategyModel, bool> p2 =null;
+                        Func<StrategyModel, bool> p2 = null;
                         Func<StrategyModel, bool> predicate = p2;
                         if (p2 == null)
                         {
@@ -248,10 +254,57 @@ namespace BAL
                 //    where ((b.CandleType != "G") || ((b.PreviousCandle.CandleType != "R") || ((b.PreviousCandle.PreviousCandle.CandleType != "G") || ((b.Close <= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.Low >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.AllIndicators.MACD.histogram <= 0.0) || ((b.Close <= b.PreviousCandle.PreviousCandle.Close) || ((b.AllIndicators.SMA20 <= b.AllIndicators.SMA50) || (b.AllIndicators.SMA50 <= b.AllIndicators.SMA200))))))))) ? ((IEnumerable<Candle>) (((b.CandleType == "R") && ((b.PreviousCandle.CandleType == "G") && ((b.PreviousCandle.PreviousCandle.CandleType == "R") && ((b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.High > Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.AllIndicators.MACD.histogram < 0.0) && ((b.Close < b.PreviousCandle.PreviousCandle.Close) && (b.AllIndicators.SMA20 < b.AllIndicators.SMA50)))))))) && (b.AllIndicators.SMA50 < b.AllIndicators.SMA200))) : ((IEnumerable<Candle>) true)
                 //    select b;
             }
+            if (selctedIdea.Name == "MyNewIdea")
+            {
+
+
+
+                enumerable = from b in enumerable
+                             where ((b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close> b.PreviousCandle.Close && b.Close< b.PreviousCandle.High)
+                             || (b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
+                             select b;
+            }
             if (selctedIdea.TI.Contains(Technical.MACD))
             {
             }
             return enumerable;
+        }
+
+
+
+        double GetRange(Candle c)
+        {
+            return Math.Abs(c.High - c.Low);
+        }
+        double GetBody(Candle c)
+        {
+            return Math.Abs(c.Close - c.Open);
+        }
+
+        double GetLowerWick(Candle c)
+        {
+            if (c.CandleType == "D" || c.CandleType == "R")
+            {
+                return c.Close - c.Low;
+            }
+            else
+            {
+                return c.Open - c.Low;
+            }
+
+        }
+
+        double GetUpperWick(Candle c)
+        {
+            if (c.CandleType == "D" || c.CandleType == "R")
+            {
+                return c.High - c.Open;
+            }
+            else
+            {
+                return c.High - c.Close;
+            }
+
         }
 
         public List<PNL> TradeStocks(Dictionary<Guid, StrategyModel> filter3, Dictionary<string, List<Candle>> myTestData, Idea selectedIdea, ProgressDelegate myProgres)

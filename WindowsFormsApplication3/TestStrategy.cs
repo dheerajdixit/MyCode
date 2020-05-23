@@ -205,6 +205,32 @@ namespace _15MCE
         delegate void SetDataSourceCallback(List<Model.PNL> outcome);
         private void SetDataSource(List<Model.PNL> outcome)
         {
+            List<Model.PNL> x = new List<Model.PNL>();
+            int cc = 0;
+            foreach (var b in outcome.OrderBy(c => c.Date))
+            {
+                if (cc >= 3)
+                {
+
+                    cc++;
+                    x.Add(b);
+                    if (b.Amount > 0)
+                    {
+                        cc = 0;
+                    }
+                }
+                if (b.Amount <= 0)
+                {
+                    cc++;
+
+                }
+                else
+                {
+                    cc=0;
+                }
+                
+
+            }
 
             if (this.rgvStocks.InvokeRequired)
             {
@@ -213,7 +239,8 @@ namespace _15MCE
             }
             else
             {
-                this.rgvStocks.DataSource = outcome;
+
+                this.rgvStocks.DataSource = x;
             }
         }
 

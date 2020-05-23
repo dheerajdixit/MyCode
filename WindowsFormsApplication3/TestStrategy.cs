@@ -206,10 +206,13 @@ namespace _15MCE
         delegate void SetDataSourceCallback(List<Model.PNL> outcome);
         private void SetDataSource(List<Model.PNL> outcome)
         {
+
             List<Model.PNL> x = new List<Model.PNL>();
             int cc = 0;
             foreach (var b in outcome.OrderBy(c => c.Date))
             {
+                //x.Add(b);
+                //continue;
                 if (cc >= 3)
                 {
 
@@ -233,6 +236,7 @@ namespace _15MCE
 
             }
 
+            x.AddRange(rgvStocks.DataSource as List<PNL>);
             if (this.rgvStocks.InvokeRequired)
             {
                 SetDataSourceCallback d = new SetDataSourceCallback(SetDataSource);
@@ -251,37 +255,45 @@ namespace _15MCE
         {
             try
             {
-
                 ProgressDelegate myProgres = ShowMyProgress;
-                List<Model.Idea> myideas = Common.GetIdeas();
-
-                Model.Idea selectedIdea = myideas.Where(a => a.Name == radDropDownList1.SelectedItem.Text).First();
-                StockOHLC stockOHLC = new StockOHLC();
-
-                //Load Data
-                Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
-
-                //Apply indicators
-
-                loadmydata.ContinueWith((t0) =>
+                List<Model.Idea> myideas = null;
+                if (checkBox1.Checked)
                 {
-                    SetText("Applying indicators");
-                    Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI));
-                    Task getTradingStocks = withIndicators.ContinueWith((t1) =>
-                    {
+                    myideas = Common.GetIdeas();
+                }
+                else
+                {
+                    myideas = Common.GetIdeas().Where(a => a.Name == radDropDownList1.SelectedItem.Text).ToList();
+                }
 
-                        Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.GetTopMostSolidGapOpenerDayWise(t1.Result, selectedIdea, myProgres));
-                        Task tradeMyStocks = getTradedStocks.ContinueWith((t2) =>
+                //Model.Idea selectedIdea = myideas.Where(a => a.Name == radDropDownList1.SelectedItem.Text).First();
+                foreach (var selectedIdea in myideas)
+                {
+                    StockOHLC stockOHLC = new StockOHLC();
+
+                    //Load Data
+                    Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
+
+                    //Apply indicators
+                    loadmydata.ContinueWith((t0) =>
+                    {
+                        SetText("Applying indicators");
+                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI));
+                        Task getTradingStocks = withIndicators.ContinueWith((t1) =>
                         {
-                            Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
-                            calculation.ContinueWith((t3) =>
+                            Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.GetTopMostSolidGapOpenerDayWise(t1.Result, selectedIdea, myProgres));
+                            Task tradeMyStocks = getTradedStocks.ContinueWith((t2) =>
                             {
-                                SetDataSource(t3.Result);
-                                SetText("Idea ran successfully");
+                                Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
+                                calculation.ContinueWith((t3) =>
+                                {
+                                    SetDataSource(t3.Result);
+                                    SetText("Idea ran successfully");
+                                });
                             });
                         });
                     });
-                });
+                }
             }
             catch (Exception ex)
             {
@@ -1131,9 +1143,14 @@ namespace _15MCE
             string s = File.ReadAllText(@"C:\Jai Sri Thakur Ji\Chart.html");
             s = s.Replace("__chartdata", cdTransformation.ToString());
             string fileName = Guid.NewGuid().ToString();
-           
-            File.WriteAllText(@"file:///C:/Jai%20Sri%20Thakur%20Ji/" + fileName + ".html", s);
+
+            File.WriteAllText(@"C:\Jai Sri Thakur Ji\" + fileName + ".html", s);
             System.Diagnostics.Process.Start(@"file:///C:/Jai%20Sri%20Thakur%20Ji/" + fileName + ".html");
+        }
+
+        private void radButton4_Click(object sender, EventArgs e)
+        {
+            rgvStocks.DataSource = null;
         }
     }
 }

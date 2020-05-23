@@ -125,7 +125,8 @@ namespace BAL
                         Low = b.Low,
                         Open = b.Open,
                         PreviousClose = b.PreviousCandle.Close,
-                        Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0
+                        Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0,
+                        Trade=b.Trade
 
                     }).ToList());
             });
@@ -258,8 +259,8 @@ namespace BAL
             {
 
                 enumerable = from b in enumerable
-                             where ((b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
-                             || (b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
+                             where ((b.PreviousCandle.CandleType == "G" && b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
+                             || (b.PreviousCandle.CandleType == "R" && b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
                              select b;
 
                 foreach (var c in enumerable)
@@ -268,6 +269,17 @@ namespace BAL
                         c.Trade = Trade.SELL;
                     else
                         c.Trade = Trade.BUY;
+                }
+
+            }
+            else if (selctedIdea.Name == "MyOldIdea")
+            {
+                foreach (var c in enumerable)
+                {
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
                 }
 
             }

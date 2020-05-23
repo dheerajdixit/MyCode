@@ -183,6 +183,8 @@ namespace _15MCE
             this.radButton2 = new Telerik.WinControls.UI.RadButton();
             this.radButton3 = new Telerik.WinControls.UI.RadButton();
             this.ddlEndDate = new Telerik.WinControls.UI.RadDropDownList();
+            this.radButton4 = new Telerik.WinControls.UI.RadButton();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.orderDetailBindingSource3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnLoad)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).BeginInit();
@@ -204,6 +206,7 @@ namespace _15MCE
             ((System.ComponentModel.ISupportInitialize)(this.radButton2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radButton3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ddlEndDate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radButton4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             this.SuspendLayout();
             // 
@@ -642,11 +645,33 @@ namespace _15MCE
             this.ddlEndDate.Size = new System.Drawing.Size(55, 24);
             this.ddlEndDate.TabIndex = 16;
             // 
+            // radButton4
+            // 
+            this.radButton4.Location = new System.Drawing.Point(156, 405);
+            this.radButton4.Name = "radButton4";
+            this.radButton4.Size = new System.Drawing.Size(80, 30);
+            this.radButton4.TabIndex = 2;
+            this.radButton4.Text = "Reset";
+            this.radButton4.ThemeName = "TelerikMetroBlue";
+            this.radButton4.Click += new System.EventHandler(this.radButton4_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(46, 414);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(77, 21);
+            this.checkBox1.TabIndex = 17;
+            this.checkBox1.Text = "Test All";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // TestStrategy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(954, 480);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.radButton4);
             this.Controls.Add(this.ddlEndDate);
             this.Controls.Add(this.radButton3);
             this.Controls.Add(this.radButton2);
@@ -695,6 +720,7 @@ namespace _15MCE
             ((System.ComponentModel.ISupportInitialize)(this.radButton2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radButton3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ddlEndDate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radButton4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -753,5 +779,7 @@ namespace _15MCE
         private Telerik.WinControls.UI.RadButton radButton2;
         private Telerik.WinControls.UI.RadButton radButton3;
         private Telerik.WinControls.UI.RadDropDownList ddlEndDate;
+        private Telerik.WinControls.UI.RadButton radButton4;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

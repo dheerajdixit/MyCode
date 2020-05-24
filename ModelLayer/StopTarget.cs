@@ -23,6 +23,13 @@ namespace Model
                 this.BookProfit1 = (current.Trade == Trade.BUY) ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
                 this.BookProfit2 = (current.Trade == Trade.BUY) ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));
             }
+            else if (stoploss == 2)
+            {
+                this.StopLossRange = (current.Trade == Trade.BUY) ? (current.Close - current.Low) : (current.High - current.Close);
+                this.Stoploss = (current.Trade == Trade.BUY) ? (current.Close - this.StopLossRange) : (current.Close + this.StopLossRange);
+                this.BookProfit1 = (current.Trade == Trade.BUY) ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
+                this.BookProfit2 = (current.Trade == Trade.BUY) ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));
+            }
             else if (stoploss != 5)
             {
                 this.StopLossRange = Math.Abs((double) (current.Close - current.Imp1));

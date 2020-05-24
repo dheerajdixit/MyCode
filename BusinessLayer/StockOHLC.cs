@@ -4,9 +4,12 @@ using Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+
 namespace BAL
 {
 
@@ -126,10 +129,11 @@ namespace BAL
                         Open = b.Open,
                         PreviousClose = b.PreviousCandle.Close,
                         Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0,
-                        Trade=b.Trade
+                        Trade = b.Trade
 
                     }).ToList());
             });
+            
             Dictionary<DateTime, List<StrategyModel>> dictionary = new Dictionary<DateTime, List<StrategyModel>>();
             foreach (DateTime myDate in (from a in myTestData.First<KeyValuePair<string, List<Candle>>>().Value select a.TimeStamp.Date).Distinct<DateTime>())
             {
@@ -230,19 +234,29 @@ namespace BAL
 
         public IEnumerable<Candle> PrepareFirstLevelOfFiltering(List<Candle> allCandles, Idea selctedIdea, Time t)
         {
+
+            //var c1 = allCandles.OrderBy(a=>a.TimeStamp).ToList();
+
+            //XmlSerializer xs = new XmlSerializer(typeof(List<Candle>));
+            //using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo.xml"))
+            //{
+            //    xs.Serialize(writer, c1);
+            //}
+
+
             IEnumerable<Candle> enumerable = from b in allCandles
                                              where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
                                              where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
                                              select b;
-            if (selctedIdea.TI.Contains(Technical.SuperTrend) && selctedIdea.TI.Contains(Technical.SimpleMovingAverage))
-            {
-                enumerable = from b in enumerable
-                             where (b.Open == b.High) || (b.Open == b.Low)
-                             select b;
-            }
-            else if (selctedIdea.TI.Contains(Technical.SuperTrend))
-            {
-            }
+            //if (selctedIdea.TI.Contains(Technical.SuperTrend) && selctedIdea.TI.Contains(Technical.SimpleMovingAverage))
+            //{
+            //    enumerable = from b in enumerable
+            //                 where (b.Open == b.High) || (b.Open == b.Low)
+            //                 select b;
+            //}
+            //else if (selctedIdea.TI.Contains(Technical.SuperTrend))
+            //{
+            //}
             if (selctedIdea.CandleType == CandleType.Solid)
             {
                 enumerable = from b in enumerable
@@ -272,6 +286,34 @@ namespace BAL
                 }
 
             }
+            else if (selctedIdea.Name == "OHOL")
+            {
+                enumerable = from b in enumerable
+                             where (b.Open == b.Low) || (b.High == b.Open)
+                             select b;
+                foreach (var c in enumerable)
+                {
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+
+            }
+            else if (selctedIdea.Name == "OHOLINV")
+            {
+                enumerable = from b in enumerable
+                             where ((b.Open == b.Low && GetUpperWick(b) > GetBody(b) * 1.25) || (b.High == b.Open && GetLowerWick(b) > GetBody(b) * 1.25))
+                             select b;
+                foreach (var c in enumerable)
+                {
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.SELL;
+                    else
+                        c.Trade = Trade.BUY;
+                }
+
+            }
             else if (selctedIdea.Name == "MyOldIdea")
             {
                 foreach (var c in enumerable)
@@ -283,9 +325,92 @@ namespace BAL
                 }
 
             }
-            if (selctedIdea.TI.Contains(Technical.MACD))
+            else if (selctedIdea.Name == "CROSS2050MIN15")
             {
+                enumerable = from b in enumerable
+                             where ((b.CandleType == "G" && b.PreviousCandle.CandleType == "R" && b.PreviousCandle.PreviousCandle.CandleType == "G") || (b.CandleType == "R" && b.PreviousCandle.CandleType == "G" && b.PreviousCandle.PreviousCandle.CandleType == "R"))
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+
             }
+            else if (selctedIdea.Name == "SuperTrendSupport")
+            {
+                enumerable = from b in enumerable
+                             where ((b.AllIndicators.SuperTrend.Trend > 0 && b.Low < b.AllIndicators.SuperTrend.SuperTrendValue && b.Close > b.AllIndicators.SuperTrend.SuperTrendValue && b.AllIndicators.SuperTrend.SuperTrendValue == b.PreviousCandle.AllIndicators.SuperTrend.SuperTrendValue)
+                             ||
+                             (b.AllIndicators.SuperTrend.Trend < 0 && b.High > b.AllIndicators.SuperTrend.SuperTrendValue && b.Close < b.AllIndicators.SuperTrend.SuperTrendValue && b.AllIndicators.SuperTrend.SuperTrendValue == b.PreviousCandle.AllIndicators.SuperTrend.SuperTrendValue)
+                             )
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.AllIndicators.SuperTrend.Trend > 0)
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+            }
+            else if (selctedIdea.Name == "2050")
+            {
+                enumerable = from b in enumerable
+                             where ((b.CandleType == "G" && b.Low < Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50) && b.Close > Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50))
+                             ||
+                             (b.CandleType == "R" && b.High > Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50) && b.Close < Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50)))
+
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+            }
+            else if (selctedIdea.Name == "SuperTrendInv")
+            {
+                enumerable = from b in enumerable
+                             where (
+                             (b.AllIndicators.SuperTrend.Trend != b.PreviousCandle.AllIndicators.SuperTrend.Trend))
+
+
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.AllIndicators.SuperTrend.Trend == 1)
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+            }
+            else if (selctedIdea.Name == "5minuteCrossOver")
+            {
+                enumerable = from b in enumerable
+                             where (
+                             (b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Low < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             ))
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+            }
+
+
+
             return enumerable;
         }
 

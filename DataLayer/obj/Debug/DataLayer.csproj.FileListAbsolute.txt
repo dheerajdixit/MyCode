@@ -1,5 +1,3 @@
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csprojResolveAssemblyReference.cache
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\DataLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\DataLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\CommonLayer.dll
@@ -15,5 +13,7 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLay
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\MongoData.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\Zerodha.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csprojResolveAssemblyReference.cache
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.pdb

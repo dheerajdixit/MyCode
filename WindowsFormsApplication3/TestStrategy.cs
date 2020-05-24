@@ -211,8 +211,8 @@ namespace _15MCE
             int cc = 0;
             foreach (var b in outcome.OrderBy(c => c.Date))
             {
-                //x.Add(b);
-                //continue;
+                x.Add(b);
+                continue;
                 if (cc >= 3)
                 {
 
@@ -235,8 +235,11 @@ namespace _15MCE
 
 
             }
+            if (rgvStocks.DataSource as List<PNL> != null)
+            {
+                x.AddRange(rgvStocks.DataSource as List<PNL>);
+            }
 
-            x.AddRange(rgvStocks.DataSource as List<PNL>);
             if (this.rgvStocks.InvokeRequired)
             {
                 SetDataSourceCallback d = new SetDataSourceCallback(SetDataSource);
@@ -1000,38 +1003,33 @@ namespace _15MCE
 
         private void BtnExports_Click(object sender, EventArgs e)
         {
-            if (consolidated.Count == radDropDownList1.Items.Count)
+            List<Model.PNL> pnlObj = rgvStocks.DataSource as List<Model.PNL>;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Monthly");
+            foreach (var p in pnlObj.GroupBy(a => new { a.Date.Month, a.Date.Year }))
             {
-                List<DateTime> lstDate = new List<DateTime>();
-                foreach (var f in consolidated)
-                    f.ForEach(a => lstDate.Add(a.Date.Date));
-
-                var distinctDates = lstDate.Distinct().ToList();
-
-                List<Model.PNL> finalPNL = new List<Model.PNL>();
-                //MessageBox.Show(distinctDates.Count().ToString());
-                foreach (var d in distinctDates)
-                {
-                    double sum = 0;
-                    foreach (var lst in consolidated)
-                    {
-                        var record = lst.Where(a => a.Date.Date == d.Date);
-                        if (record != null && record.Count() > 0)
-                        {
-                            sum += record.First().Amount;
-                        }
-                    }
-                    finalPNL.Add(new Model.PNL { Date = d.Date, Amount = sum });
-                }
-
-                SetDataSource(finalPNL);
-
+                sb.AppendLine(p.Key.Month + "/" + p.Key.Year + " : " + p.Sum(b => b.Amount));
             }
 
-            //foreach(var i in //)
-            GridViewSpreadExport spreadExporter = new GridViewSpreadExport(this.rgvStocks);
-            SpreadExportRenderer exportRenderer = new SpreadExportRenderer();
-            spreadExporter.RunExport("C:\\Jai Sri Thakur Ji\\exportedFile.xlsx", exportRenderer);
+            sb.AppendLine("Daily");
+            foreach (var p in pnlObj.GroupBy(a => new { a.Date }))
+            {
+                sb.AppendLine(p.Key.Date + " : " + p.Sum(b => b.Amount));
+            }
+            sb.AppendLine("Summary");
+
+            sb.AppendLine("Total Trades : " + pnlObj.Count());
+            sb.AppendLine("Profitable Trades : " + pnlObj.Count(b => b.Amount > 0));
+            sb.AppendLine("Negative Trades : " + pnlObj.Count(b => b.Amount < 0));
+            sb.AppendLine("Total Profit : " + pnlObj.Sum(b => b.Amount));
+            sb.AppendLine("Total No of Days : " + pnlObj.GroupBy(b => b.Date).Count());
+            sb.AppendLine("Max Profit : " + pnlObj.GroupBy(b => b.Date).Max(a => a.Sum(c => c.Amount)));
+            sb.AppendLine("Max Loss : " + pnlObj.GroupBy(b => b.Date).Min(a => a.Sum(c => c.Amount)));
+            sb.AppendLine("Avg Profit : " + pnlObj.Average(b => b.Amount));
+            sb.AppendLine("Max Trade a Single Day : " + pnlObj.GroupBy(b => b.Date).Max(a => a.Count()));
+
+            File.WriteAllText(@"C:\Jai Sri Thakur Ji\Summary.txt", sb.ToString());
+
         }
         ConcurrentBag<List<Model.PNL>> consolidated = new ConcurrentBag<List<Model.PNL>>();
         private void RadButton2_Click_1(object sender, EventArgs e)
@@ -1099,7 +1097,7 @@ namespace _15MCE
         private void rgvStocks_CellDoubleClick(object sender, GridViewCellEventArgs e)
         {
             List<Candle> cd = (rgvStocks.DataSource as List<Model.PNL>)[e.RowIndex].ChartData;
-
+            double low = cd.Min(a => a.Low);
             //jsfidler
             StringBuilder cdTransformation = new StringBuilder();
             foreach (var c in cd)
@@ -1110,6 +1108,26 @@ namespace _15MCE
                     cdTransformation.Append("'");
                     cdTransformation.Append(c.TimeStamp);
                     cdTransformation.Append("'");
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SuperTrend != null)
+                        cdTransformation.Append(c.AllIndicators.SuperTrend.SuperTrendValue);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA20 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA20);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA50 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA50);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA200 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA200);
+                    else
+                        cdTransformation.Append(low);
                     cdTransformation.Append(",");
                     cdTransformation.Append(c.Low);
                     cdTransformation.Append(",");
@@ -1127,6 +1145,26 @@ namespace _15MCE
                     cdTransformation.Append("'");
                     cdTransformation.Append(c.TimeStamp);
                     cdTransformation.Append("'");
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SuperTrend != null)
+                        cdTransformation.Append(c.AllIndicators.SuperTrend.SuperTrendValue);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA20 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA20);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA50 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA50);
+                    else
+                        cdTransformation.Append(low);
+                    cdTransformation.Append(",");
+                    if (c.AllIndicators.SMA200 > 0)
+                        cdTransformation.Append(c.AllIndicators.SMA200);
+                    else
+                        cdTransformation.Append(low);
                     cdTransformation.Append(",");
                     cdTransformation.Append(c.High);
                     cdTransformation.Append(",");

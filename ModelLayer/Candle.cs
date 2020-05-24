@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
+
 namespace Model
 {
     
@@ -18,6 +20,7 @@ namespace Model
 
         public string Stock { get; set; }
 
+        [XmlIgnore]
         public Candle PreviousCandle { get; set; }
 
         public AllTechnicals AllIndicators { get; set; }

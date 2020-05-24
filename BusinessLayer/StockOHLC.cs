@@ -128,12 +128,12 @@ namespace BAL
                         Low = b.Low,
                         Open = b.Open,
                         PreviousClose = b.PreviousCandle.Close,
-                        Imp1 = (selectedIdea.Stoploss == 4) ? b.AllIndicators.SuperTrend.SuperTrendValue : 0.0,
+                        Imp1 = 0,
                         Trade = b.Trade
 
                     }).ToList());
             });
-            
+
             Dictionary<DateTime, List<StrategyModel>> dictionary = new Dictionary<DateTime, List<StrategyModel>>();
             foreach (DateTime myDate in (from a in myTestData.First<KeyValuePair<string, List<Candle>>>().Value select a.TimeStamp.Date).Distinct<DateTime>())
             {
@@ -395,9 +395,43 @@ namespace BAL
             {
                 enumerable = from b in enumerable
                              where (
-                             (b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Low < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             ))
+                             (b.Close > Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Low <= Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.CandleType == "G"
+                             ) ||
+                             (
+                             b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.CandleType == "R"
+
+                             )
+                             )
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+
+            }
+            else if (selctedIdea.Name == "15minuteCrossOver")
+            {
+                enumerable = from b in enumerable
+                             where (
+                             (b.Close > Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Low <= Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.CandleType == "G"
+                             ) ||
+                             (
+                             b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.CandleType == "R"
+
+                             )
+                             )
                              select b;
                 foreach (var c in enumerable)
                 {
@@ -486,7 +520,7 @@ namespace BAL
                             {
                                 if (candle2.High >= stoploss)
                                 {
-                                    num2 -= num4 * stopLossRange;
+                                    num2 -= num4 * (stoploss - gap.Value.Close);
                                     num4 = 0;
                                 }
                                 else
@@ -546,7 +580,7 @@ namespace BAL
                                 }
                                 else
                                 {
-                                    num2 -= num4 * stopLossRange;
+                                    num2 -= num4 * (gap.Value.Close - stoploss);
                                     num4 = 0;
                                 }
                             }

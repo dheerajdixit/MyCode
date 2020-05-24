@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 namespace Model
 {
-   
+
 
     public class Idea
     {
@@ -34,6 +34,8 @@ namespace Model
         public double Risk { get; set; }
 
         public Model.BookProfit BookProfit { get; set; }
+
+        public int TryAfterContinuosError { get; set; }
     }
 }
 

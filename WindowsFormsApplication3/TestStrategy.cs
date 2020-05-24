@@ -203,17 +203,17 @@ namespace _15MCE
             }
         }
 
-        delegate void SetDataSourceCallback(List<Model.PNL> outcome);
-        private void SetDataSource(List<Model.PNL> outcome)
+        delegate void SetDataSourceCallback(List<Model.PNL> outcome, Idea selectedIdea);
+        private void SetDataSource(List<Model.PNL> outcome, Idea selectedIdea)
         {
 
             List<Model.PNL> x = new List<Model.PNL>();
             int cc = 0;
             foreach (var b in outcome.OrderBy(c => c.Date))
             {
-                x.Add(b);
-                continue;
-                if (cc >= 3)
+                //x.Add(b);
+                //continue;
+                if (cc >= selectedIdea.TryAfterContinuosError)
                 {
 
                     cc++;
@@ -243,7 +243,7 @@ namespace _15MCE
             if (this.rgvStocks.InvokeRequired)
             {
                 SetDataSourceCallback d = new SetDataSourceCallback(SetDataSource);
-                this.Invoke(d, new object[] { outcome });
+                this.Invoke(d, new object[] { outcome,selectedIdea });
             }
             else
             {
@@ -290,7 +290,7 @@ namespace _15MCE
                                 Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
                                 calculation.ContinueWith((t3) =>
                                 {
-                                    SetDataSource(t3.Result);
+                                    SetDataSource(t3.Result, selectedIdea);
                                     SetText("Idea ran successfully");
                                 });
                             });
@@ -1027,6 +1027,8 @@ namespace _15MCE
             sb.AppendLine("Max Loss : " + pnlObj.GroupBy(b => b.Date).Min(a => a.Sum(c => c.Amount)));
             sb.AppendLine("Avg Profit : " + pnlObj.Average(b => b.Amount));
             sb.AppendLine("Max Trade a Single Day : " + pnlObj.GroupBy(b => b.Date).Max(a => a.Count()));
+            sb.AppendLine("Total Losing Day : " + pnlObj.GroupBy(b => b.Date).Count(a => a.Sum(c=>c.Amount)<=0));
+            sb.AppendLine("Total Winning Day : " + pnlObj.GroupBy(b => b.Date).Count(a => a.Sum(c => c.Amount) > 0));
 
             File.WriteAllText(@"C:\Jai Sri Thakur Ji\Summary.txt", sb.ToString());
 

@@ -32,6 +32,7 @@ using CommonFeatures;
 using System.Diagnostics;
 using Model;
 using MongoDB.Driver;
+using DAL;
 
 namespace _15MCE
 {
@@ -509,15 +510,19 @@ namespace _15MCE
                 }
                 if ((txtTam.Text == "3" || txtTam.Text == "9" || txtTam.Text == "15" || txtTam.Text == "21" || txtTam.Text == "27" || txtTam.Text == "33" || txtTam.Text == "39" || txtTam.Text == "45" || txtTam.Text == "51" || txtTam.Text == "57" || txtTam.Text == "63"))
                 {
-                    //LoadData(30);
+                    int t = Convert.ToInt32(txtTam.Text);
+                    if (t == 15)
+                        LoadData(30);
+                    if (t > 15)
+                        UpdateOrders(30);
                 }
 
                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57"))
                 {
-                    LoadData(60);
+                    //LoadData(60);
                 }
+                //UpdateOrders(30);
 
-                UpdateOrders(60);
                 foreach (var xx in orderDetails)
                 {
                     orders.Rows.Add(xx);
@@ -716,49 +721,76 @@ namespace _15MCE
             }
             if (period == 5 && SuperTrendQuanaity > 0)
             {
+            }
+            if (txtTam.Text == "9" && period == 60)
+            {
+            }
+            else if (period == 30)
+            {
+
                 fS1.Clear();
                 List<StockData> finalStock = null;
 
 
-                if (Convert.ToInt32(txtTam.Text) >= -2)
+                if (Convert.ToInt32(txtTam.Text) == 15)
                 {
                     List<StockData> sGap = new List<StockData>();
                     foreach (var a in allData[period.ToString() + "minute"])
                     {
                         try
                         {
-                            Candle TodaysOpen = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
-
-                            var lst = a.Value.Where(c => c.TimeStamp <= TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate) && c.TimeStamp.Date
-                                 == CurrentTradingDate.Date).ToList();
-
-                            if (
-                               (TodaysOpen.STrend.Trend == -1 && TodaysOpen.High >= TodaysOpen.STrend.SuperTrend && TodaysOpen.CandleType == "R")
-                                ||
-                                (TodaysOpen.STrend.Trend == 1 && TodaysOpen.Low <= TodaysOpen.STrend.SuperTrend && TodaysOpen.CandleType == "G")
-                               )
+                            Candle tradingCandle = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
+                            tradingCandle.PreviousCandle = a.Value.Where(b => b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).Last();
+                            tradingCandle.PreviousCandle.PreviousCandle = a.Value.Where(b => b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
+                            if (tradingCandle.Close > 50)
                             {
-                                if (TodaysOpen.Close > 50)
+                                if (tradingCandle.CandleType == "G" && tradingCandle.PreviousCandle.CandleType == "R" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "G")
                                 {
                                     sGap.Add(new StockData
                                     {
                                         Symbol = a.Key,
                                         Open = 0,
-                                        Vol = lst.Sum(b => b.Volume * b.Close),
-                                        dHigh = lst.Max(b => b.Close),
-                                        dLow = lst.Min(b => b.Close),
-                                        High = TodaysOpen.High,
-                                        Low = TodaysOpen.Low
+                                        Vol = tradingCandle.Volume * tradingCandle.Close,
+                                        //dHigh = tradingCandle.High,
+                                        //dLow = tradi,
+                                        High = tradingCandle.High,
+                                        Low = tradingCandle.Low,
+                                        Direction = "BM",
+                                        stopLoss =tradingCandle.Low,
+                                        TradingDate = tradingCandle.TimeStamp,
+                                        Quantity = Convert.ToInt32(MaxRisk / (3 / (tradingCandle.High - tradingCandle.Low)))
                                     });
+
+                                }
+                                else if (tradingCandle.CandleType == "R" && tradingCandle.PreviousCandle.CandleType == "G" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "R")
+                                {
+                                    sGap.Add(new StockData
+                                    {
+                                        Symbol = a.Key,
+                                        Open = 0,
+                                        Vol = tradingCandle.Volume * tradingCandle.Close,
+                                        //dHigh = tradingCandle.High,
+                                        //dLow = tradi,
+                                        High = tradingCandle.High,
+                                        Low = tradingCandle.Low,
+                                        Direction ="SM",
+                                        stopLoss = tradingCandle.High,
+                                        TradingDate = tradingCandle.TimeStamp,
+                                        Quantity = Convert.ToInt32(MaxRisk /(3/ (tradingCandle.High- tradingCandle.Low)))
+                                    });
+
                                 }
                             }
+
+                           
+
                         }
                         catch (Exception ex)
                         {
                         }
 
                     }
-                    finalStock = sGap.Take(5).OrderByDescending(b => b.Vol).Take(1).ToList();
+                    finalStock = sGap. OrderByDescending(b => b.Vol).Take(5).ToList().OrderByDescending(a=>a.High-a.Low).Take(3).ToList();
                 }
 
                 foreach (var s1 in finalStock)
@@ -768,225 +800,22 @@ namespace _15MCE
                         fS1.Add(s1);
                     }
                 }
-
-            }
-            if (txtTam.Text == "9" && period == 60)
-            {
-                fS1.Clear();
-                List<StockData> finalStock = null;
-
-                if (_60MinQuantity > 0)
-                {
-                    if (Convert.ToInt32(txtTam.Text) >= 9)
-                    {
-                        List<StockData> sGap = new List<StockData>();
-                        foreach (var a in allData[period.ToString() + "minute"])
-                        {
-                            try
-                            {
-                                Candle TodaysOpen = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(-2, CurrentTradingDate)).First();
-                                Candle PreviousClose = a.Value.Where(b => b.TimeStamp.Date == a.Value[a.Value.IndexOf(TodaysOpen) - 1].TimeStamp.Date).Last();
-                                List<double> movingAvgs = new List<double>();
-                                movingAvgs.Add(TodaysOpen.SMA20);
-                                movingAvgs.Add(TodaysOpen.SMA50);
-                                movingAvgs.Add(TodaysOpen.SMA200);
-                                var lst = a.Value.Where(c => c.TimeStamp <= TokenChannel.GetTimeStamp(9, CurrentTradingDate) && c.TimeStamp.Date
-                                     == CurrentTradingDate.Date).ToList();
-                                if (((TodaysOpen.High - TodaysOpen.Close) < (TodaysOpen.Close - TodaysOpen.Open) / 2) || ((TodaysOpen.Close - TodaysOpen.Low) < (TodaysOpen.Open - TodaysOpen.Close) / 2))
-                                {
-                                    if (TodaysOpen.Close > 50)
-                                    {
-                                        sGap.Add(new StockData
-                                        {
-                                            Symbol = a.Key,
-                                            Open = (Math.Abs(TodaysOpen.Close - PreviousClose.Close) / PreviousClose.Close) * 100,
-                                            Vol = lst.Sum(b => b.Volume * b.Close),
-                                            dHigh = lst.Max(b => b.Close),
-                                            dLow = lst.Min(b => b.Close),
-                                            High = TodaysOpen.High,
-                                            Low = TodaysOpen.Low
-
-                                        });
-                                    }
-                                }
-
-                            }
-                            catch (Exception ex)
-                            { }
-
-                        }
-                        finalStock = sGap.OrderByDescending(b => b.Vol).Take(5).OrderByDescending(b => b.Open).Take(1).ToList();
-                    }
-
-                    foreach (var s1 in finalStock)
-                    {
-                        if (true || s1.dHigh < s1.High && s1.dLow > s1.Low)
-                        {
-                            fS1.Add(s1);
-
-                        }
-                    }
-
-                }
-            }
-            else if (period == 30)
-            {
-                fS1.Clear();
-                List<StockData> finalStock = null;
-
-                if (_30MinQuantity > 0)
-                {
-                    if (Convert.ToInt32(txtTam.Text) >= 0)
-                    {
-                        List<StockData> sGap = new List<StockData>();
-                        foreach (var a in allData[period.ToString() + "minute"])
-                        {
-                            try
-                            {
-                                Candle TodaysOpen = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
-                                Candle TodaysOpen1 = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(3, CurrentTradingDate, period)).First();
-                                Candle PreviousClose = a.Value.Where(b => b.TimeStamp.Date == a.Value[a.Value.IndexOf(TodaysOpen1) - 1].TimeStamp.Date).Last();
-                                List<Candle> prevDayCandleList = a.Value.Where(b => b.TimeStamp.Date == a.Value[a.Value.IndexOf(TodaysOpen1) - 1].TimeStamp.Date).ToList();
-
-                                Candle superTrendBroken = a.Value.Where(b => b.STrend.Trend == -1 && b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).Last();
-                                Candle superTrendBrokenB = a.Value.Where(b => b.STrend.Trend == 1 && b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).Last();
-                                superTrendBroken = a.Value.Where(b => b.TimeStamp > superTrendBroken.TimeStamp).First();
-                                superTrendBrokenB = a.Value.Where(b => b.TimeStamp > superTrendBrokenB.TimeStamp).First();
-                                List<Candle> candleRange = a.Value.Where(b => b.TimeStamp > superTrendBroken.TimeStamp && b.TimeStamp < TodaysOpen.TimeStamp).ToList();
-                                List<Candle> candleRangeB = a.Value.Where(b => b.TimeStamp > superTrendBrokenB.TimeStamp && b.TimeStamp < TodaysOpen.TimeStamp).ToList();
-
-                                List<double> movingAvgs = new List<double>();
-                                movingAvgs.Add(TodaysOpen.SMA20);
-                                movingAvgs.Add(TodaysOpen.SMA50);
-                                movingAvgs.Add(TodaysOpen.SMA200);
-                                movingAvgs.Add(TodaysOpen.STrend.SuperTrend);
-                                var lst = a.Value.Where(c => c.TimeStamp <= TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate) && c.TimeStamp.Date
-                                     == CurrentTradingDate.Date).ToList();
-
-                                if (
-                                    (TodaysOpen.Low <= TodaysOpen.STrend.SuperTrend && TodaysOpen.STrend.Trend == 1 && candleRange.Where(b => b.Low <= b.STrend.SuperTrend).Count() == 0)
-                                    ||
-                                    (TodaysOpen.High >= TodaysOpen.STrend.SuperTrend && TodaysOpen.STrend.Trend == -1 && candleRangeB.Where(b => b.High >= b.STrend.SuperTrend).Count() == 0)
-                                   )
-
-
-                                {
-                                    if (TodaysOpen.Close > 50)
-                                    {
-                                        sGap.Add(new StockData
-                                        {
-                                            Symbol = a.Key,
-                                            Open = TodaysOpen.Open,
-                                            Vol = lst.Sum(b => b.Volume * b.Close),
-                                            dHigh = lst.Max(b => b.Close),
-                                            dLow = lst.Min(b => b.Close),
-                                            High = TodaysOpen.High,
-                                            Low = TodaysOpen.Low
-
-                                        });
-                                    }
-                                }
-
-                            }
-                            catch
-                            {
-                            }
-
-                        }
-                        finalStock = sGap.OrderBy(b => b.Vol).Take(1).ToList();
-                    }
-
-                    //if (Convert.ToInt32(txtTam.Text) >= 3)
-                    //{
-                    //    List<StockData> sGap = new List<StockData>();
-                    //    foreach (var a in allData[period.ToString() + "minute"])
-                    //    {
-                    //        try
-                    //        {
-                    //            Candle TodaysOpen = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
-                    //            Candle TodaysOpen1 = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
-                    //            Candle PreviousClose = a.Value.Where(b => b.TimeStamp.Date == a.Value[a.Value.IndexOf(TodaysOpen1) - 1].TimeStamp.Date).Last();
-                    //            List<double> movingAvgs = new List<double>();
-                    //            movingAvgs.Add(TodaysOpen.SMA20);
-                    //            movingAvgs.Add(TodaysOpen.SMA50);
-                    //            movingAvgs.Add(TodaysOpen.SMA200);
-                    //            var lst = a.Value.Where(c => c.TimeStamp <= TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate) && c.TimeStamp.Date
-                    //                 == CurrentTradingDate.Date).ToList();
-                    //            if (
-                    //                ((TodaysOpen.High - TodaysOpen.Close) < (TodaysOpen.Close - TodaysOpen.Open) / 2 && TodaysOpen.High>TodaysOpen.STrend.SuperTrend && TodaysOpen.Close < TodaysOpen.STrend.SuperTrend && TodaysOpen.STrend.Trend == -1  && TodaysOpen.CandleType=="G" && TodaysOpen.Close> movingAvgs.Max()) 
-                    //                || 
-                    //                ((TodaysOpen.Close - TodaysOpen.Low) < (TodaysOpen.Open - TodaysOpen.Close) / 2  && TodaysOpen.Low < TodaysOpen.STrend.SuperTrend && TodaysOpen.Close> TodaysOpen.STrend.SuperTrend && TodaysOpen.STrend.Trend==1  && TodaysOpen.CandleType == "R" && TodaysOpen.Close< movingAvgs.Min()))
-
-
-                    //            {
-                    //                if (TodaysOpen.Close > 50)
-                    //                {
-                    //                    sGap.Add(new StockData
-                    //                    {
-                    //                        Symbol = a.Key,
-                    //                        Open = (Math.Abs(TodaysOpen.Close - TodaysOpen.STrend.SuperTrend) / PreviousClose.Close) * 100,
-                    //                        Vol = lst.Sum(b => b.Volume * b.Close),
-                    //                        dHigh = lst.Max(b => b.Close),
-                    //                        dLow = lst.Min(b => b.Close),
-                    //                        High = TodaysOpen.High,
-                    //                        Low = TodaysOpen.Low
-
-                    //                    });
-                    //                }
-                    //            }
-
-                    //        }
-                    //        catch
-                    //        { }
-
-                    //    }
-                    //    finalStock = sGap.OrderByDescending(b => b.Vol).Take(5).OrderBy(b => b.Open).Take(1).ToList();
-                    //}
-
-                    foreach (var s1 in finalStock)
-                    {
-                        if (true || s1.dHigh < s1.High && s1.dLow > s1.Low)
-                        {
-                            fS1.Add(s1);
-
-                        }
-                    }
-
-                }
             }
 
             if (period == 5)
             {
-                foreach (var s in fS1)
-                {
-
-                    NSA.Order o = TokenChannel.MyDoziSetup(new Equity() { Gap = 1, Name = s.Symbol, todaysLevel = new StockData(), backTestDay = BTD, Category = 2, TestAtMinute = Convert.ToInt16(txtTam.Text), TransactionTradingDate = CurrentTradingDate, MaxRisk = MaxRisk, allDaa = allData[period.ToString() + "minute"][s.Symbol], }, new List<Candle>());
-
-                    if (o != null)
-                    {
-                        PlacePartialOrders(o);
-                    }
-
-                }
             }
             else if (period == 60)
             {
-                foreach (var s in fS1)
-                {
-                    NSA.Order o = TokenChannel.MyGapSetup(new Equity() { Gap = 1, Name = s.Symbol, todaysLevel = new StockData(), backTestDay = BTD, Category = 2, TestAtMinute = Convert.ToInt16(txtTam.Text), TransactionTradingDate = CurrentTradingDate, MaxRisk = MaxRisk, allDaa = allData[period.ToString() + "minute"][s.Symbol], }, new List<Candle>());
-
-                    if (o != null)
-                    {
-                        PlacePartialOrders(o);
-                    }
-
-                }
             }
-            else if (period == 30)
+
+
+
+            if (period == 30)
             {
                 foreach (var s in fS1)
                 {
-                    NSA.Order o = TokenChannel.MyTrendSetup(new Equity() { Gap = 1, Name = s.Symbol, todaysLevel = new StockData(), backTestDay = BTD, Category = 2, TestAtMinute = Convert.ToInt16(txtTam.Text), TransactionTradingDate = CurrentTradingDate, MaxRisk = MaxRisk, allDaa = allData[period.ToString() + "minute"][s.Symbol], }, new List<Candle>());
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity =s.Quantity, Scrip = s.Symbol, Stoploss =  s.stopLoss , Strategy = "ThirdCandle", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
                     if (o != null)
                     {
@@ -4384,11 +4213,11 @@ namespace _15MCE
                 }
             }
 
-            goTimeCount = Convert.ToInt16(txtTam.Text) + 12;
-            txtTam.Text = (Convert.ToInt16(txtTam.Text) + 12).ToString();
+            goTimeCount = Convert.ToInt16(txtTam.Text) + 6;
+            txtTam.Text = (Convert.ToInt16(txtTam.Text) + 6).ToString();
 
 
-            radLabelElement1.Text = "Last Candle Updated " + (Convert.ToInt16(txtTam.Text) + 12);
+            radLabelElement1.Text = "Last Candle Updated " + (Convert.ToInt16(txtTam.Text) + 6);
             LogStatus("Orders & Data refreshed.");
 
             if (prevOrders != currentOrders && takeBackupOfFiles)

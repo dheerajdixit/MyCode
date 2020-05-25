@@ -321,6 +321,10 @@
       <Project>{4620120b-b5e2-40d0-af31-99ada4a728c4}</Project>
       <Name>CommonLayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataLayer\DataLayer.csproj">
+      <Project>{A9312271-8737-451F-ABFF-E7E614C0A35C}</Project>
+      <Name>DataLayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ModelLayer\ModelLayer.csproj">
       <Project>{8623ad45-3b7a-4f45-b1ee-090688641a58}</Project>
       <Name>ModelLayer</Name>

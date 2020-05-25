@@ -395,17 +395,9 @@ namespace BAL
             {
                 enumerable = from b in enumerable
                              where (
-                             (b.Close > Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Low <= Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.CandleType == "G"
-                             ) ||
-                             (
-                             b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.CandleType == "R"
-
-                             )
-                             )
+                             (b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             && b.Low < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
+                             ))
                              select b;
                 foreach (var c in enumerable)
                 {
@@ -415,7 +407,6 @@ namespace BAL
                     else
                         c.Trade = Trade.SELL;
                 }
-
             }
             else if (selctedIdea.Name == "15minuteCrossOver")
             {

@@ -243,7 +243,7 @@ namespace _15MCE
             if (this.rgvStocks.InvokeRequired)
             {
                 SetDataSourceCallback d = new SetDataSourceCallback(SetDataSource);
-                this.Invoke(d, new object[] { outcome,selectedIdea });
+                this.Invoke(d, new object[] { outcome, selectedIdea });
             }
             else
             {
@@ -1022,13 +1022,13 @@ namespace _15MCE
             sb.AppendLine("Profitable Trades : " + pnlObj.Count(b => b.Amount > 0));
             sb.AppendLine("Negative Trades : " + pnlObj.Count(b => b.Amount < 0));
             sb.AppendLine("Total Profit : " + pnlObj.Sum(b => b.Amount));
-            sb.AppendLine("Total No of Days : " + pnlObj.GroupBy(b => b.Date).Count());
-            sb.AppendLine("Max Profit : " + pnlObj.GroupBy(b => b.Date).Max(a => a.Sum(c => c.Amount)));
-            sb.AppendLine("Max Loss : " + pnlObj.GroupBy(b => b.Date).Min(a => a.Sum(c => c.Amount)));
-            sb.AppendLine("Avg Profit : " + pnlObj.Average(b => b.Amount));
-            sb.AppendLine("Max Trade a Single Day : " + pnlObj.GroupBy(b => b.Date).Max(a => a.Count()));
-            sb.AppendLine("Total Losing Day : " + pnlObj.GroupBy(b => b.Date).Count(a => a.Sum(c=>c.Amount)<=0));
-            sb.AppendLine("Total Winning Day : " + pnlObj.GroupBy(b => b.Date).Count(a => a.Sum(c => c.Amount) > 0));
+            sb.AppendLine("Total No of Days : " + pnlObj.GroupBy(b => b.Date.Date).Count());
+            sb.AppendLine("Max Profit : " + pnlObj.GroupBy(b => b.Date.Date).Max(a => a.Sum(c => c.Amount)));
+            sb.AppendLine("Max Loss : " + pnlObj.GroupBy(b => b.Date.Date).Min(a => a.Sum(c => c.Amount)));
+            sb.AppendLine("Avg Profit : " + pnlObj.Sum(b => b.Amount) / pnlObj.GroupBy(a => a.Date.Date).Count());
+            sb.AppendLine("Max Trade a Single Day : " + pnlObj.GroupBy(b => b.Date.Date).Max(a => a.Count()));
+            sb.AppendLine("Total Losing Day : " + pnlObj.GroupBy(b => b.Date.Date).Count(a => a.Sum(c => c.Amount) <= 0));
+            sb.AppendLine("Total Winning Day : " + pnlObj.GroupBy(b => b.Date.Date).Count(a => a.Sum(c => c.Amount) > 0));
 
             File.WriteAllText(@"C:\Jai Sri Thakur Ji\Summary.txt", sb.ToString());
 
@@ -1111,22 +1111,24 @@ namespace _15MCE
                     cdTransformation.Append(c.TimeStamp);
                     cdTransformation.Append("'");
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SuperTrend != null)
-                        cdTransformation.Append(c.AllIndicators.SuperTrend.SuperTrendValue);
-                    else
-                        cdTransformation.Append(low);
+                    if (c.AllIndicators != null)
+
+                        if (c.AllIndicators != null && c.AllIndicators.SuperTrend != null)
+                            cdTransformation.Append(c.AllIndicators.SuperTrend.SuperTrendValue);
+                        else
+                            cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA20 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA20 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA20);
                     else
                         cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA50 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA50 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA50);
                     else
                         cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA200 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA200 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA200);
                     else
                         cdTransformation.Append(low);
@@ -1148,22 +1150,22 @@ namespace _15MCE
                     cdTransformation.Append(c.TimeStamp);
                     cdTransformation.Append("'");
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SuperTrend != null)
+                    if (c.AllIndicators != null && c.AllIndicators.SuperTrend != null)
                         cdTransformation.Append(c.AllIndicators.SuperTrend.SuperTrendValue);
                     else
                         cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA20 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA20 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA20);
                     else
                         cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA50 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA50 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA50);
                     else
                         cdTransformation.Append(low);
                     cdTransformation.Append(",");
-                    if (c.AllIndicators.SMA200 > 0)
+                    if (c.AllIndicators != null && c.AllIndicators.SMA200 > 0)
                         cdTransformation.Append(c.AllIndicators.SMA200);
                     else
                         cdTransformation.Append(low);

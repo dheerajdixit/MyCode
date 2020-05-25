@@ -659,7 +659,7 @@ namespace _15MCE
                         downlodableScrip = AllFNO.ToList();
                 }
 
-                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 1 }, (s) =>
+                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
                     if (period == 60)
                     {
@@ -739,50 +739,57 @@ namespace _15MCE
                     {
                         try
                         {
-                            Candle tradingCandle = a.Value.Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
-                            tradingCandle.PreviousCandle = a.Value.Where(b => b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).Last();
-                            tradingCandle.PreviousCandle.PreviousCandle = a.Value.Where(b => b.TimeStamp < TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, period)).First();
+                            var c = a.Value.Where(b => b.TimeStamp.Date == CurrentTradingDate.Date).OrderBy(b => b.TimeStamp).ToArray();
+                            Candle tradingCandle = c[2];
+                            tradingCandle.PreviousCandle = c[1];
+                            tradingCandle.PreviousCandle.PreviousCandle = c[0];
                             if (tradingCandle.Close > 50)
                             {
-                                if (tradingCandle.CandleType == "G" && tradingCandle.PreviousCandle.CandleType == "R" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "G")
+                                if (((tradingCandle.High - tradingCandle.Close) < ((tradingCandle.Close - tradingCandle.Open) / 2.0)) || ((tradingCandle.Close - tradingCandle.Low) < ((tradingCandle.Open - tradingCandle.Close) / 2.0)))
                                 {
-                                    sGap.Add(new StockData
+                                    if (tradingCandle.CandleType == "G" && tradingCandle.PreviousCandle.CandleType == "R" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "G")
                                     {
-                                        Symbol = a.Key,
-                                        Open = 0,
-                                        Vol = tradingCandle.Volume * tradingCandle.Close,
-                                        //dHigh = tradingCandle.High,
-                                        //dLow = tradi,
-                                        High = tradingCandle.High,
-                                        Low = tradingCandle.Low,
-                                        Direction = "BM",
-                                        stopLoss =tradingCandle.Low,
-                                        TradingDate = tradingCandle.TimeStamp,
-                                        Quantity = Convert.ToInt32(MaxRisk / (3 / (tradingCandle.High - tradingCandle.Low)))
-                                    });
+                                        sGap.Add(new StockData
+                                        {
+                                            Symbol = a.Key,
+                                            Open = 0,
+                                            Vol = tradingCandle.Volume * tradingCandle.Close,
+                                            //dHigh = tradingCandle.High,
+                                            //dLow = tradi,
+                                            High = tradingCandle.High,
+                                            Low = tradingCandle.Low,
+                                            Direction = "BM",
+                                            stopLoss = tradingCandle.Low,
+                                            TradingDate = tradingCandle.TimeStamp,
+                                            Quantity = Convert.ToInt32(MaxRisk / (3 / (tradingCandle.High - tradingCandle.Low))),
+                                            dClose = ((Math.Abs((double)(tradingCandle.Close - tradingCandle.PreviousCandle.Close)) / tradingCandle.Close) * 100.0)
+                                        });
 
-                                }
-                                else if (tradingCandle.CandleType == "R" && tradingCandle.PreviousCandle.CandleType == "G" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "R")
-                                {
-                                    sGap.Add(new StockData
+                                    }
+                                    else if (tradingCandle.CandleType == "R" && tradingCandle.PreviousCandle.CandleType == "G" && tradingCandle.PreviousCandle.PreviousCandle.CandleType == "R")
                                     {
-                                        Symbol = a.Key,
-                                        Open = 0,
-                                        Vol = tradingCandle.Volume * tradingCandle.Close,
-                                        //dHigh = tradingCandle.High,
-                                        //dLow = tradi,
-                                        High = tradingCandle.High,
-                                        Low = tradingCandle.Low,
-                                        Direction ="SM",
-                                        stopLoss = tradingCandle.High,
-                                        TradingDate = tradingCandle.TimeStamp,
-                                        Quantity = Convert.ToInt32(MaxRisk /(3/ (tradingCandle.High- tradingCandle.Low)))
-                                    });
+                                        sGap.Add(new StockData
+                                        {
+                                            Symbol = a.Key,
+                                            Open = 0,
+                                            Vol = tradingCandle.Volume * tradingCandle.Close,
+                                            //dHigh = tradingCandle.High,
+                                            //dLow = tradi,
+                                            High = tradingCandle.High,
+                                            Low = tradingCandle.Low,
+                                            Direction = "SM",
+                                            stopLoss = tradingCandle.High,
+                                            TradingDate = tradingCandle.TimeStamp,
+                                            Quantity = Convert.ToInt32(MaxRisk / (3 / (tradingCandle.High - tradingCandle.Low))),
+                                            dClose = ((Math.Abs((double)(tradingCandle.Close - tradingCandle.PreviousCandle.Close)) / tradingCandle.Close) * 100.0)
 
+                                        });
+
+                                    }
                                 }
                             }
 
-                           
+
 
                         }
                         catch (Exception ex)
@@ -790,7 +797,14 @@ namespace _15MCE
                         }
 
                     }
-                    finalStock = sGap. OrderByDescending(b => b.Vol).Take(5).ToList().OrderByDescending(a=>a.High-a.Low).Take(3).ToList();
+                    //var c1 = sGap.OrderBy(a => a.Symbol).ToList();
+
+                    //XmlSerializer xs = new XmlSerializer(typeof(List<StockData>));
+                    //using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo1.xml"))
+                    //{
+                    //    xs.Serialize(writer, c1);
+                    //}
+                    finalStock = sGap.OrderByDescending(b => b.Vol).Take(5).ToList().OrderByDescending(a => a.dClose).Take(3).ToList();
                 }
 
                 foreach (var s1 in finalStock)
@@ -815,7 +829,7 @@ namespace _15MCE
             {
                 foreach (var s in fS1)
                 {
-                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity =s.Quantity, Scrip = s.Symbol, Stoploss =  s.stopLoss , Strategy = "ThirdCandle", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = "ThirdCandle", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
                     if (o != null)
                     {
@@ -2054,7 +2068,7 @@ namespace _15MCE
             if (orders.Select("scrip ='" + o.Scrip + "'").Count() == 0)
             {
                 int tc = 0;
-                if (o.Strategy.Contains("Continuation"))
+                if (o.Strategy.Contains("ThirdCandle"))
                     tc = SMAQuanitty;
                 else if (o.Strategy.Contains("Failure"))
                     tc = PSAAQuantity;
@@ -3011,7 +3025,7 @@ namespace _15MCE
                         result = reader.ReadToEnd();
                         reader.Close();
                     }
-
+                    //File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup30\" + SymbolName + ".json",result);
                     ls = TokenChannel.ConvertToJason(result);
                 }
                 else
@@ -5526,7 +5540,7 @@ namespace _15MCE
             tmrClock.Stop();
             goLiveTimer.Stop();
             goLiveTimer.Enabled = false;
-            txtSMA.Text = "0";
+            txtSMA.Text = "3";
             txtPSAA.Text = "0";
             txt60Min.Text = "1";
             txt30Min.Text = "1";

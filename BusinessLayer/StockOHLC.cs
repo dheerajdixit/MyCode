@@ -86,7 +86,12 @@ namespace BAL
         }
 
         public double GetRange(Candle b, Range r) =>
-            ((r != Range.Gap) ? ((r != Range.Normal) ? ((r != Range.Gap) ? 0.0 : (Math.Abs((double)(b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close)) : (Math.Abs((double)(b.Open - b.Close)) / b.PreviousCandle.Close)) : ((Math.Abs((double)(b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0));
+            (
+            (r != Range.Gap) 
+            ? ((r != Range.Normal) 
+                    ?((r != Range.Gap) ? 0.0 : (Math.Abs((double)(b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close)) 
+                    : (Math.Abs((double)(b.Open - b.Close)) / b.PreviousCandle.Close))
+            : ((Math.Abs((double)(b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0));
 
         public Time GetTime(Idea i)
         {
@@ -156,9 +161,20 @@ namespace BAL
                 }
                 dictionary.Add(myDate.Date, list);
             }
+           
             Dictionary<Guid, StrategyModel> dictionary2 = new Dictionary<Guid, StrategyModel>();
             foreach (KeyValuePair<DateTime, List<StrategyModel>> pair2 in dictionary)
             {
+                //if (pair2.Value.Count() == 17)
+                //{
+                //    var c1 = pair2.Value.OrderBy(a => a.Stock).ToList();
+
+                //    XmlSerializer xs = new XmlSerializer(typeof(List<StrategyModel>));
+                //    using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo.xml"))
+                //    {
+                //        xs.Serialize(writer, c1);
+                //    }
+                //}
                 myProgres($"Selecting Most solid gap up stock for Date {pair2.Key}");
                 if (selectedIdea.Sorting == Sorting.VolumeFirst)
                 {
@@ -174,6 +190,20 @@ namespace BAL
                             Func<StrategyModel, bool> local5 = p2;
                             predicate = p2 = b => b.Date == j.Key;
                         }
+
+                        //if (pair2.Value.Count() == 17)
+                        //{
+                        //    //var c1 = pair2.Where<StrategyModel>(predicate)  orderby b.Volume descending
+                        //    //                                        select b).Take<StrategyModel>(selectedIdea.FilterByVolume).toli;
+
+                        //    //XmlSerializer xs = new XmlSerializer(typeof(List<StrategyModel>));
+                        //    //using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo.xml"))
+                        //    //{
+                        //    //    xs.Serialize(writer, c1);
+                        //    //}
+                        //}
+
+
                         foreach (StrategyModel model in (from a in (from b in pair2.Value.Where<StrategyModel>(predicate)
                                                                     orderby b.Volume descending
                                                                     select b).Take<StrategyModel>(selectedIdea.FilterByVolume)

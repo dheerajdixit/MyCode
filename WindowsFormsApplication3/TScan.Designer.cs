@@ -429,7 +429,7 @@ namespace _15MCE
             this.txtMaxRisk.Name = "txtMaxRisk";
             this.txtMaxRisk.Size = new System.Drawing.Size(99, 28);
             this.txtMaxRisk.TabIndex = 34;
-            this.txtMaxRisk.Text = "10000";
+            this.txtMaxRisk.Text = "3000";
             this.txtMaxRisk.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtMaxRisk.ThemeName = "TelerikMetroBlue";
             // 

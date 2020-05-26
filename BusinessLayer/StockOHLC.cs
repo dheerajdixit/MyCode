@@ -134,7 +134,8 @@ namespace BAL
                         Open = b.Open,
                         PreviousClose = b.PreviousCandle.Close,
                         Imp1 = 0,
-                        Trade = b.Trade
+                        Trade = b.Trade,
+                        CurrentCandle = b
 
                     }).ToList());
             });

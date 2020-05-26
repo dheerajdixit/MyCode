@@ -25,7 +25,8 @@ namespace Model
             }
             else if (stoploss == 2)
             {
-                this.StopLossRange = (current.Trade == Trade.BUY) ? (current.Close - current.Low) : (current.High - current.Close);
+                Candle highLow = this.GetHighLow(current.CurrentCandle);
+                this.StopLossRange = (current.Trade == Trade.BUY) ? (current.Close - highLow.Low) : (highLow.High - current.Close);
                 this.Stoploss = (current.Trade == Trade.BUY) ? (current.Close - this.StopLossRange) : (current.Close + this.StopLossRange);
                 this.BookProfit1 = (current.Trade == Trade.BUY) ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
                 this.BookProfit2 = (current.Trade == Trade.BUY) ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));
@@ -78,7 +79,7 @@ namespace Model
             int num3 = 0;
             while (true)
             {
-                if (num3 >= 14)
+                if (num3 >= 3)
                 {
                     Candle candle1 = new Candle();
                     candle1.High = high;

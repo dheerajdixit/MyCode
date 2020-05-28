@@ -40,7 +40,7 @@ namespace _15MCE
     public partial class TScan : Telerik.WinControls.UI.RadForm
     {
         DataTable orders = null;
-
+        static string OrderPlacingMode = string.Empty;
         DataTable pivotPointsCurrent = new DataTable();
         DataTable pivotPointsAll = new DataTable();
         DataTable dma = new DataTable();
@@ -2142,6 +2142,7 @@ namespace _15MCE
                                 {
                                     try
                                     {
+                                        OrderPlacingMode = Constants.VARIETY_BO;
                                         Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
                    Exchange: Constants.EXCHANGE_NSE,
                    TradingSymbol: scrip,
@@ -2210,6 +2211,7 @@ namespace _15MCE
                                         {
                                             try
                                             {
+                                                OrderPlacingMode = Constants.VARIETY_CO;
                                                 Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
     Exchange: Constants.EXCHANGE_NSE,
     TradingSymbol: scrip,
@@ -2271,7 +2273,7 @@ namespace _15MCE
 
                            );
                                             }
-                                            catch(Exception exCo)
+                                            catch (Exception exCo)
                                             {
                                                 MessageBox.Show(exCo.Message);
                                             }
@@ -3107,7 +3109,7 @@ namespace _15MCE
                         result = reader.ReadToEnd();
                         reader.Close();
                     }
-                    File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup30\" + SymbolName + ".json", result);
+                    //File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup30\" + SymbolName + ".json", result);
                     ls = TokenChannel.ConvertToJason(result);
                 }
                 else
@@ -4326,16 +4328,59 @@ namespace _15MCE
             }
         }
 
-
-
-
-
         private static System.TimeZoneInfo INDIAN_ZONE = System.TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-
 
         bool tryLogin = true;
         private void tmrClock_Tick(object sender, EventArgs e)
         {
+            if (OrderPlacingMode == Constants.VARIETY_CO && DateTime.Now.Second % 12 == 0)
+            {
+                foreach (Kite kiteUser in kUsers)
+                {
+                    List<KiteConnect.Order> allOrders = kiteUser.GetOrders();
+                    var positions = kiteUser.GetPositions().Day;
+
+
+                    List<KiteConnect.Order> pendingOrders = allOrders.Where(a => a.Status == "TRIGGER PENDING").ToList();
+                    List<KiteConnect.Order> completedOrders = allOrders.Where(a => a.Status == "COMPLETE").ToList();
+
+                    var ordersFromGrid = orders.AsEnumerable().ToList();
+
+                    foreach (var stock in completedOrders.GroupBy(b => b.Tradingsymbol))
+                    {
+
+                        int stoplossOrdersCount = pendingOrders.Where(a => a.Tradingsymbol == stock.Key).Count();
+                        if (stoplossOrdersCount >= 2)
+                        {
+
+                            double entryPrice = 0;
+                            double stoplossPrice = 0;
+
+
+                            if (stoplossOrdersCount == 3 && positions.Where(a => a.TradingSymbol == stock.Key && a.PNL >= (decimal)MaxRisk + 600).Count() > 0)
+                            {
+                                var orderTobeCancelled = pendingOrders.Where(g => g.Tradingsymbol == stock.Key).First();
+                                var orderTobeUpdated = pendingOrders.Where(g => g.Tradingsymbol == stock.Key && g.OrderId != orderTobeCancelled.OrderId);
+                                kiteUser.CancelOrder(orderTobeCancelled.OrderId, Constants.VARIETY_CO, orderTobeCancelled.ParentOrderId);
+                                foreach (var o in orderTobeUpdated)
+                                {
+                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice, o.Variety);
+                                }
+                            }
+                            if (stoplossOrdersCount == 2 && positions.Where(a => a.TradingSymbol == stock.Key && a.PNL >= (decimal)((MaxRisk / 3) + (MaxRisk / 3) * 4) + 200).Count() > 0)
+                            {
+                                var orderTobeCancelled = pendingOrders.Where(g => g.Tradingsymbol == stock.Key).First();
+                                kiteUser.CancelOrder(orderTobeCancelled.OrderId, Constants.VARIETY_CO, orderTobeCancelled.ParentOrderId);
+                                var orderTobeUpdated = pendingOrders.Where(g => g.Tradingsymbol == stock.Key && g.OrderId != orderTobeCancelled.OrderId);
+                                foreach (var o in orderTobeUpdated)
+                                {
+                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, o.TransactionType == "SELL" ? positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice + (decimal)((MaxRisk / 3) / o.Quantity) : positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice - (decimal)((MaxRisk / 3) / o.Quantity), o.Variety);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             //if (DONT_DELETE && tryLogin)
             //{
             //    tryLogin = false;
@@ -4742,17 +4787,17 @@ namespace _15MCE
             {
                 if (txtSwitchMode.Text != string.Empty)
                 {
-                    foreach (Kite kiteUser in kUsers)
-                    {
-                        List<KiteConnect.Order> allOrders = kiteUser.GetOrders();
-                        //filter all the stoploss orders            
-                        stoplossOrders = allOrders.Where(a => a.Tradingsymbol == scrip && a.Status == "TRIGGER PENDING").ToList();
-                        foreach (KiteConnect.Order o in stoplossOrders)
-                        {
-                            kiteUser.CancelOrder(o.OrderId, Constants.VARIETY_CO, o.ParentOrderId);
-                            LogStatus("Close - Order " + o.Tradingsymbol + " Quantity " + o.Quantity + " Order Id : " + o.OrderId);
-                        }
-                    }
+                    //foreach (Kite kiteUser in kUsers)
+                    //{
+                    //    List<KiteConnect.Order> allOrders = kiteUser.GetOrders();
+                    //    //filter all the stoploss orders            
+                    //    stoplossOrders = allOrders.Where(a => a.Tradingsymbol == scrip && a.Status == "TRIGGER PENDING").ToList();
+                    //    foreach (KiteConnect.Order o in stoplossOrders)
+                    //    {
+                    //        kiteUser.CancelOrder(o.OrderId, Constants.VARIETY_CO, o.ParentOrderId);
+                    //        LogStatus("Close - Order " + o.Tradingsymbol + " Quantity " + o.Quantity + " Order Id : " + o.OrderId);
+                    //    }
+                    //}
                 }
             }
             catch (Exception ex)
@@ -4825,17 +4870,17 @@ namespace _15MCE
                 }
                 if (txtSwitchMode.Text != string.Empty)
                 {
-                    foreach (Kite kiteUser in kUsers)
-                    {
-                        List<KiteConnect.Order> allOrders = kiteUser.GetOrders();
-                        //filter all the stoploss orders            
-                        stoplossOrders = allOrders.Where(a => a.Tradingsymbol == scrip && a.ParentOrderId != null && a.Status == "TRIGGER PENDING" && a.TransactionType == (direction == "BM" ? "SELL" : "BUY")).ToList();
-                        foreach (KiteConnect.Order o in stoplossOrders)
-                        {
-                            kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, "0", 0, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, (decimal)Math.Round(trailingStoploss, 1), o.Variety);
-                            LogStatus("Modify - Order " + o.Tradingsymbol + " stop loss" + trailingStoploss);
-                        }
-                    }
+                    //foreach (Kite kiteUser in kUsers)
+                    //{
+                    //    List<KiteConnect.Order> allOrders = kiteUser.GetOrders();
+                    //    //filter all the stoploss orders            
+                    //    stoplossOrders = allOrders.Where(a => a.Tradingsymbol == scrip && a.ParentOrderId != null && a.Status == "TRIGGER PENDING" && a.TransactionType == (direction == "BM" ? "SELL" : "BUY")).ToList();
+                    //    foreach (KiteConnect.Order o in stoplossOrders)
+                    //    {
+                    //        kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, "0", 0, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, (decimal)Math.Round(trailingStoploss, 1), o.Variety);
+                    //        LogStatus("Modify - Order " + o.Tradingsymbol + " stop loss" + trailingStoploss);
+                    //    }
+                    //}
                 }
             }
             catch (Exception ex)
@@ -5539,7 +5584,7 @@ namespace _15MCE
                 {
                     return;
                 }
-                if (txtSwitchMode.Text == "09:05:13" || txtSwitchMode.Text != string.Empty)
+                if (txtSwitchMode.Text == "09:14:13" || txtSwitchMode.Text != string.Empty)
                 {
                     if (MessageBox.Show("Confirm Your Current Trading Date!!", "Date Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -5551,7 +5596,7 @@ namespace _15MCE
 
                                 txtQuoteStart.Text = t.AddMinutes(5).AddSeconds(-10).ToString("hh:mm:ss");
                                 txtLogin.Text = t.AddMinutes(0).AddSeconds(5).ToString("hh:mm:ss");
-                                txtMarketStart.Text = t.AddMinutes(10).AddSeconds(-9).ToString("hh:mm:ss");
+                                txtMarketStart.Text = t.AddMinutes(1).AddSeconds(-9).ToString("hh:mm:ss");
 
                                 LogStatus("Quote Time : " + txtQuoteStart.Text);
                                 LogStatus("Login Time : " + txtLogin.Text);

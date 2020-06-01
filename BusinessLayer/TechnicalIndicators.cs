@@ -1,13 +1,15 @@
-﻿namespace BAL
+﻿using Model;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+namespace BAL
 {
-    using Model;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+
 
     public class TechnicalIndicators
     {
-        public static Dictionary<string, List<Candle>> AddIndicators(Dictionary<string, List<Candle>> dsList, List<Technical> listofIndicators)
+        public static Dictionary<string, List<Candle>> AddIndicators(Dictionary<string, List<Candle>> dsList, List<Technical> listofIndicators,DateTime fromDate, DateTime toDate)
         {
             Dictionary<string, List<Candle>> dictionary;
             if ((listofIndicators == null) || (listofIndicators.Count == 0))
@@ -188,7 +190,14 @@
                         }
                     }
                 });
-                dictionary = dsList;
+                //dictionary = dsList;
+            }
+            dictionary = new Dictionary<string, List<Candle>>();
+            foreach(var a in dsList)
+            {
+                List<Candle> l = a.Value;
+                var dateRangeCandles = l.Where(d => d.TimeStamp >= fromDate && d.TimeStamp <= toDate).ToList();
+                dictionary.Add(a.Key, dateRangeCandles);
             }
             return dictionary;
         }

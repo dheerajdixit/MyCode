@@ -235,15 +235,37 @@ namespace _15MCE
 
 
             }
-            if (rgvStocks.DataSource as List<PNL> != null)
-            {
-                x.AddRange(rgvStocks.DataSource as List<PNL>);
-            }
+            x = outcome;
+            //if (rgvStocks.DataSource as List<PNL> != null && (rgvStocks.DataSource as List<PNL>).Count() > 0 && outcome.Count > 0)
+            //{
+            //    PNL[] cc2 = new PNL[rgvStocks.Rows.Count];
+            //    (rgvStocks.DataSource as List<PNL>).CopyTo(cc2);
+            //    var cc1 = cc2.ToList();
+            //    for (int i = 0; i < cc2.Count(); i++)
+            //    {
+            //        var d = cc2[i];
+            //        if (outcome.Where(a => a.Stock == d.Stock).Count() == 0)
+            //        {
+            //            cc1.Remove(d);
+            //        }
+
+            //    }
+            //    if (cc1.Count > 0)
+            //    {
+            //        x = cc1;
+            //    }
+            //    else
+            //    {
+            //        x = rgvStocks.DataSource as List<PNL>;
+            //    }
+            //    // outcome = x;
+            //}
 
             if (this.rgvStocks.InvokeRequired)
             {
-                SetDataSourceCallback d = new SetDataSourceCallback(SetDataSource);
-                this.Invoke(d, new object[] { outcome, selectedIdea });
+                SetDataSourceCallback d = new SetDataSourceCallback(Lund);
+                // this.Invoke(d, new object[] { null, selectedIdea });
+                this.Invoke(d, new object[] { x, selectedIdea });
             }
             else
             {
@@ -252,51 +274,73 @@ namespace _15MCE
             }
         }
 
+        public void Lund(List<PNL> final, Idea selectedIda)
+        {
+            this.rgvStocks.DataSource = null;
+            this.rgvStocks.DataSource = final;
+        }
+
 
         DataTable finalList = new DataTable();
+        static List<CustomizedPNL> l = new List<CustomizedPNL>();
+
         private void btnLoad_Click(object sender, EventArgs e)
         {
+            l.Clear();
+            //rgvStocks.DataSource = null;
             try
             {
                 ProgressDelegate myProgres = ShowMyProgress;
                 List<Model.Idea> myideas = null;
                 if (checkBox1.Checked)
                 {
-                    myideas = Common.GetIdeas();
+                    myideas = Common.GetIdeas().OrderBy(a => a.runOrder).ToList();
                 }
                 else
                 {
                     myideas = Common.GetIdeas().Where(a => a.Name == radDropDownList1.SelectedItem.Text).ToList();
                 }
 
+                List<Task> allTask = new List<Task>();
                 //Model.Idea selectedIdea = myideas.Where(a => a.Name == radDropDownList1.SelectedItem.Text).First();
-                foreach (var selectedIdea in myideas)
+                foreach (var selectedIdea in myideas.OrderBy(a => a.runOrder))
                 {
                     StockOHLC stockOHLC = new StockOHLC();
 
                     //Load Data
                     Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
-
+                    allTask.Add(loadmydata);
+                    //loadmydata.Wait();
                     //Apply indicators
                     loadmydata.ContinueWith((t0) =>
                     {
                         SetText("Applying indicators");
-                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI));
+                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
+                        allTask.Add(withIndicators);
                         Task getTradingStocks = withIndicators.ContinueWith((t1) =>
                         {
                             Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.GetTopMostSolidGapOpenerDayWise(t1.Result, selectedIdea, myProgres));
+                            allTask.Add(getTradedStocks);
                             Task tradeMyStocks = getTradedStocks.ContinueWith((t2) =>
                             {
                                 Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
+                                allTask.Add(getTradedStocks);
                                 calculation.ContinueWith((t3) =>
                                 {
-                                    SetDataSource(t3.Result, selectedIdea);
-                                    SetText("Idea ran successfully");
+                                    l.Add(new CustomizedPNL { order = selectedIdea.runOrder, selectedIdea = selectedIdea, Strategyoutput = t3.Result });
+
                                 });
+                                //calculation.Wait();
                             });
                         });
                     });
+
+
+                    //loadmydata.Wait();
+                    //Task.WaitAll();
                 }
+                Task.Factory.ContinueWhenAll(allTask.ToArray(), FinalWork);
+
             }
             catch (Exception ex)
             {
@@ -306,6 +350,35 @@ namespace _15MCE
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.InnerException);
             }
 
+        }
+        public void FinalWork(System.Threading.Tasks.Task[] allTask)
+        {
+            rgvStocks.Columns.Clear();
+            rgvStocks.AutoGenerateColumns = true;
+            while (allTask.Count() != l.Count())
+            {
+                Thread.Sleep(1000);
+            }
+            List<PNL> xtraLarge = new List<PNL>();
+            if (allTask.All(t => t.Status == TaskStatus.RanToCompletion))
+            {
+
+                //foreach (var c in l.OrderBy(a => a.order))
+                //{
+                //    xtraLarge.AddRange(c.Strategyoutput);
+
+                //}
+                //var maxOccurrence = xtraLarge.GroupBy(a => a.Stock).Select(a => new { zz = a.Key, zzz = a.Count() }).OrderByDescending(a => a.zzz).First();
+                ////var maxCashFlow = xtraLarge.GroupBy(a => a.Stock).
+                //var allWithmaxOccurrence = xtraLarge.GroupBy(a => a.Stock).Where(a => a.Count() == maxOccurrence.zzz).Select(b => b.Key).ToList();
+                //var xyz = xtraLarge.Where(a => allWithmaxOccurrence.Contains(a.Stock)).ToList();
+                //xyz = xyz.Where(a => a.ChartData.Count() == xyz.Min(b => b.ChartData.Count())) .ToList();
+                SetDataSource(l.First().Strategyoutput, l.First().selectedIdea);
+                SetText("Idea ran successfully");
+                l.Clear();
+
+                // do "some work"
+            }
         }
 
         public T DeSerializeObject<T>(string fileName)
@@ -1057,7 +1130,7 @@ namespace _15MCE
                     loadmydata.ContinueWith((t0) =>
                     {
                         SetText("Applying indicators");
-                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI));
+                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(year, Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
                         Task getTradingStocks = withIndicators.ContinueWith((t1) =>
                         {
 

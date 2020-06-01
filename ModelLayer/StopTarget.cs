@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Model
 {
-    
+
     public class StopTarget
     {
         public StopTarget(StrategyModel current, Idea stoplossidea)
@@ -33,7 +33,7 @@ namespace Model
             }
             else if (stoploss != 5)
             {
-                this.StopLossRange = Math.Abs((double) (current.Close - current.Imp1));
+                this.StopLossRange = Math.Abs((double)(current.Close - current.Imp1));
                 this.Stoploss = (current.CandleType == "G") ? (current.Close - this.StopLossRange) : (current.Close + this.StopLossRange);
                 this.BookProfit1 = (current.CandleType == "G") ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
                 this.BookProfit2 = (current.CandleType == "G") ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));

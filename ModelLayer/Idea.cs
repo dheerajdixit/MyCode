@@ -36,6 +36,7 @@ namespace Model
         public Model.BookProfit BookProfit { get; set; }
 
         public int TryAfterContinuosError { get; set; }
+        public int runOrder { get; set; }
     }
 }
 

@@ -4,7 +4,12 @@ using System.Runtime.CompilerServices;
 
 namespace Model
 {
-
+    public class CustomizedPNL
+    {
+        public List<PNL> Strategyoutput { get; set; }
+        public int order { get; set; }
+        public Idea selectedIdea { get; set; }
+    }
     public class PNL
     {
         public string Stock { get; set; }
@@ -34,6 +39,8 @@ namespace Model
         public int Quantity { get; set; }
 
         public List<Candle> ChartData { get; set; }
+
+        public double Change { get; set; }
     }
 }
 

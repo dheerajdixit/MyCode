@@ -53,6 +53,7 @@ namespace _15MCE
             Telerik.WinControls.UI.RadListDataItem radListDataItem19 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem20 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem21 = new Telerik.WinControls.UI.RadListDataItem();
+            Telerik.WinControls.UI.RadListDataItem radListDataItem22 = new Telerik.WinControls.UI.RadListDataItem();
             this.telerikMetroBlueTheme1 = new Telerik.WinControls.Themes.TelerikMetroBlueTheme();
             this.orderDetailBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -199,7 +200,7 @@ namespace _15MCE
             // 
             this.txtIdeaName.Location = new System.Drawing.Point(210, 21);
             this.txtIdeaName.Name = "txtIdeaName";
-            this.txtIdeaName.Size = new System.Drawing.Size(151, 24);
+            this.txtIdeaName.Size = new System.Drawing.Size(151, 28);
             this.txtIdeaName.TabIndex = 6;
             this.txtIdeaName.Text = "Sample Idea";
             this.txtIdeaName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -209,7 +210,7 @@ namespace _15MCE
             // 
             this.radLabel1.Location = new System.Drawing.Point(91, 26);
             this.radLabel1.Name = "radLabel1";
-            this.radLabel1.Size = new System.Drawing.Size(61, 16);
+            this.radLabel1.Size = new System.Drawing.Size(58, 15);
             this.radLabel1.TabIndex = 7;
             this.radLabel1.Text = "Idea Name";
             this.radLabel1.ThemeName = "TelerikMetroBlue";
@@ -219,7 +220,7 @@ namespace _15MCE
             // 
             this.radLabel2.Location = new System.Drawing.Point(109, 56);
             this.radLabel2.Name = "radLabel2";
-            this.radLabel2.Size = new System.Drawing.Size(43, 16);
+            this.radLabel2.Size = new System.Drawing.Size(41, 15);
             this.radLabel2.TabIndex = 8;
             this.radLabel2.Text = "Interval";
             this.radLabel2.ThemeName = "TelerikMetroBlue";
@@ -228,7 +229,7 @@ namespace _15MCE
             // 
             this.txtInterval.Location = new System.Drawing.Point(210, 51);
             this.txtInterval.Name = "txtInterval";
-            this.txtInterval.Size = new System.Drawing.Size(151, 24);
+            this.txtInterval.Size = new System.Drawing.Size(151, 28);
             this.txtInterval.TabIndex = 7;
             this.txtInterval.Text = "60";
             this.txtInterval.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -238,7 +239,7 @@ namespace _15MCE
             // 
             this.radLabel3.Location = new System.Drawing.Point(102, 87);
             this.radLabel3.Name = "radLabel3";
-            this.radLabel3.Size = new System.Drawing.Size(50, 16);
+            this.radLabel3.Size = new System.Drawing.Size(47, 15);
             this.radLabel3.TabIndex = 9;
             this.radLabel3.Text = "Stoploss";
             this.radLabel3.ThemeName = "TelerikMetroBlue";
@@ -262,7 +263,7 @@ namespace _15MCE
             this.radDropDownList1.Items.Add(radListDataItem7);
             this.radDropDownList1.Location = new System.Drawing.Point(211, 86);
             this.radDropDownList1.Name = "radDropDownList1";
-            this.radDropDownList1.Size = new System.Drawing.Size(151, 20);
+            this.radDropDownList1.Size = new System.Drawing.Size(151, 24);
             this.radDropDownList1.TabIndex = 10;
             // 
             // radCheckedListBox1
@@ -284,7 +285,7 @@ namespace _15MCE
             // 
             this.radLabel4.Location = new System.Drawing.Point(720, 83);
             this.radLabel4.Name = "radLabel4";
-            this.radLabel4.Size = new System.Drawing.Size(55, 16);
+            this.radLabel4.Size = new System.Drawing.Size(52, 15);
             this.radLabel4.TabIndex = 8;
             this.radLabel4.Text = "Indicators";
             this.radLabel4.ThemeName = "TelerikMetroBlue";
@@ -302,7 +303,7 @@ namespace _15MCE
             // 
             this.radLabel9.Location = new System.Drawing.Point(53, 118);
             this.radLabel9.Name = "radLabel9";
-            this.radLabel9.Size = new System.Drawing.Size(99, 16);
+            this.radLabel9.Size = new System.Drawing.Size(93, 15);
             this.radLabel9.TabIndex = 10;
             this.radLabel9.Text = "Entry Start Candle";
             this.radLabel9.ThemeName = "TelerikMetroBlue";
@@ -311,7 +312,7 @@ namespace _15MCE
             // 
             this.txtEntryStartCandle.Location = new System.Drawing.Point(210, 112);
             this.txtEntryStartCandle.Name = "txtEntryStartCandle";
-            this.txtEntryStartCandle.Size = new System.Drawing.Size(151, 24);
+            this.txtEntryStartCandle.Size = new System.Drawing.Size(151, 28);
             this.txtEntryStartCandle.TabIndex = 8;
             this.txtEntryStartCandle.Text = "1";
             this.txtEntryStartCandle.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -321,7 +322,7 @@ namespace _15MCE
             // 
             this.radLabel10.Location = new System.Drawing.Point(47, 148);
             this.radLabel10.Name = "radLabel10";
-            this.radLabel10.Size = new System.Drawing.Size(105, 16);
+            this.radLabel10.Size = new System.Drawing.Size(99, 15);
             this.radLabel10.TabIndex = 11;
             this.radLabel10.Text = "Entry Finish Candle";
             this.radLabel10.ThemeName = "TelerikMetroBlue";
@@ -330,7 +331,7 @@ namespace _15MCE
             // 
             this.txtEntryFinishCandle.Location = new System.Drawing.Point(210, 142);
             this.txtEntryFinishCandle.Name = "txtEntryFinishCandle";
-            this.txtEntryFinishCandle.Size = new System.Drawing.Size(151, 24);
+            this.txtEntryFinishCandle.Size = new System.Drawing.Size(151, 28);
             this.txtEntryFinishCandle.TabIndex = 9;
             this.txtEntryFinishCandle.Text = "75";
             this.txtEntryFinishCandle.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -340,7 +341,7 @@ namespace _15MCE
             // 
             this.radLabel11.Location = new System.Drawing.Point(52, 177);
             this.radLabel11.Name = "radLabel11";
-            this.radLabel11.Size = new System.Drawing.Size(100, 16);
+            this.radLabel11.Size = new System.Drawing.Size(94, 15);
             this.radLabel11.TabIndex = 12;
             this.radLabel11.Text = "Trade Per Session";
             this.radLabel11.ThemeName = "TelerikMetroBlue";
@@ -349,7 +350,7 @@ namespace _15MCE
             // 
             this.txtTradePerSession.Location = new System.Drawing.Point(211, 172);
             this.txtTradePerSession.Name = "txtTradePerSession";
-            this.txtTradePerSession.Size = new System.Drawing.Size(151, 24);
+            this.txtTradePerSession.Size = new System.Drawing.Size(151, 28);
             this.txtTradePerSession.TabIndex = 10;
             this.txtTradePerSession.Text = "1";
             this.txtTradePerSession.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -359,7 +360,7 @@ namespace _15MCE
             // 
             this.radLabel12.Location = new System.Drawing.Point(55, 207);
             this.radLabel12.Name = "radLabel12";
-            this.radLabel12.Size = new System.Drawing.Size(89, 16);
+            this.radLabel12.Size = new System.Drawing.Size(84, 15);
             this.radLabel12.TabIndex = 13;
             this.radLabel12.Text = "Filter By Volume";
             this.radLabel12.ThemeName = "TelerikMetroBlue";
@@ -368,7 +369,7 @@ namespace _15MCE
             // 
             this.txtFilterByVolume.Location = new System.Drawing.Point(210, 202);
             this.txtFilterByVolume.Name = "txtFilterByVolume";
-            this.txtFilterByVolume.Size = new System.Drawing.Size(151, 24);
+            this.txtFilterByVolume.Size = new System.Drawing.Size(151, 28);
             this.txtFilterByVolume.TabIndex = 11;
             this.txtFilterByVolume.Text = "5";
             this.txtFilterByVolume.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -378,7 +379,7 @@ namespace _15MCE
             // 
             this.radLabel13.Location = new System.Drawing.Point(74, 234);
             this.radLabel13.Name = "radLabel13";
-            this.radLabel13.Size = new System.Drawing.Size(70, 16);
+            this.radLabel13.Size = new System.Drawing.Size(67, 15);
             this.radLabel13.TabIndex = 14;
             this.radLabel13.Text = "Candle Type";
             this.radLabel13.ThemeName = "TelerikMetroBlue";
@@ -392,14 +393,14 @@ namespace _15MCE
             this.radCandType.Items.Add(radListDataItem9);
             this.radCandType.Location = new System.Drawing.Point(210, 232);
             this.radCandType.Name = "radCandType";
-            this.radCandType.Size = new System.Drawing.Size(151, 20);
+            this.radCandType.Size = new System.Drawing.Size(151, 24);
             this.radCandType.TabIndex = 21;
             // 
             // radLabel14
             // 
             this.radLabel14.Location = new System.Drawing.Point(103, 263);
             this.radLabel14.Name = "radLabel14";
-            this.radLabel14.Size = new System.Drawing.Size(40, 16);
+            this.radLabel14.Size = new System.Drawing.Size(38, 15);
             this.radLabel14.TabIndex = 15;
             this.radLabel14.Text = "Range";
             this.radLabel14.ThemeName = "TelerikMetroBlue";
@@ -409,18 +410,20 @@ namespace _15MCE
             this.ddlRange.DropDownAnimationEnabled = false;
             radListDataItem10.Text = "Gap";
             radListDataItem11.Text = "Normal";
+            radListDataItem12.Text = "Change%";
             this.ddlRange.Items.Add(radListDataItem10);
             this.ddlRange.Items.Add(radListDataItem11);
+            this.ddlRange.Items.Add(radListDataItem12);
             this.ddlRange.Location = new System.Drawing.Point(210, 258);
             this.ddlRange.Name = "ddlRange";
-            this.ddlRange.Size = new System.Drawing.Size(151, 20);
+            this.ddlRange.Size = new System.Drawing.Size(151, 24);
             this.ddlRange.TabIndex = 22;
             // 
             // radLabel15
             // 
             this.radLabel15.Location = new System.Drawing.Point(104, 290);
             this.radLabel15.Name = "radLabel15";
-            this.radLabel15.Size = new System.Drawing.Size(42, 16);
+            this.radLabel15.Size = new System.Drawing.Size(40, 15);
             this.radLabel15.TabIndex = 16;
             this.radLabel15.Text = "Sorting";
             this.radLabel15.ThemeName = "TelerikMetroBlue";
@@ -428,34 +431,34 @@ namespace _15MCE
             // ddlSorting
             // 
             this.ddlSorting.DropDownAnimationEnabled = false;
-            radListDataItem12.Text = "Volume First";
-            radListDataItem13.Text = "Range First";
-            this.ddlSorting.Items.Add(radListDataItem12);
+            radListDataItem13.Text = "Volume First";
+            radListDataItem14.Text = "Range First";
             this.ddlSorting.Items.Add(radListDataItem13);
+            this.ddlSorting.Items.Add(radListDataItem14);
             this.ddlSorting.Location = new System.Drawing.Point(211, 287);
             this.ddlSorting.Name = "ddlSorting";
-            this.ddlSorting.Size = new System.Drawing.Size(151, 20);
+            this.ddlSorting.Size = new System.Drawing.Size(151, 24);
             this.ddlSorting.TabIndex = 23;
             // 
             // ddlOrder
             // 
             this.ddlOrder.DropDownAnimationEnabled = false;
-            radListDataItem14.Text = "One";
-            radListDataItem15.Text = "Two";
-            radListDataItem16.Text = "Three";
-            this.ddlOrder.Items.Add(radListDataItem14);
+            radListDataItem15.Text = "One";
+            radListDataItem16.Text = "Two";
+            radListDataItem17.Text = "Three";
             this.ddlOrder.Items.Add(radListDataItem15);
             this.ddlOrder.Items.Add(radListDataItem16);
+            this.ddlOrder.Items.Add(radListDataItem17);
             this.ddlOrder.Location = new System.Drawing.Point(211, 315);
             this.ddlOrder.Name = "ddlOrder";
-            this.ddlOrder.Size = new System.Drawing.Size(151, 20);
+            this.ddlOrder.Size = new System.Drawing.Size(151, 24);
             this.ddlOrder.TabIndex = 25;
             // 
             // radLabel5
             // 
             this.radLabel5.Location = new System.Drawing.Point(104, 318);
             this.radLabel5.Name = "radLabel5";
-            this.radLabel5.Size = new System.Drawing.Size(35, 16);
+            this.radLabel5.Size = new System.Drawing.Size(33, 15);
             this.radLabel5.TabIndex = 24;
             this.radLabel5.Text = "Order";
             this.radLabel5.ThemeName = "TelerikMetroBlue";
@@ -464,7 +467,7 @@ namespace _15MCE
             // 
             this.txtMaxRisk.Location = new System.Drawing.Point(104, 340);
             this.txtMaxRisk.Name = "txtMaxRisk";
-            this.txtMaxRisk.Size = new System.Drawing.Size(28, 16);
+            this.txtMaxRisk.Size = new System.Drawing.Size(27, 15);
             this.txtMaxRisk.TabIndex = 26;
             this.txtMaxRisk.Text = "Risk";
             this.txtMaxRisk.ThemeName = "TelerikMetroBlue";
@@ -473,7 +476,7 @@ namespace _15MCE
             // 
             this.txtRisk.Location = new System.Drawing.Point(211, 341);
             this.txtRisk.Name = "txtRisk";
-            this.txtRisk.Size = new System.Drawing.Size(151, 24);
+            this.txtRisk.Size = new System.Drawing.Size(151, 28);
             this.txtRisk.TabIndex = 12;
             this.txtRisk.Text = "5000";
             this.txtRisk.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -482,26 +485,26 @@ namespace _15MCE
             // ddlBookProfit
             // 
             this.ddlBookProfit.DropDownAnimationEnabled = false;
-            radListDataItem17.Text = "1 to 1";
-            radListDataItem18.Text = "1 to 2";
-            radListDataItem19.Text = "1 to 3";
-            radListDataItem20.Text = "Day End";
-            radListDataItem21.Text = "Number Of Candle Passed";
-            this.ddlBookProfit.Items.Add(radListDataItem17);
+            radListDataItem18.Text = "1 to 1";
+            radListDataItem19.Text = "1 to 2";
+            radListDataItem20.Text = "1 to 3";
+            radListDataItem21.Text = "Day End";
+            radListDataItem22.Text = "Number Of Candle Passed";
             this.ddlBookProfit.Items.Add(radListDataItem18);
             this.ddlBookProfit.Items.Add(radListDataItem19);
             this.ddlBookProfit.Items.Add(radListDataItem20);
             this.ddlBookProfit.Items.Add(radListDataItem21);
+            this.ddlBookProfit.Items.Add(radListDataItem22);
             this.ddlBookProfit.Location = new System.Drawing.Point(211, 371);
             this.ddlBookProfit.Name = "ddlBookProfit";
-            this.ddlBookProfit.Size = new System.Drawing.Size(151, 20);
+            this.ddlBookProfit.Size = new System.Drawing.Size(151, 24);
             this.ddlBookProfit.TabIndex = 27;
             // 
             // radLabel6
             // 
             this.radLabel6.Location = new System.Drawing.Point(104, 374);
             this.radLabel6.Name = "radLabel6";
-            this.radLabel6.Size = new System.Drawing.Size(62, 16);
+            this.radLabel6.Size = new System.Drawing.Size(58, 15);
             this.radLabel6.TabIndex = 26;
             this.radLabel6.Text = "Book Profit";
             this.radLabel6.ThemeName = "TelerikMetroBlue";
@@ -510,7 +513,7 @@ namespace _15MCE
             // 
             this.radTextBox1.Location = new System.Drawing.Point(211, 399);
             this.radTextBox1.Name = "radTextBox1";
-            this.radTextBox1.Size = new System.Drawing.Size(151, 24);
+            this.radTextBox1.Size = new System.Drawing.Size(151, 28);
             this.radTextBox1.TabIndex = 13;
             this.radTextBox1.Text = "0";
             this.radTextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -520,14 +523,14 @@ namespace _15MCE
             // 
             this.radLabel7.Location = new System.Drawing.Point(102, 403);
             this.radLabel7.Name = "radLabel7";
-            this.radLabel7.Size = new System.Drawing.Size(52, 16);
+            this.radLabel7.Size = new System.Drawing.Size(49, 15);
             this.radLabel7.TabIndex = 27;
             this.radLabel7.Text = "Exit After";
             this.radLabel7.ThemeName = "TelerikMetroBlue";
             // 
             // IdeaCreator
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1070, 428);
             this.Controls.Add(this.radLabel7);

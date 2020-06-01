@@ -7,7 +7,7 @@ namespace Model
     {
         Gap = 0,
         Normal = 1,
-        GapUpDown = 0
+        Change = 2
     }
 }
 

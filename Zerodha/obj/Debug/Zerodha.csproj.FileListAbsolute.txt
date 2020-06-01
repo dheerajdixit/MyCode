@@ -10,6 +10,8 @@ C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Zerodha\bin\Debug\Model.p
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Zerodha\obj\Debug\Zerodha.dll
 C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\Zerodha\obj\Debug\Zerodha.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csprojResolveAssemblyReference.cache
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\Zerodha.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\Zerodha.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\CommonLayer.dll
@@ -18,7 +20,5 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\CommonLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\ModelLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\bin\Debug\Newtonsoft.Json.xml
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csprojResolveAssemblyReference.cache
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.pdb

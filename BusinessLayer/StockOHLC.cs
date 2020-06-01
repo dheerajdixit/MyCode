@@ -39,7 +39,7 @@ namespace BAL
                     candle = candle2;
                     candle2.Lowest = ((IEnumerable<double>)lowest).Min();
                     candle2.Highest = ((IEnumerable<double>)highest).Max();
-                    if (lowest.Count > 150)
+                    if (lowest.Count > 100)
                     {
                         lowest.Dequeue();
                         highest.Dequeue();
@@ -85,13 +85,30 @@ namespace BAL
             return result;
         }
 
-        public double GetRange(Candle b, Range r) =>
-            (
-            (r != Range.Gap) 
-            ? ((r != Range.Normal) 
-                    ?((r != Range.Gap) ? 0.0 : (Math.Abs((double)(b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close)) 
+        public double GetRange(Candle b, Range r)
+        {
+            if (r == Range.Change)
+            {
+                var c = b;
+                while (c.TimeStamp.Date == b.TimeStamp.Date)
+                {
+                    c = c.PreviousCandle;
+                }
+                //double p = b.PreviousCandle.
+                return ((Math.Abs((double)(b.Close - c.Close)) / c.Close) * 100.0);
+            }
+            else
+            {
+                return (r != Range.Gap)
+            ? ((r != Range.Normal)
+                    ? ((r != Range.Gap) ? 0.0 : (Math.Abs((double)(b.Open - b.PreviousCandle.Close)) / b.PreviousCandle.Close))
                     : (Math.Abs((double)(b.Open - b.Close)) / b.PreviousCandle.Close))
-            : ((Math.Abs((double)(b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0));
+            : ((Math.Abs((double)(b.Close - b.PreviousCandle.Close)) / b.Close) * 100.0);
+            }
+        }
+
+
+
 
         public Time GetTime(Idea i)
         {
@@ -135,7 +152,8 @@ namespace BAL
                         PreviousClose = b.PreviousCandle.Close,
                         Imp1 = 0,
                         Trade = b.Trade,
-                        CurrentCandle = b
+                        CurrentCandle = b,
+
 
                     }).ToList());
             });
@@ -162,7 +180,7 @@ namespace BAL
                 }
                 dictionary.Add(myDate.Date, list);
             }
-           
+
             Dictionary<Guid, StrategyModel> dictionary2 = new Dictionary<Guid, StrategyModel>();
             foreach (KeyValuePair<DateTime, List<StrategyModel>> pair2 in dictionary)
             {
@@ -238,9 +256,9 @@ namespace BAL
                         predicate = p1 = b => b.Date == grouping1.Key;
                     }
                     foreach (StrategyModel model2 in (from b in pair2.Value.Where<StrategyModel>(predicate)
-                                                      orderby b.Range
-                                                      orderby b.Volume descending
-                                                      select b).Take<StrategyModel>(selectedIdea.FilterByVolume).Take<StrategyModel>(selectedIdea.TradePerSession))
+                                                      orderby b.Range descending
+                                                      select b))
+
                     {
                         dictionary2.Add(Guid.NewGuid(), model2);
                         num2++;
@@ -300,20 +318,46 @@ namespace BAL
                 //    where ((b.CandleType != "G") || ((b.PreviousCandle.CandleType != "R") || ((b.PreviousCandle.PreviousCandle.CandleType != "G") || ((b.Close <= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.Low >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.AllIndicators.MACD.histogram <= 0.0) || ((b.Close <= b.PreviousCandle.PreviousCandle.Close) || ((b.AllIndicators.SMA20 <= b.AllIndicators.SMA50) || (b.AllIndicators.SMA50 <= b.AllIndicators.SMA200))))))))) ? ((IEnumerable<Candle>) (((b.CandleType == "R") && ((b.PreviousCandle.CandleType == "G") && ((b.PreviousCandle.PreviousCandle.CandleType == "R") && ((b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.High > Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.AllIndicators.MACD.histogram < 0.0) && ((b.Close < b.PreviousCandle.PreviousCandle.Close) && (b.AllIndicators.SMA20 < b.AllIndicators.SMA50)))))))) && (b.AllIndicators.SMA50 < b.AllIndicators.SMA200))) : ((IEnumerable<Candle>) true)
                 //    select b;
             }
-            if (selctedIdea.Name == "MyNewIdea")
+            if (selctedIdea.Name.Contains("MyNewIdea"))
             {
 
+                //foreach (var b in enumerable)
+                //{
+                //    if (b.TimeStamp.Date.Day == 28)
+                //    {
+                //        bool x = b.Low <= b.AllIndicators.SMA20 + b.Low * 0.001;
+                //        x = (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b));
+                //        x = b.AllIndicators.SMA50 < b.AllIndicators.SMA20;
+                //        x = b.AllIndicators.SuperTrend.SuperTrendValue < b.AllIndicators.SMA50;
+                //    }
+                //}
                 enumerable = from b in enumerable
-                             where ((b.PreviousCandle.CandleType == "G" && b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
-                             || (b.PreviousCandle.CandleType == "R" && b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
+                             where
+                             b.Low <= b.AllIndicators.SMA20 + b.Low * 0.001
+                             && (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b))
+                             && b.AllIndicators.SMA50 < b.AllIndicators.SMA20
+                             && b.AllIndicators.SuperTrend.SuperTrendValue < b.AllIndicators.SMA50
+                             && b.CandleType == "G"
                              select b;
 
                 foreach (var c in enumerable)
                 {
-                    if (c.Close > c.PreviousCandle.Close)
-                        c.Trade = Trade.SELL;
-                    else
+                    if (c.CandleType == "G")
                         c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+
+                    //enumerable = from b in enumerable
+                    //             where ((b.PreviousCandle.CandleType == "G" && b.PreviousCandle.High == b.Highest && b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
+                    //             || (b.PreviousCandle.CandleType == "R" && b.PreviousCandle.Low == b.Lowest && b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
+                    //             select b;
+
+                    //foreach (var c in enumerable)
+                    //{
+                    //    if (c.Close > c.PreviousCandle.Close)
+                    //        c.Trade = Trade.SELL;
+                    //    else
+                    //        c.Trade = Trade.BUY;
                 }
 
             }
@@ -347,11 +391,15 @@ namespace BAL
             }
             else if (selctedIdea.Name == "MyOldIdea")
             {
+                enumerable = from b in enumerable
+                             where (Dozi(b)) && (Math.Abs(b.PreviousCandle.Close - b.PreviousCandle.Open) / b.PreviousCandle.Close) * 100 <= 1 && ((b.PreviousCandle.High - b.PreviousCandle.Low) / b.PreviousCandle.Close) * 100 <= 1.5
+                             select b;
                 foreach (var c in enumerable)
                 {
-                    if (c.CandleType == "G")
+
+                    if (c.PreviousCandle.CandleType == "G")
                         c.Trade = Trade.BUY;
-                    else
+                    else if (c.PreviousCandle.CandleType == "R")
                         c.Trade = Trade.SELL;
                 }
 
@@ -470,7 +518,10 @@ namespace BAL
             return enumerable;
         }
 
-
+        bool Dozi(Candle c)
+        {
+            return (Math.Abs(c.Open - c.Close) <= ((c.High - c.Low) * 0.1)) && (GetUpperWick(c) > GetLowerWick(c) * 3 || GetLowerWick(c) > GetUpperWick(c) * 3);
+        }
 
         double GetRange(Candle c)
         {
@@ -518,7 +569,7 @@ namespace BAL
                     double close = gap.Value.Close;
                     double num2 = 0.0;
                     double stopLossRange = target.StopLossRange;
-                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange));
+                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange == 0 ? 1 : stopLossRange));
                     int num5 = num4;
                     double stoploss = target.Stoploss;
                     double num7 = stoploss;
@@ -526,7 +577,8 @@ namespace BAL
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
                                          where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
-                                         select b).ToList<Candle>();
+                                         select b) .OrderBy(b=>b.TimeStamp).ToList<Candle>();
+                    //list.Remove(list.Last());
                     List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
                                           where b.TimeStamp.Date == gap.Value.Date.Date
                                           select b).ToList<Candle>();
@@ -656,10 +708,15 @@ namespace BAL
                     pnl1.Stock = gap.Value.Stock;
                     pnl1.Entry = close;
                     pnl1.Quantity = num5;
+                    pnl1.BookProfit1 = target.BookProfit1;
+                    pnl1.BookProfit2 = target.BookProfit2;
+                    pnl1.BookProfit3 = list2[target.FinalCandle].Close;
                     pnl1.Direction = gap.Value.Trade == Trade.BUY ? "BUY" : "SELL";
                     pnl1.ChartData = list2;
+                    pnl1.Change = (Math.Abs(gap.Value.PreviousClose - gap.Value.Close) / gap.Value.PreviousClose) * 100;
                     PNL item = pnl1;
                     item.Stoploss = num7;
+
 
                     finalAmount.Add(item);
                     myProgres($"PNL for stock {gap.Value.Stock} for Day{gap.Value.Date.Date} is : {num2}");

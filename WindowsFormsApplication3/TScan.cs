@@ -842,7 +842,57 @@ namespace _15MCE
             }
         }
 
+        public void LoadAllDateTillDate()
+        {
 
+            if (txtSwitchMode.Text == string.Empty)
+            {
+                downlodableScrip = AllFNO.ToList();
+            }
+            else
+            {
+                foreach (DataRow dr in orders.Rows)
+                {
+                    if (!downlodableScrip.Contains(dr["scrip"].ToString()))
+                        downlodableScrip.Add(dr["scrip"].ToString());
+                }
+                if (SMAQuanitty + PSAAQuantity + _60MinQuantity + SuperTrendQuanaity > 0)
+                    downlodableScrip = AllFNO.ToList();
+            }
+
+            bool load30 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["30"]);
+            bool load10 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["10"]);
+            bool load15 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["15"]);
+            bool load60 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["60"]);
+            bool load5 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["5"]);
+            string duation = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["DLDuration"]);
+            int noOfDaysMultiplier = 1;
+            if (duation.ToLower() == "short")
+            {
+                noOfDaysMultiplier = 10;
+            }
+
+            Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+            {
+                if (load60)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-400 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "60" + "minute", "60");
+                if (load10)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "10" + "minute", "10");
+                if (load30)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "30" + "minute", "30");
+                if (load15)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
+                if (load5)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
+
+
+            });
+
+
+
+
+            MessageBox.Show("All data loaded");
+        }
 
 
         List<StockData> fS1 = new List<StockData>();
@@ -2206,32 +2256,32 @@ namespace _15MCE
                                     }
                                     catch (Exception ex)
                                     {
-                                        MessageBox.Show(ex.Message);
-                                        if (MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                                        //  MessageBox.Show(ex.Message);
+                                        if (true)//MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                                         {
                                             try
                                             {
                                                 OrderPlacingMode = Constants.VARIETY_CO;
                                                 Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-    Exchange: Constants.EXCHANGE_NSE,
-    TradingSymbol: scrip,
-    TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-    Quantity: lotSize,
-    //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-    OrderType: Constants.ORDER_TYPE_LIMIT,
-    Product: Constants.PRODUCT_MIS,
-    //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-    TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
-    //StoplossValue: stopLossValue,
-    //SquareOffValue: squareOffValue1,
-    Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+        Exchange: Constants.EXCHANGE_NSE,
+        TradingSymbol: scrip,
+        TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+        Quantity: lotSize,
+        //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+        OrderType: Constants.ORDER_TYPE_LIMIT,
+        Product: Constants.PRODUCT_MIS,
+        //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+        TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+        //StoplossValue: stopLossValue,
+        //SquareOffValue: squareOffValue1,
+        Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-    //        SquareOffValue: squareOffValue,
-    Validity: Constants.VALIDITY_DAY,
-    Variety: Constants.VARIETY_CO//,,
+        //        SquareOffValue: squareOffValue,
+        Validity: Constants.VALIDITY_DAY,
+        Variety: Constants.VARIETY_CO//,,
 
 
-    );
+        );
                                                 response = kiteUser.PlaceOrder(
                           Exchange: Constants.EXCHANGE_NSE,
                           TradingSymbol: scrip,
@@ -3066,7 +3116,7 @@ namespace _15MCE
 
         }
         StockOHLC ohlcObj = new StockOHLC();
-        private void CallWebServiceZerodha(string InstrumentToken, string SymbolName, string dateFrom, string dateTo, string apiKey, string accessToken, string interval)
+        private void CallWebServiceZerodha(string InstrumentToken, string SymbolName, string dateFrom, string dateTo, string apiKey, string accessToken, string interval, string period = "30")
         {
             // File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\Instr.txt", InstrumentToken.ToString() + ",");
 
@@ -3109,7 +3159,7 @@ namespace _15MCE
                         result = reader.ReadToEnd();
                         reader.Close();
                     }
-                    //File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup30\" + SymbolName + ".json", result);
+                    File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup" + period + "\\" + SymbolName + ".json", result);
                     ls = TokenChannel.ConvertToJason(result);
                 }
                 else
@@ -4491,6 +4541,7 @@ namespace _15MCE
                             radLabelElement1.Text = "Live Mode Started";
                             //CloseOrder();
                             LogStatus("Market is stared now...");
+                            RefreshData();
                         }
 
 
@@ -5486,7 +5537,7 @@ namespace _15MCE
                 e.CellElement.NumberOfColors = 1;
             }
             else if (e.Column.HeaderText == "MTM"
-       && !string.IsNullOrEmpty(e.Row.Cells["target"].Value.ToString()) && Convert.ToDouble(e.Row.Cells["target"].Value) > 0)
+        && !string.IsNullOrEmpty(e.Row.Cells["target"].Value.ToString()) && Convert.ToDouble(e.Row.Cells["target"].Value) > 0)
             {
                 e.CellElement.DrawFill = true;
                 e.CellElement.BackColor = Color.Green;
@@ -5619,7 +5670,7 @@ namespace _15MCE
             }
             else if (txtSwitchMode.Text == string.Empty)
             {
-
+                LoadAllDateTillDate();
                 goLiveTimer.Interval = 5000;
                 goLiveTimer.Start();
                 return;

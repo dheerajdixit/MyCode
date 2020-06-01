@@ -104,7 +104,7 @@ namespace DAL
             parallelOptions.MaxDegreeOfParallelism = num;
             Parallel.ForEach<KeyValuePair<string, string>>(source, parallelOptions, delegate (KeyValuePair<string, string> i)
             {
-                resultCollection.Add(h.GetHistoryFromFile(h.folderName, i.Value, fromDate, toDate));
+                resultCollection.Add(h.GetHistoryFromFile(h.folderName, i.Value, fromDate.AddDays(-30), toDate));
                 progress($"Loading Data ... {i.Value}");
             });
             return resultCollection;

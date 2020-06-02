@@ -569,7 +569,7 @@ namespace BAL
                     double close = gap.Value.Close;
                     double num2 = 0.0;
                     double stopLossRange = target.StopLossRange;
-                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange == 0 ? 1 : stopLossRange));
+                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
                     int num5 = num4;
                     double stoploss = target.Stoploss;
                     double num7 = stoploss;
@@ -716,8 +716,6 @@ namespace BAL
                     pnl1.Change = (Math.Abs(gap.Value.PreviousClose - gap.Value.Close) / gap.Value.PreviousClose) * 100;
                     PNL item = pnl1;
                     item.Stoploss = num7;
-
-
                     finalAmount.Add(item);
                     myProgres($"PNL for stock {gap.Value.Stock} for Day{gap.Value.Date.Date} is : {num2}");
                 }

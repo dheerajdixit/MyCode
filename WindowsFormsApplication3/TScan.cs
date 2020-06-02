@@ -4393,7 +4393,13 @@ namespace _15MCE
 
                     List<KiteConnect.Order> pendingOrders = allOrders.Where(a => a.Status == "TRIGGER PENDING").ToList();
                     List<KiteConnect.Order> completedOrders = allOrders.Where(a => a.Status == "COMPLETE").ToList();
-
+                    if (DateTime.Now.Hour == 15 && DateTime.Now.Minute >= 15)
+                    {
+                        foreach (var oc in pendingOrders)
+                        {
+                            kiteUser.CancelOrder(oc.OrderId, Constants.VARIETY_CO, oc.ParentOrderId);
+                        }
+                    }
                     var ordersFromGrid = orders.AsEnumerable().ToList();
 
                     foreach (var stock in completedOrders.GroupBy(b => b.Tradingsymbol))
@@ -4414,7 +4420,7 @@ namespace _15MCE
                                 kiteUser.CancelOrder(orderTobeCancelled.OrderId, Constants.VARIETY_CO, orderTobeCancelled.ParentOrderId);
                                 foreach (var o in orderTobeUpdated)
                                 {
-                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice, o.Variety);
+                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, Math.Round(positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice, 1), o.Variety);
                                 }
                             }
                             if (stoplossOrdersCount == 2 && positions.Where(a => a.TradingSymbol == stock.Key && a.PNL >= (decimal)((MaxRisk / 3) + (MaxRisk / 3) * 4) + 200).Count() > 0)
@@ -4424,7 +4430,7 @@ namespace _15MCE
                                 var orderTobeUpdated = pendingOrders.Where(g => g.Tradingsymbol == stock.Key && g.OrderId != orderTobeCancelled.OrderId);
                                 foreach (var o in orderTobeUpdated)
                                 {
-                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, o.TransactionType == "SELL" ? positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice + (decimal)((MaxRisk / 3) / o.Quantity) : positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice - (decimal)((MaxRisk / 3) / o.Quantity), o.Variety);
+                                    kiteUser.ModifyOrder(o.OrderId, o.ParentOrderId, o.Exchange, o.Tradingsymbol, o.TransactionType, Convert.ToString(o.Quantity), o.Price, o.Product, o.OrderType, o.Validity, o.DisclosedQuantity, Math.Round(o.TransactionType == "SELL" ? positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice + (decimal)((MaxRisk / 3) / o.Quantity) : positions.Where(a => a.TradingSymbol == stock.Key).First().AveragePrice - (decimal)((MaxRisk / 3) / o.Quantity), 1), o.Variety);
                                 }
                             }
                         }

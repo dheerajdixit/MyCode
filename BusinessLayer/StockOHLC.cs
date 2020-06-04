@@ -291,12 +291,12 @@ namespace BAL
             //{
             //    xs.Serialize(writer, c1);
             //}
-
-
-            IEnumerable<Candle> enumerable = from b in allCandles
-                                             where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
-                                             where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
-                                             select b;
+            IEnumerable<Candle> enumerable = allCandles;
+            if (selctedIdea.Interval > 0)
+                enumerable = from b in allCandles
+                             where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
+                             where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
+                             select b;
             //if (selctedIdea.TI.Contains(Technical.SuperTrend) && selctedIdea.TI.Contains(Technical.SimpleMovingAverage))
             //{
             //    enumerable = from b in enumerable
@@ -512,6 +512,21 @@ namespace BAL
                         c.Trade = Trade.SELL;
                 }
             }
+            else if (selctedIdea.Name == "manual")
+            {
+                enumerable = from b in enumerable
+                             where  (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b))
+                             select b;
+                foreach (var c in enumerable)
+                {
+
+                    if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
+                    else
+                        c.Trade = Trade.SELL;
+                }
+            }
+
 
 
 
@@ -577,7 +592,7 @@ namespace BAL
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
                                          where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
-                                         select b) .OrderBy(b=>b.TimeStamp).ToList<Candle>();
+                                         select b).OrderBy(b => b.TimeStamp).ToList<Candle>();
                     //list.Remove(list.Last());
                     List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
                                           where b.TimeStamp.Date == gap.Value.Date.Date

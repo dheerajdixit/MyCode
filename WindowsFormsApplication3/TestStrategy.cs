@@ -99,25 +99,33 @@ namespace _15MCE
             set;
         }
 
-        public TestStrategy()
+        int psa = 0;
+        int sma = 0;
+        bool DONT_DELETE = false;
+        bool takeBackupOfFiles = false;
+        public TestStrategy(Dictionary<string, string> setting)
         {
+            mySettings = setting;
             InitializeComponent();
+            psa = Convert.ToInt16(mySettings["PSA"]);
+            sma = Convert.ToInt16(mySettings["SMA"]);
+            DONT_DELETE = Convert.ToBoolean(mySettings["DoNotRemove"]);
+            takeBackupOfFiles = Convert.ToBoolean(mySettings["TakeBackupOfFilesAfterPlacingOrders"]);
         }
         List<Pivots> pList = new List<Pivots>();
+        Dictionary<string, string> mySettings = new Dictionary<string, string>();
         private void radGroupBox1_Click(object sender, EventArgs e)
         {
 
         }
 
         bool backLiveTest = false;
-        int psa = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["PSA"]);
-        int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
-        //bool calculateBrokerage = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["Brokerage"]);
-        //int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
+
+        //bool calculateBrokerage = Convert.ToBoolean(mySettings["Brokerage"]);
+        //int sma = Convert.ToInt16(mySettings["SMA"]);
 
         DataSet instrToken = new DataSet();
-        public static bool DONT_DELETE = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["DoNotRemove"]);
-        public static bool takeBackupOfFiles = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["TakeBackupOfFilesAfterPlacingOrders"]);
+
 
         public static byte[] StringToByteArray(string hex)
         {

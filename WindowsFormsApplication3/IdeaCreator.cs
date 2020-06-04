@@ -102,14 +102,12 @@ namespace _15MCE
         }
 
         bool backLiveTest = false;
-        int psa = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["PSA"]);
-        int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
+    
         //bool calculateBrokerage = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["Brokerage"]);
         //int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
 
         DataSet instrToken = new DataSet();
-        public static bool DONT_DELETE = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["DoNotRemove"]);
-        public static bool takeBackupOfFiles = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["TakeBackupOfFilesAfterPlacingOrders"]);
+     
 
         public static byte[] StringToByteArray(string hex)
         {

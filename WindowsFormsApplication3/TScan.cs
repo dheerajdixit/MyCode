@@ -276,12 +276,21 @@ namespace _15MCE
             set;
         }
         List<CIndexes> listIndex = new List<CIndexes>();
-        public TScan()
+        Dictionary<string, string> mySettings = new Dictionary<string, string>();
+        int psa = 0;
+        int sma = 0;
+        bool DONT_DELETE = false;
+        bool takeBackupOfFiles = false;
+        public TScan(Dictionary<string, string> setting)
         {
-
+            mySettings = setting;
             InitializeComponent();
             rgvStocks.TableElement.RowHeight = 50;
             LogStatus("Application Started !!");
+            psa = Convert.ToInt16(mySettings["PSA"]);
+            sma = Convert.ToInt16(mySettings["SMA"]);
+            DONT_DELETE = Convert.ToBoolean(mySettings["DoNotRemove"]);
+            takeBackupOfFiles = Convert.ToBoolean(mySettings["TakeBackupOfFilesAfterPlacingOrders"]);
         }
         List<Pivots> pList = new List<Pivots>();
         private void radGroupBox1_Click(object sender, EventArgs e)
@@ -292,16 +301,13 @@ namespace _15MCE
         string myAPIKey = "253tendzrkq911h2";
         string mySecret = "g0wzr0vk9cmpypexzhfzkslwn351x0n1";
         bool backLiveTest = false;
-        int psa = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["PSA"]);
-        int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
-        //bool calculateBrokerage = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["Brokerage"]);
-        //int sma = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["SMA"]);
+       
+        //bool calculateBrokerage = Convert.ToBoolean(mySettings["Brokerage"]);
+        //int sma = Convert.ToInt16(mySettings["SMA"]);
 
         DataSet instrToken = new DataSet();
         DataSet dateMapping = null;
 
-        public static bool DONT_DELETE = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["DoNotRemove"]);
-        public static bool takeBackupOfFiles = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["TakeBackupOfFilesAfterPlacingOrders"]);
 
         public static byte[] StringToByteArray(string hex)
         {
@@ -326,7 +332,7 @@ namespace _15MCE
                 }
 
 
-                txtBTD.Text = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["BTD"]);
+                txtBTD.Text = Convert.ToString(mySettings["BTD"]);
                 tmrClock.Enabled = false;
                 tmrClock.Stop();
                 dateMapping = new DataSet();
@@ -358,10 +364,10 @@ namespace _15MCE
 
 
                 panel1.Visible = false;
-                risk = Convert.ToDouble(System.Configuration.ConfigurationSettings.AppSettings["risk"]);
-                myAPIKey = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["myAPIKey"]);
-                mySecret = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["mySecret"]);
-                backLiveTest = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["BackLiveTest"]);
+                risk = Convert.ToDouble(mySettings["risk"]);
+                myAPIKey = Convert.ToString(mySettings["myAPIKey"]);
+                mySecret = Convert.ToString(mySettings["mySecret"]);
+                backLiveTest = Convert.ToBoolean(mySettings["BackLiveTest"]);
                 if (rdoLive.IsChecked)
                 {
                     backLiveTest = false;
@@ -860,12 +866,13 @@ namespace _15MCE
                     downlodableScrip = AllFNO.ToList();
             }
 
-            bool load30 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["30"]);
-            bool load10 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["10"]);
-            bool load15 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["15"]);
-            bool load60 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["60"]);
-            bool load5 = Convert.ToBoolean(System.Configuration.ConfigurationSettings.AppSettings["5"]);
-            string duation = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["DLDuration"]);
+            bool load30 = Convert.ToBoolean(mySettings["30"]);
+            bool load10 = Convert.ToBoolean(mySettings["10"]);
+            bool load15 = Convert.ToBoolean(mySettings["15"]);
+            bool load60 = Convert.ToBoolean(mySettings["60"]);
+            bool load5 = Convert.ToBoolean(mySettings["5"]);
+            bool loaddaily = Convert.ToBoolean(mySettings["daily"]);
+            string duation = Convert.ToString(mySettings["DLDuration"]);
             int noOfDaysMultiplier = 1;
             if (duation.ToLower() == "short")
             {
@@ -884,6 +891,8 @@ namespace _15MCE
                     CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
                 if (load5)
                     CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
+                if (loaddaily)
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
 
 
             });
@@ -2325,7 +2334,73 @@ namespace _15MCE
                                             }
                                             catch (Exception exCo)
                                             {
-                                                MessageBox.Show(exCo.Message);
+                                                try
+                                                {
+                                                    OrderPlacingMode = Constants.VARIETY_REGULAR;
+                                                    Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
+            Exchange: Constants.EXCHANGE_NSE,
+            TradingSymbol: scrip,
+            TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+            Quantity: lotSize,
+            //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+            OrderType: Constants.ORDER_TYPE_LIMIT,
+            Product: Constants.PRODUCT_MIS,
+            //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+            //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+            //StoplossValue: stopLossValue,
+            //SquareOffValue: squareOffValue1,
+            Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+            //        SquareOffValue: squareOffValue,
+            Validity: Constants.VALIDITY_DAY,
+            Variety: Constants.VARIETY_REGULAR//,,
+
+            );
+                                                    response = kiteUser.PlaceOrder(
+                              Exchange: Constants.EXCHANGE_NSE,
+                              TradingSymbol: scrip,
+                              TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                              Quantity: lotSize,
+                              //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                              OrderType: Constants.ORDER_TYPE_LIMIT,
+                              Product: Constants.PRODUCT_MIS,
+                              //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                              //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                              //StoplossValue: stopLossValue,
+                              //SquareOffValue: squareOffValue2,
+                              Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+                              //        SquareOffValue: squareOffValue,
+                              Validity: Constants.VALIDITY_DAY,
+                              Variety: Constants.VARIETY_REGULAR//,,
+
+
+                              );
+                                                    response = kiteUser.PlaceOrder(
+                               Exchange: Constants.EXCHANGE_NSE,
+                               TradingSymbol: scrip,
+                               TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                               Quantity: lotSize,
+                               //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                               OrderType: Constants.ORDER_TYPE_LIMIT,
+                               Product: Constants.PRODUCT_MIS,
+                               //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                               //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                               //StoplossValue: stopLossValue,
+                               //SquareOffValue: squareOffValue3,
+                               Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+                               //        SquareOffValue: squareOffValue,
+                               Validity: Constants.VALIDITY_DAY,
+                               Variety: Constants.VARIETY_REGULAR//,,
+
+
+                               );
+                                                }
+                                                catch (Exception exMIS)
+                                                {
+                                                    MessageBox.Show(exMIS.Message);
+                                                }
                                             }
                                         }
 
@@ -2507,7 +2582,7 @@ namespace _15MCE
                 }
 
 
-                //if (System.Configuration.ConfigurationSettings.AppSettings["BackLiveTest"] == "True")
+                //if (mySettings["BackLiveTest"] == "True")
                 //{
                 //    int xL = startOfTheWeekIndex - 1;
                 //    for (int deleteIndex = xL + goTimeCount; deleteIndex < ds.Tables[0].Rows.Count; deleteIndex++)
@@ -2659,7 +2734,7 @@ namespace _15MCE
                 }
 
 
-                //if (System.Configuration.ConfigurationSettings.AppSettings["BackLiveTest"] == "True")
+                //if (mySettings["BackLiveTest"] == "True")
                 //{
                 //    int xL = startOfTheWeekIndex - 1;
                 //    for (int deleteIndex = xL + goTimeCount; deleteIndex < ds.Tables[0].Rows.Count; deleteIndex++)
@@ -2888,7 +2963,7 @@ namespace _15MCE
                 }
 
 
-                //if (System.Configuration.ConfigurationSettings.AppSettings["BackLiveTest"] == "True")
+                //if (mySettings["BackLiveTest"] == "True")
                 //{
                 //    int xL = startOfTheWeekIndex - 1;
                 //    for (int deleteIndex = xL + goTimeCount; deleteIndex < ds.Tables[0].Rows.Count; deleteIndex++)

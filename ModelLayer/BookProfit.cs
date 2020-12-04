@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Model
 {
-   
+
 
     public enum BookProfit
     {
@@ -9,7 +9,8 @@ namespace Model
         OneTo2,
         OneTo3,
         DayEnd,
-        SpecificInterval
+        SpecificInterval,
+        OnlyOnLoss
     }
 }
 

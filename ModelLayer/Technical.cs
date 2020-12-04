@@ -8,7 +8,8 @@ namespace Model
         SuperTrend,
         SimpleMovingAverage,
         MACD,
-        RSI
+        RSI,
+        BollingerBand
     }
 }
 

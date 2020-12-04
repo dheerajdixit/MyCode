@@ -236,7 +236,9 @@
     <Compile Include="Order.cs" />
     <Compile Include="Pivots.cs" />
     <Compile Include="Receipt.cs" />
-    <None Include="StaticData\AllEQ.json" />
+    <None Include="StaticData\AllEQ.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="Selector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -312,9 +314,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="StaticData\Settings.json" />
-    <None Include="StaticData\Stocks.json" />
-    <None Include="StaticData\Strategy.json" />
+    <None Include="StaticData\Settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="StaticData\Stocks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="StaticData\Strategy.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -340,7 +348,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="StaticData\Chart.html" />
+    <Content Include="StaticData\Chart.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticData\loader.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

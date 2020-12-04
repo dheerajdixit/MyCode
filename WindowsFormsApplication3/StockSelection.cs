@@ -30,7 +30,7 @@ namespace NSA
         private void StockSelection_Load(object sender, EventArgs e)
         {
             s = CommonFeatures.Common.GetSettings();
-            data = Common.GetStocks();
+            data = Common.GetStocks().OrderBy(a=>a.StockName).ToList();
             SetDataSource();
             radDropDownList1.SelectedIndex = s.RunMode;
             //radDropDownList1.ReadOnly = true;

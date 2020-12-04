@@ -7,7 +7,10 @@ namespace Model
     {
         Gap = 0,
         Normal = 1,
-        Change = 2
+        Change = 2,
+        Top = 3,
+        Engulfing = 4,
+        TopGainerLooser = 5
     }
 }
 

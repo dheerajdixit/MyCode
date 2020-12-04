@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Model
@@ -25,19 +27,34 @@ namespace Model
             }
             else if (stoploss == 2)
             {
-                Candle highLow = this.GetHighLow(current.CurrentCandle);
-                this.StopLossRange = (current.Trade == Trade.BUY) ? (current.Close - highLow.Low) : (highLow.High - current.Close);
-                this.Stoploss = (current.Trade == Trade.BUY) ? (current.Close - this.StopLossRange) : (current.Close + this.StopLossRange);
+                Candle highLow = this.GetDayHighLow(current.CurrentCandle);
+                this.StopLossRange =  (highLow.High - highLow.Low);
+                this.Stoploss = (current.Trade == Trade.BUY) ? (highLow.Low) : (highLow.High);
                 this.BookProfit1 = (current.Trade == Trade.BUY) ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
                 this.BookProfit2 = (current.Trade == Trade.BUY) ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));
             }
+
             else if (stoploss != 5)
             {
-                this.StopLossRange = Math.Abs((double)(current.Close - current.Imp1));
+                if (true)
+                {
+                    this.StopLossRange = (current.CandleType == "G") ?
+                        (current.Close - GetMin(current.CurrentCandle.AllIndicators.SuperTrend.SuperTrendValue))
+                        :
+                        (GetMax( current.CurrentCandle.AllIndicators.SuperTrend.SuperTrendValue) - current.Close);
+                }
+                else
+                {
+                    this.StopLossRange = (current.CandleType == "G") ?
+                                            (current.Close - GetMin(current.CurrentCandle.AllIndicators.SMA20, current.CurrentCandle.AllIndicators.SMA50, current.CurrentCandle.AllIndicators.SMA200, current.CurrentCandle.AllIndicators.SuperTrend.SuperTrendValue))
+                                            :
+                                            (GetMax(current.CurrentCandle.AllIndicators.SMA20, current.CurrentCandle.AllIndicators.SMA50, current.CurrentCandle.AllIndicators.SMA200, current.CurrentCandle.AllIndicators.SuperTrend.SuperTrendValue) - current.Close);
+                }
                 this.Stoploss = (current.CandleType == "G") ? (current.Close - this.StopLossRange) : (current.Close + this.StopLossRange);
                 this.BookProfit1 = (current.CandleType == "G") ? (current.Close + this.StopLossRange) : (current.Close - this.StopLossRange);
                 this.BookProfit2 = (current.CandleType == "G") ? (current.Close + (2.0 * this.StopLossRange)) : (current.Close - (2.0 * this.StopLossRange));
             }
+
             else
             {
                 Candle highLow = this.GetHighLow(current.CurrentCandle);
@@ -51,7 +68,7 @@ namespace Model
             {
                 if (interval == 5)
                 {
-                    this.FinalCandle = 0x49;
+                    this.FinalCandle = 73;
                 }
                 else if (interval == 10)
                 {
@@ -70,6 +87,36 @@ namespace Model
             {
                 this.FinalCandle = 5;
             }
+        }
+
+
+        public double GetMin(params double [] arr)
+        {
+            return arr.Min();
+        }
+        public double GetMax(params double[] arr)
+        {
+            return arr.Max();
+        }
+
+        private Candle GetDayHighLow(Candle c)
+        {
+            List<double> min = new List<double>();
+            List<double> max = new List<double>();
+            min.Add(c.Low);
+            max.Add(c.High);
+
+            var d = c.PreviousCandle;
+            while (d.TimeStamp.Date == c.TimeStamp.Date)
+            {
+                min.Add(d.Low);
+                max.Add(d.High);
+                d = d.PreviousCandle;
+            }
+            Candle candle1 = new Candle();
+            candle1.High = max.Max();
+            candle1.Low = min.Min();
+            return candle1;
         }
 
         private Candle GetHighLow(Candle c)

@@ -1,7 +1,10 @@
-﻿namespace BAL
+﻿using Clifton.Collections.Generic;
+using Model;
+using System;
+using System.Linq;
+namespace BAL
 {
-    using Clifton.Collections.Generic;
-    using System;
+
 
     public class SimpleMovingAverage : IMovingAverage
     {
@@ -49,7 +52,23 @@
                 {
                     throw new ApplicationException("Number of samples is 0.");
                 }
-                return (this.total / ((float) this.samples.Count));
+                return (this.total / ((float)this.samples.Count));
+            }
+        }
+
+        public BollingerBand BollingerBand
+        {
+            get
+            {
+                if (this.samples.Count == 0)
+                {
+                    throw new ApplicationException("Number of samples is 0.");
+                }
+
+                var sampleData = this.samples.ToArray();
+                float sumOfSquaresOfDifferences = sampleData.Select(val => (val - this.Average) * (val - this.Average)).Sum();
+                double sd = Math.Sqrt(sumOfSquaresOfDifferences / this.samples.Count);
+                return new BollingerBand { Upper = this.Average + 2 * sd, Middle = this.Average, Lower = this.Average - 2 * sd };
             }
         }
     }

@@ -28,6 +28,7 @@ namespace CommonFeatures
             {
                 return JsonConvert.DeserializeObject<List<Idea>>(reader.ReadToEnd());
             }
+        
         }
 
         public static Settings GetSettings()

@@ -109,7 +109,7 @@ namespace _15MCE
         {
             get
             {
-                return Convert.ToInt16(txtMaxTurnover.Text);
+                return Convert.ToInt64(txtMaxTurnover.Text);
             }
             set
             {
@@ -301,7 +301,7 @@ namespace _15MCE
         string myAPIKey = "253tendzrkq911h2";
         string mySecret = "g0wzr0vk9cmpypexzhfzkslwn351x0n1";
         bool backLiveTest = false;
-       
+
         //bool calculateBrokerage = Convert.ToBoolean(mySettings["Brokerage"]);
         //int sma = Convert.ToInt16(mySettings["SMA"]);
 
@@ -503,10 +503,14 @@ namespace _15MCE
                 orderDetails.Clear();
 
 
-                if (txtTam.Text == "-2")
-                {
-                    //LoadData(5);
-                }
+
+                //int t = Convert.ToInt32(txtTam.Text);
+                //if (t == -2)
+                //    LoadData(5);
+                //if (t > -2)
+                //    UpdateOrders(5);
+
+
                 if ((txtTam.Text == "0" || txtTam.Text == "3" || txtTam.Text == "6" || txtTam.Text == "9" || txtTam.Text == "12" || txtTam.Text == "15" || txtTam.Text == "12"
                         || txtTam.Text == "15" || txtTam.Text == "18" || txtTam.Text == "21" || txtTam.Text == "24" || txtTam.Text == "27" || txtTam.Text == "30" || txtTam.Text == "33"
                         || txtTam.Text == "36" || txtTam.Text == "39" || txtTam.Text == "42" || txtTam.Text == "45" || txtTam.Text == "48" || txtTam.Text == "51" || txtTam.Text == "54"
@@ -689,6 +693,8 @@ namespace _15MCE
                         {
                             CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute");
                         }
+
+
                     }
                     else if (period == 30)
                     {
@@ -826,6 +832,84 @@ namespace _15MCE
 
             if (period == 5)
             {
+                fS1.Clear();
+                List<StockData> finalStock = null;
+
+
+                if (Convert.ToInt32(txtTam.Text) == -2)
+                {
+                    List<StockData> sGap = new List<StockData>();
+
+                    Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().GetTopMostSolidGapOpenerDayWise(allData[period.ToString() + "minute"], Common.GetIdeas().Where(a => a.Name == "manual").First(), null);
+                    var finalStocks = getTradedStocks.Where(b => b.Value.Date.Date == CurrentTradingDate).ToList();
+                    foreach (var a in finalStocks)
+                    {
+                        try
+                        {
+                            if (a.Value.Trade == Model.Trade.BUY)
+                            {
+                                sGap.Add(new StockData
+                                {
+                                    Symbol = a.Value.Stock,
+                                    Open = 0,
+                                    Vol = a.Value.Volume,
+                                    //dHigh = tradingCandle.High,
+                                    //dLow = tradi,
+                                    High = a.Value.High,
+                                    Low = a.Value.Low,
+                                    Direction = "BM",
+                                    stopLoss = a.Value.Close - ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                    TradingDate = a.Value.Date,
+                                    Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                    dClose = 0,
+                                    Close = a.Value.Close
+                                });
+
+                            }
+                            else if (a.Value.Trade == Model.Trade.SELL)
+                            {
+                                sGap.Add(new StockData
+                                {
+                                    Symbol = a.Value.Stock,
+                                    Open = 0,
+                                    Vol = a.Value.Volume,
+                                    //dHigh = tradingCandle.High,
+                                    //dLow = tradi,
+                                    High = a.Value.High,
+                                    Low = a.Value.Low,
+                                    Direction = "SM",
+                                    stopLoss = a.Value.Close + ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                    TradingDate = a.Value.Date,
+                                    Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                    dClose = 0,
+                                    Close = a.Value.Close
+
+                                });
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+
+                    }
+                    //var c1 = sGap.OrderBy(a => a.Symbol).ToList();
+
+                    //XmlSerializer xs = new XmlSerializer(typeof(List<StockData>));
+                    //using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo1.xml"))
+                    //{
+                    //    xs.Serialize(writer, c1);
+                    //}
+                    finalStock = sGap.OrderByDescending(b => b.Vol).Take(10).ToList().OrderByDescending(a => a.dClose).Take(5).ToList();
+                }
+
+                foreach (var s1 in finalStock)
+                {
+                    if (true || s1.dHigh < s1.High && s1.dLow > s1.Low)
+                    {
+                        fS1.Add(s1);
+                    }
+                }
             }
             else if (period == 60)
             {
@@ -833,11 +917,11 @@ namespace _15MCE
 
 
 
-            if (period == 30)
+            if (period == 30 || period == 5)
             {
                 foreach (var s in fS1)
                 {
-                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = "ThirdCandle", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = period == 30 ? "ThirdCandle" : "FirstCandle", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
                     if (o != null)
                     {
@@ -846,7 +930,42 @@ namespace _15MCE
 
                 }
             }
+
         }
+
+        double GetBody(Candle c)
+        {
+            return Math.Abs(c.Close - c.Open);
+        }
+
+        double GetLowerWick(Candle c)
+        {
+            if (c.CandleType == "D" || c.CandleType == "R")
+            {
+                return c.Close - c.Low;
+            }
+            else
+            {
+                return c.Open - c.Low;
+            }
+
+        }
+
+        double GetUpperWick(Candle c)
+        {
+            if (c.CandleType == "D" || c.CandleType == "R")
+            {
+                return c.High - c.Open;
+            }
+            else
+            {
+                return c.High - c.Close;
+            }
+
+        }
+
+
+
 
         public void LoadAllDateTillDate()
         {
@@ -2132,7 +2251,7 @@ namespace _15MCE
                 int tc = 0;
                 if (o.Strategy.Contains("ThirdCandle"))
                     tc = SMAQuanitty;
-                else if (o.Strategy.Contains("Failure"))
+                else if (o.Strategy.Contains("FirstCandle"))
                     tc = PSAAQuantity;
                 else if (o.Strategy.Contains("Strength"))
                     tc = SuperTrendQuanaity;
@@ -3235,7 +3354,7 @@ namespace _15MCE
                         reader.Close();
                     }
                     File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup" + period + "\\" + SymbolName + ".json", result);
-                    ls = TokenChannel.ConvertToJason(result);
+                    ls = TokenChannel.ConvertToJason(result, SymbolName);
                 }
                 else
                 {

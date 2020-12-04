@@ -42,7 +42,7 @@ namespace NSA
             int i = 0;
             foreach (var c in System.Configuration.ConfigurationSettings.AppSettings)
             {
-               
+
                 Label l = new Label();
                 l.Name = "lbl" + c;
                 l.Text = c.ToString();
@@ -52,7 +52,7 @@ namespace NSA
 
 
                 TextBox t = new TextBox();
-                t.Name = "txt" + c;
+                t.Name = c.ToString();
                 t.Text = System.Configuration.ConfigurationSettings.AppSettings[c.ToString()];
                 t.Margin = new Padding { Left = 20, Top = 0, Bottom = 0, Right = 0 };
                 t.Location = new Point(x + 100, y);

@@ -29,15 +29,15 @@ namespace _15MCE
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn11 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn12 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn13 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn14 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn15 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem7 = new Telerik.WinControls.UI.GridViewSummaryItem();
-            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem8 = new Telerik.WinControls.UI.GridViewSummaryItem();
-            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem9 = new Telerik.WinControls.UI.GridViewSummaryItem();
-            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition3 = new Telerik.WinControls.UI.TableViewDefinition();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn6 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn7 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn8 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn9 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn10 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem4 = new Telerik.WinControls.UI.GridViewSummaryItem();
+            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem5 = new Telerik.WinControls.UI.GridViewSummaryItem();
+            Telerik.WinControls.UI.GridViewSummaryItem gridViewSummaryItem6 = new Telerik.WinControls.UI.GridViewSummaryItem();
+            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
             this.telerikMetroBlueTheme1 = new Telerik.WinControls.Themes.TelerikMetroBlueTheme();
             this.radGroupBox1 = new Telerik.WinControls.UI.RadGroupBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -419,7 +419,7 @@ namespace _15MCE
             this.txtMaxTurnover.Name = "txtMaxTurnover";
             this.txtMaxTurnover.Size = new System.Drawing.Size(99, 28);
             this.txtMaxTurnover.TabIndex = 36;
-            this.txtMaxTurnover.Text = "3600000";
+            this.txtMaxTurnover.Text = "100000";
             this.txtMaxTurnover.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtMaxTurnover.ThemeName = "TelerikMetroBlue";
             // 
@@ -504,7 +504,7 @@ namespace _15MCE
             this.txtPSAA.Name = "txtPSAA";
             this.txtPSAA.Size = new System.Drawing.Size(37, 28);
             this.txtPSAA.TabIndex = 26;
-            this.txtPSAA.Text = "0";
+            this.txtPSAA.Text = "5";
             this.txtPSAA.ThemeName = "TelerikMetroBlue";
             // 
             // label1
@@ -811,55 +811,55 @@ namespace _15MCE
             // 
             this.rgvStocks.MasterTemplate.AddNewRowPosition = Telerik.WinControls.UI.SystemRowPosition.Bottom;
             this.rgvStocks.MasterTemplate.AllowAddNewRow = false;
-            gridViewTextBoxColumn11.FieldName = "ltp";
-            gridViewTextBoxColumn11.HeaderText = "LTP";
-            gridViewTextBoxColumn11.Name = "column1";
-            gridViewTextBoxColumn11.Width = 70;
-            gridViewTextBoxColumn12.DataType = typeof(double);
-            gridViewTextBoxColumn12.FieldName = "BP";
-            gridViewTextBoxColumn12.HeaderText = "Profit";
-            gridViewTextBoxColumn12.Name = "BP";
-            gridViewTextBoxColumn12.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
-            gridViewTextBoxColumn12.Width = 60;
-            gridViewTextBoxColumn13.DataType = typeof(double);
-            gridViewTextBoxColumn13.Expression = "Bp + Target ";
-            gridViewTextBoxColumn13.HeaderText = "Total";
-            gridViewTextBoxColumn13.Name = "total";
-            gridViewTextBoxColumn13.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
-            gridViewTextBoxColumn13.Width = 60;
-            gridViewTextBoxColumn14.FieldName = "ec";
-            gridViewTextBoxColumn14.HeaderText = "Ex Candle";
-            gridViewTextBoxColumn14.Name = "column2";
-            gridViewTextBoxColumn14.Width = 70;
-            gridViewTextBoxColumn15.FieldName = "exLevel";
-            gridViewTextBoxColumn15.HeaderText = "Exit Levels";
-            gridViewTextBoxColumn15.Name = "Levels";
-            gridViewTextBoxColumn15.Width = 150;
+            gridViewTextBoxColumn6.FieldName = "ltp";
+            gridViewTextBoxColumn6.HeaderText = "LTP";
+            gridViewTextBoxColumn6.Name = "column1";
+            gridViewTextBoxColumn6.Width = 70;
+            gridViewTextBoxColumn7.DataType = typeof(double);
+            gridViewTextBoxColumn7.FieldName = "BP";
+            gridViewTextBoxColumn7.HeaderText = "Profit";
+            gridViewTextBoxColumn7.Name = "BP";
+            gridViewTextBoxColumn7.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
+            gridViewTextBoxColumn7.Width = 60;
+            gridViewTextBoxColumn8.DataType = typeof(double);
+            gridViewTextBoxColumn8.Expression = "Bp + Target ";
+            gridViewTextBoxColumn8.HeaderText = "Total";
+            gridViewTextBoxColumn8.Name = "total";
+            gridViewTextBoxColumn8.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
+            gridViewTextBoxColumn8.Width = 60;
+            gridViewTextBoxColumn9.FieldName = "ec";
+            gridViewTextBoxColumn9.HeaderText = "Ex Candle";
+            gridViewTextBoxColumn9.Name = "column2";
+            gridViewTextBoxColumn9.Width = 70;
+            gridViewTextBoxColumn10.FieldName = "exLevel";
+            gridViewTextBoxColumn10.HeaderText = "Exit Levels";
+            gridViewTextBoxColumn10.Name = "Levels";
+            gridViewTextBoxColumn10.Width = 150;
             this.rgvStocks.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
-            gridViewTextBoxColumn11,
-            gridViewTextBoxColumn12,
-            gridViewTextBoxColumn13,
-            gridViewTextBoxColumn14,
-            gridViewTextBoxColumn15});
+            gridViewTextBoxColumn6,
+            gridViewTextBoxColumn7,
+            gridViewTextBoxColumn8,
+            gridViewTextBoxColumn9,
+            gridViewTextBoxColumn10});
             this.rgvStocks.MasterTemplate.DataSource = this.orderDetailBindingSource3;
             this.rgvStocks.MasterTemplate.ShowRowHeaderColumn = false;
-            gridViewSummaryItem7.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
-            gridViewSummaryItem7.AggregateExpression = null;
-            gridViewSummaryItem7.FormatString = "{0}";
-            gridViewSummaryItem7.Name = "Target";
-            gridViewSummaryItem8.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
-            gridViewSummaryItem8.AggregateExpression = null;
-            gridViewSummaryItem8.FormatString = "{0}";
-            gridViewSummaryItem8.Name = "BP";
-            gridViewSummaryItem9.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
-            gridViewSummaryItem9.AggregateExpression = null;
-            gridViewSummaryItem9.FormatString = "{0}";
-            gridViewSummaryItem9.Name = "total";
+            gridViewSummaryItem4.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
+            gridViewSummaryItem4.AggregateExpression = null;
+            gridViewSummaryItem4.FormatString = "{0}";
+            gridViewSummaryItem4.Name = "Target";
+            gridViewSummaryItem5.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
+            gridViewSummaryItem5.AggregateExpression = null;
+            gridViewSummaryItem5.FormatString = "{0}";
+            gridViewSummaryItem5.Name = "BP";
+            gridViewSummaryItem6.Aggregate = Telerik.WinControls.UI.GridAggregateFunction.Sum;
+            gridViewSummaryItem6.AggregateExpression = null;
+            gridViewSummaryItem6.FormatString = "{0}";
+            gridViewSummaryItem6.Name = "total";
             this.rgvStocks.MasterTemplate.SummaryRowsBottom.Add(new Telerik.WinControls.UI.GridViewSummaryRowItem(new Telerik.WinControls.UI.GridViewSummaryItem[] {
-                gridViewSummaryItem7,
-                gridViewSummaryItem8,
-                gridViewSummaryItem9}));
-            this.rgvStocks.MasterTemplate.ViewDefinition = tableViewDefinition3;
+                gridViewSummaryItem4,
+                gridViewSummaryItem5,
+                gridViewSummaryItem6}));
+            this.rgvStocks.MasterTemplate.ViewDefinition = tableViewDefinition2;
             this.rgvStocks.Name = "rgvStocks";
             this.rgvStocks.ShowGroupPanel = false;
             this.rgvStocks.Size = new System.Drawing.Size(1028, 426);

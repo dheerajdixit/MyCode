@@ -38,7 +38,8 @@ namespace Model
     public enum Trade
     {
         BUY,
-        SELL
+        SELL,
+        NONE
     }
 }
 

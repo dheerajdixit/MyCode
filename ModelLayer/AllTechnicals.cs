@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 namespace Model
 {
-    
+
 
     public class AllTechnicals
     {
@@ -17,6 +17,8 @@ namespace Model
         public double SMA50 { get; set; }
 
         public double SMA200 { get; set; }
+
+        public BollingerBand BollingerBand { get; set; }
     }
 }
 

@@ -39,6 +39,7 @@ namespace _15MCE
             Telerik.WinControls.UI.ListViewDataItem listViewDataItem1 = new Telerik.WinControls.UI.ListViewDataItem("SuperTrend");
             Telerik.WinControls.UI.ListViewDataItem listViewDataItem2 = new Telerik.WinControls.UI.ListViewDataItem("Simple Moving Average");
             Telerik.WinControls.UI.ListViewDataItem listViewDataItem3 = new Telerik.WinControls.UI.ListViewDataItem("MACD");
+            Telerik.WinControls.UI.ListViewDataItem listViewDataItem4 = new Telerik.WinControls.UI.ListViewDataItem("Bollinger Band");
             Telerik.WinControls.UI.RadListDataItem radListDataItem8 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem9 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem10 = new Telerik.WinControls.UI.RadListDataItem();
@@ -271,10 +272,12 @@ namespace _15MCE
             listViewDataItem1.Text = "SuperTrend";
             listViewDataItem2.Text = "Simple Moving Average";
             listViewDataItem3.Text = "MACD";
+            listViewDataItem4.Text = "Bollinger Band";
             this.radCheckedListBox1.Items.AddRange(new Telerik.WinControls.UI.ListViewDataItem[] {
             listViewDataItem1,
             listViewDataItem2,
-            listViewDataItem3});
+            listViewDataItem3,
+            listViewDataItem4});
             this.radCheckedListBox1.Location = new System.Drawing.Point(720, 105);
             this.radCheckedListBox1.Name = "radCheckedListBox1";
             this.radCheckedListBox1.Size = new System.Drawing.Size(189, 91);

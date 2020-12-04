@@ -97,6 +97,17 @@ namespace BAL
                 //double p = b.PreviousCandle.
                 return ((Math.Abs((double)(b.Close - c.Close)) / c.Close) * 100.0);
             }
+            else if (r == Range.Engulfing)
+            {
+                return ((Math.Abs((double)(b.Close - b.PreviousCandle.Open)) / b.Close) * 100.0);
+
+            }
+            else if (r == Range.Top)
+            {
+
+                //double p = b.PreviousCandle.
+                return ((Math.Abs((double)(b.High - b.Close)) / b.Close) * 100.0);
+            }
             else
             {
                 return (r != Range.Gap)
@@ -134,8 +145,10 @@ namespace BAL
             {
 
                 List<Candle> allCandles = stock.Value;
-                myProgres($"Collecting first candle for all days for {stock.Key}");
-
+                if (myProgres != null)
+                {
+                    myProgres($"Collecting first candle for all days for {stock.Key}");
+                }
                 List<StrategyModel> selector = new List<StrategyModel>();
 
                 filter1.Add(this.PrepareFirstLevelOfFiltering(allCandles, selectedIdea, t).Select(b =>
@@ -153,8 +166,6 @@ namespace BAL
                         Imp1 = 0,
                         Trade = b.Trade,
                         CurrentCandle = b,
-
-
                     }).ToList());
             });
 
@@ -165,7 +176,10 @@ namespace BAL
                 foreach (List<StrategyModel> list2 in filter1)
                 {
                     Func<StrategyModel, bool> pf = null;
-                    myProgres($"Arranging stock date wise for {myDate.Date}");
+                    if (myProgres != null)
+                    {
+                        myProgres($"Arranging stock date wise for {myDate.Date}");
+                    }
                     Func<StrategyModel, bool> predicate = pf;
                     if (pf == null)
                     {
@@ -194,7 +208,10 @@ namespace BAL
                 //        xs.Serialize(writer, c1);
                 //    }
                 //}
-                myProgres($"Selecting Most solid gap up stock for Date {pair2.Key}");
+                if (myProgres != null)
+                {
+                    myProgres($"Selecting Most solid gap up stock for Date {pair2.Key}");
+                }
                 if (selectedIdea.Sorting == Sorting.VolumeFirst)
                 {
                     int num = 0;
@@ -227,7 +244,8 @@ namespace BAL
                                                                     orderby b.Volume descending
                                                                     select b).Take<StrategyModel>(selectedIdea.FilterByVolume)
                                                          orderby a.Range descending
-                                                         select a).Take<StrategyModel>(selectedIdea.TradePerSession))
+                                                         select a).Take<StrategyModel>(selectedIdea.TradePerSession).OrderByDescending(a => ((a.High - a.Low) / (a.Close)) * 100).Take(selectedIdea.TradePerSession)
+                                                         )
                         {
                             dictionary2.Add(Guid.NewGuid(), model);
                             num++;
@@ -236,10 +254,7 @@ namespace BAL
                                 break;
                             }
                         }
-                        if (num == selectedIdea.TradePerSession)
-                        {
-                            break;
-                        }
+
                     }
                     continue;
                 }
@@ -255,9 +270,8 @@ namespace BAL
                         Func<StrategyModel, bool> local10 = p1;
                         predicate = p1 = b => b.Date == grouping1.Key;
                     }
-                    foreach (StrategyModel model2 in (from b in pair2.Value.Where<StrategyModel>(predicate)
-                                                      orderby b.Range descending
-                                                      select b))
+                    double range = pair2.Value.Where<StrategyModel>(predicate).Max(a => a.Range);
+                    foreach (StrategyModel model2 in (from b in pair2.Value.Where<StrategyModel>(predicate).Where(a => a.Range == range) orderby b.Volume ascending select b))
 
                     {
                         dictionary2.Add(Guid.NewGuid(), model2);
@@ -283,29 +297,13 @@ namespace BAL
 
         public IEnumerable<Candle> PrepareFirstLevelOfFiltering(List<Candle> allCandles, Idea selctedIdea, Time t)
         {
-
-            //var c1 = allCandles.OrderBy(a=>a.TimeStamp).ToList();
-
-            //XmlSerializer xs = new XmlSerializer(typeof(List<Candle>));
-            //using (StreamWriter writer = new StreamWriter(@"C:\Jai Sri Thakur Ji\foo.xml"))
-            //{
-            //    xs.Serialize(writer, c1);
-            //}
             IEnumerable<Candle> enumerable = allCandles;
             if (selctedIdea.Interval > 0)
                 enumerable = from b in allCandles
                              where (b.Close > 50.0) && (b.PreviousCandle.Close > 0.0)
-                             where ((b.TimeStamp.Hour >= t.StartHour) && ((b.TimeStamp.Minute >= t.StartMinute) && (b.TimeStamp.Hour <= t.EndHour))) && (b.TimeStamp.Minute <= t.EndMinute)
+                             where ((b.TimeStamp.Hour >= t.StartHour) && (b.TimeStamp.Hour <= t.EndHour))
                              select b;
-            //if (selctedIdea.TI.Contains(Technical.SuperTrend) && selctedIdea.TI.Contains(Technical.SimpleMovingAverage))
-            //{
-            //    enumerable = from b in enumerable
-            //                 where (b.Open == b.High) || (b.Open == b.Low)
-            //                 select b;
-            //}
-            //else if (selctedIdea.TI.Contains(Technical.SuperTrend))
-            //{
-            //}
+
             if (selctedIdea.CandleType == CandleType.Solid)
             {
                 enumerable = from b in enumerable
@@ -318,219 +316,123 @@ namespace BAL
                 //    where ((b.CandleType != "G") || ((b.PreviousCandle.CandleType != "R") || ((b.PreviousCandle.PreviousCandle.CandleType != "G") || ((b.Close <= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.Low >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.AllIndicators.MACD.histogram <= 0.0) || ((b.Close <= b.PreviousCandle.PreviousCandle.Close) || ((b.AllIndicators.SMA20 <= b.AllIndicators.SMA50) || (b.AllIndicators.SMA50 <= b.AllIndicators.SMA200))))))))) ? ((IEnumerable<Candle>) (((b.CandleType == "R") && ((b.PreviousCandle.CandleType == "G") && ((b.PreviousCandle.PreviousCandle.CandleType == "R") && ((b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.High > Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.AllIndicators.MACD.histogram < 0.0) && ((b.Close < b.PreviousCandle.PreviousCandle.Close) && (b.AllIndicators.SMA20 < b.AllIndicators.SMA50)))))))) && (b.AllIndicators.SMA50 < b.AllIndicators.SMA200))) : ((IEnumerable<Candle>) true)
                 //    select b;
             }
-            if (selctedIdea.Name.Contains("MyNewIdea"))
+            if (selctedIdea.Name == "BollingerBand3")
             {
-
-                //foreach (var b in enumerable)
-                //{
-                //    if (b.TimeStamp.Date.Day == 28)
-                //    {
-                //        bool x = b.Low <= b.AllIndicators.SMA20 + b.Low * 0.001;
-                //        x = (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b));
-                //        x = b.AllIndicators.SMA50 < b.AllIndicators.SMA20;
-                //        x = b.AllIndicators.SuperTrend.SuperTrendValue < b.AllIndicators.SMA50;
-                //    }
-                //}
                 enumerable = from b in enumerable
                              where
-                             b.Low <= b.AllIndicators.SMA20 + b.Low * 0.001
-                             && (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b))
-                             && b.AllIndicators.SMA50 < b.AllIndicators.SMA20
-                             && b.AllIndicators.SuperTrend.SuperTrendValue < b.AllIndicators.SMA50
-                             && b.CandleType == "G"
-                             select b;
-
-                foreach (var c in enumerable)
-                {
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-
-                    //enumerable = from b in enumerable
-                    //             where ((b.PreviousCandle.CandleType == "G" && b.PreviousCandle.High == b.Highest && b.Open < b.PreviousCandle.High && b.Open > b.PreviousCandle.Close && b.Close > b.PreviousCandle.Close && b.Close < b.PreviousCandle.High)
-                    //             || (b.PreviousCandle.CandleType == "R" && b.PreviousCandle.Low == b.Lowest && b.Open < b.PreviousCandle.Close && b.Open > b.PreviousCandle.Low && b.Close > b.PreviousCandle.Low && b.Close < b.PreviousCandle.Close))
-                    //             select b;
-
-                    //foreach (var c in enumerable)
-                    //{
-                    //    if (c.Close > c.PreviousCandle.Close)
-                    //        c.Trade = Trade.SELL;
-                    //    else
-                    //        c.Trade = Trade.BUY;
-                }
-
-            }
-            else if (selctedIdea.Name == "OHOL")
-            {
-                enumerable = from b in enumerable
-                             where (b.Open == b.Low) || (b.High == b.Open)
-                             select b;
-                foreach (var c in enumerable)
-                {
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-
-            }
-            else if (selctedIdea.Name == "OHOLINV")
-            {
-                enumerable = from b in enumerable
-                             where ((b.Open == b.Low && GetUpperWick(b) > GetBody(b) * 1.25) || (b.High == b.Open && GetLowerWick(b) > GetBody(b) * 1.25))
-                             select b;
-                foreach (var c in enumerable)
-                {
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.SELL;
-                    else
-                        c.Trade = Trade.BUY;
-                }
-
-            }
-            else if (selctedIdea.Name == "MyOldIdea")
-            {
-                enumerable = from b in enumerable
-                             where (Dozi(b)) && (Math.Abs(b.PreviousCandle.Close - b.PreviousCandle.Open) / b.PreviousCandle.Close) * 100 <= 1 && ((b.PreviousCandle.High - b.PreviousCandle.Low) / b.PreviousCandle.Close) * 100 <= 1.5
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.PreviousCandle.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else if (c.PreviousCandle.CandleType == "R")
-                        c.Trade = Trade.SELL;
-                }
-
-            }
-            else if (selctedIdea.Name == "CROSS2050MIN15")
-            {
-                enumerable = from b in enumerable
-                             where ((b.CandleType == "G" && b.PreviousCandle.CandleType == "R" && b.PreviousCandle.PreviousCandle.CandleType == "G") || (b.CandleType == "R" && b.PreviousCandle.CandleType == "G" && b.PreviousCandle.PreviousCandle.CandleType == "R"))
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-
-            }
-            else if (selctedIdea.Name == "SuperTrendSupport")
-            {
-                enumerable = from b in enumerable
-                             where ((b.AllIndicators.SuperTrend.Trend > 0 && b.Low < b.AllIndicators.SuperTrend.SuperTrendValue && b.Close > b.AllIndicators.SuperTrend.SuperTrendValue && b.AllIndicators.SuperTrend.SuperTrendValue == b.PreviousCandle.AllIndicators.SuperTrend.SuperTrendValue)
-                             ||
-                             (b.AllIndicators.SuperTrend.Trend < 0 && b.High > b.AllIndicators.SuperTrend.SuperTrendValue && b.Close < b.AllIndicators.SuperTrend.SuperTrendValue && b.AllIndicators.SuperTrend.SuperTrendValue == b.PreviousCandle.AllIndicators.SuperTrend.SuperTrendValue)
-                             )
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.AllIndicators.SuperTrend.Trend > 0)
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-            }
-            else if (selctedIdea.Name == "2050")
-            {
-                enumerable = from b in enumerable
-                             where ((b.CandleType == "G" && b.Low < Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50) && b.Close > Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50))
-                             ||
-                             (b.CandleType == "R" && b.High > Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50) && b.Close < Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50)))
-
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-            }
-            else if (selctedIdea.Name == "SuperTrendInv")
-            {
-                enumerable = from b in enumerable
-                             where (
-                             (b.AllIndicators.SuperTrend.Trend != b.PreviousCandle.AllIndicators.SuperTrend.Trend))
-
-
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.AllIndicators.SuperTrend.Trend == 1)
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-            }
-            else if (selctedIdea.Name == "5minuteCrossOver")
-            {
-                enumerable = from b in enumerable
-                             where (
-                             (b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Low < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             ))
-                             select b;
-                foreach (var c in enumerable)
-                {
-
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
-                }
-            }
-            else if (selctedIdea.Name == "15minuteCrossOver")
-            {
-                enumerable = from b in enumerable
-                             where (
-                             (b.Close > Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Low <= Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.CandleType == "G"
-                             ) ||
                              (
-                             b.High >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)
-                             && b.CandleType == "R"
-
-                             )
-                             )
+                             (b.PreviousCandle.CandleType == "G" && b.PreviousCandle.Close > b.AllIndicators.BollingerBand.Upper && b.CandleType == "R")
+                             ||
+                              (b.PreviousCandle.CandleType == "R" && b.PreviousCandle.Close < b.AllIndicators.BollingerBand.Lower && b.CandleType == "G"))
                              select b;
+
+
                 foreach (var c in enumerable)
                 {
 
-                    if (c.CandleType == "G")
+                    if (c.CandleType == "R")
                         c.Trade = Trade.BUY;
-                    else
+                    else if (c.CandleType == "G")
                         c.Trade = Trade.SELL;
+                    else
+                        c.Trade = Trade.NONE;
+
                 }
             }
-            else if (selctedIdea.Name == "manual")
+
+            var x = enumerable.Where(a => a.Trade != Trade.NONE);
+
+            return x;
+        }
+
+
+        public bool SupportedOrResistanced(Candle c)
+        {
+            if (Contacted(c, c.AllIndicators.SMA20) || Contacted(c, c.AllIndicators.SuperTrend.SuperTrendValue))
             {
-                enumerable = from b in enumerable
-                             where  (GetBody(b) > GetUpperWick(b) || GetBody(b) > GetLowerWick(b))
-                             select b;
-                foreach (var c in enumerable)
-                {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-                    if (c.CandleType == "G")
-                        c.Trade = Trade.BUY;
-                    else
-                        c.Trade = Trade.SELL;
+        public bool Contacted(Candle c, double d)
+        {
+            if (c.High >= d && c.Low <= d)
+            { return true; }
+            else
+
+            {
+                return false;
+            }
+        }
+        public Candle DayCandle(Candle d)
+        {
+            List<double> max = new List<double>();
+            List<double> min = new List<double>();
+            Candle c = d;
+            double open = 0;
+            while (c.TimeStamp.Date == d.TimeStamp.Date)
+            {
+                if (c.CandleType == "G")
+                {
+                    max.Add(c.Close);
                 }
+                else
+                {
+                    min.Add(c.Close);
+                }
+                open = c.Open;
+                c = c.PreviousCandle;
+
+
             }
 
+            return new Candle { High = max.Count() > 0 ? max.Max() : d.Close, Low = min.Count() > 0 ? min.Min() : d.Close, Open = open, Close = d.Close };
+        }
+
+        public Candle PreviousDayCandle(Candle d)
+        {
+            try
+            {
+                List<double> max = new List<double>();
+                List<double> min = new List<double>();
+                Candle c = d;
+                double open = 0;
+                while (c.TimeStamp.Date == d.TimeStamp.Date)
+                {
+
+                    c = c.PreviousCandle;
 
 
+                }
+                var x = c;
+                if (c != null)
+                {
+                    double close = x.Close;
+                    while (c.TimeStamp.Date == x.TimeStamp.Date)
+                    {
+                        max.Add(c.High);
+                        min.Add(c.Low);
+                        open = c.Open;
+                        c = c.PreviousCandle;
 
-            return enumerable;
+
+                    }
+
+                    return new Candle { High = max.Count() > 0 ? max.Max() : d.Close, Low = min.Count() > 0 ? min.Min() : d.Close, Open = open, Close = close };
+                }
+                else
+                {
+                    return new Candle { High = max.Count() > 0 ? max.Max() : d.Close, Low = min.Count() > 0 ? min.Min() : d.Close, Open = 0, Close = 0 };
+                }
+            }
+            catch
+            {
+                return new Candle { High = 0, Low = 0, Open = 0, Close = 0 };
+            }
         }
 
         bool Dozi(Candle c)
@@ -580,13 +482,16 @@ namespace BAL
             {
                 if (gap.Value != null)
                 {
+
                     StopTarget target = new StopTarget(gap.Value, selectedIdea);
                     double close = gap.Value.Close;
-                    double num2 = 0.0;
+                    double mtm = 0.0;
                     double stopLossRange = target.StopLossRange;
-                    int num4 = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
-                    int num5 = num4;
+                    //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
+                    int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
+                    int num5 = quantity;
                     double stoploss = target.Stoploss;
+                    //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
                     double num7 = stoploss;
                     double num8 = target.BookProfit1;
                     double num9 = target.BookProfit2;
@@ -609,38 +514,46 @@ namespace BAL
                             {
                                 if (candle2.High >= stoploss)
                                 {
-                                    num2 -= num4 * (stoploss - gap.Value.Close);
-                                    num4 = 0;
+                                    mtm -= quantity * (stoploss - gap.Value.Close);
+                                    quantity = 0;
                                 }
                                 else
                                 {
-                                    if (((candle2.Low <= num8) && !flag2) && (selectedIdea.OrderMultiples == OrderMultiples.Three))
+                                    if (selectedIdea.BookProfit == BookProfit.OnlyOnLoss && candle2.Close > gap.Value.Close)
                                     {
-                                        num2 += (num4 / 3) * stopLossRange;
+                                        mtm -= quantity * (candle2.Close - gap.Value.Close);
+                                        stoploss = candle2.Close;
+                                        quantity = 0;
+                                        flag2 = true;
+                                        break;
+                                    }
+                                    else if (((candle2.Low <= num8) && !flag2) && (selectedIdea.OrderMultiples == OrderMultiples.Three))
+                                    {
+                                        mtm += (quantity / 3) * stopLossRange;
                                         stoploss = close;
-                                        num4 -= num4 / 3;
+                                        quantity -= quantity / 3;
                                         flag2 = true;
                                     }
                                     else if (((candle2.Low <= num8) && (!flag2 && (selectedIdea.OrderMultiples == OrderMultiples.One))) && (selectedIdea.BookProfit == BookProfit.OneTo1))
                                     {
-                                        num2 += num4 * stopLossRange;
+                                        mtm += quantity * stopLossRange;
                                         stoploss = close;
-                                        num4 = 0;
+                                        quantity = 0;
                                         flag2 = true;
                                         break;
                                     }
                                     if (((candle2.Low <= num9) && !flag3) && (selectedIdea.OrderMultiples == OrderMultiples.Three))
                                     {
-                                        num2 += (num4 / 2) * (2.0 * stopLossRange);
+                                        mtm += (quantity / 2) * (2.0 * stopLossRange);
                                         stoploss = close;
                                         flag3 = true;
                                     }
                                     else if (((candle2.Low <= num9) && (!flag3 && (selectedIdea.OrderMultiples == OrderMultiples.One))) && (selectedIdea.BookProfit == BookProfit.OneTo2))
                                     {
-                                        num2 += num4 * (2.0 * stopLossRange);
+                                        mtm += quantity * (2.0 * stopLossRange);
                                         stoploss = close;
                                         flag3 = true;
-                                        num4 = 0;
+                                        quantity = 0;
                                         break;
                                     }
                                     if ((num11 + 1) <= target.FinalCandle)
@@ -650,13 +563,13 @@ namespace BAL
                                 }
                                 break;
                             }
-                            if ((num4 > 0) && (list2.Count<Candle>() > target.FinalCandle))
+                            if ((quantity > 0) && (list2.Count<Candle>() > target.FinalCandle))
                             {
-                                num2 += num4 * (close - list2[target.FinalCandle].Close);
+                                mtm += quantity * (close - list2[target.FinalCandle].Close);
                             }
                         }
                     }
-                    else
+                    else if (gap.Value.Trade == Trade.BUY)
                     {
                         int num10 = 0;
                         foreach (Candle candle in list)
@@ -665,43 +578,52 @@ namespace BAL
                             {
                                 if (flag2)
                                 {
-                                    num4 = 0;
+                                    quantity = 0;
                                 }
                                 else
                                 {
-                                    num2 -= num4 * (gap.Value.Close - stoploss);
-                                    num4 = 0;
+                                    mtm -= quantity * (gap.Value.Close - stoploss);
+                                    quantity = 0;
                                 }
                             }
                             else
                             {
+                                if (selectedIdea.BookProfit == BookProfit.OnlyOnLoss && candle.Close < gap.Value.Close)
+                                {
+                                    mtm += quantity * (candle.Close - gap.Value.Close);
+                                    stoploss = candle.Close;
+                                    quantity = 0;
+                                    flag2 = true;
+                                    break;
+                                }
+                                else
                                 if (((candle.High >= num8) && !flag2) && (selectedIdea.OrderMultiples == OrderMultiples.Three))
                                 {
-                                    num2 += (num4 / 3) * stopLossRange;
+                                    mtm += (quantity / 3) * stopLossRange;
                                     stoploss = close;
-                                    num4 -= num4 / 3;
+                                    quantity -= quantity / 3;
                                     flag2 = true;
                                 }
                                 else if (((candle.High >= num8) && (!flag2 && (selectedIdea.OrderMultiples == OrderMultiples.One))) && (selectedIdea.BookProfit == BookProfit.OneTo1))
                                 {
-                                    num2 += num4 * stopLossRange;
+                                    mtm += quantity * stopLossRange;
                                     stoploss = close;
-                                    num4 = 0;
+                                    quantity = 0;
                                     flag2 = true;
                                     break;
                                 }
                                 if (((candle.High >= num9) && !flag3) && (selectedIdea.OrderMultiples == OrderMultiples.Three))
                                 {
-                                    num2 += (num4 / 2) * (2.0 * stopLossRange);
+                                    mtm += (quantity / 2) * (2.0 * stopLossRange);
                                     stoploss = close;
-                                    num4 -= num4 / 2;
+                                    quantity -= quantity / 2;
                                     flag3 = true;
                                 }
                                 else if (((candle.High >= num9) && (!flag3 && (selectedIdea.OrderMultiples == OrderMultiples.One))) && (selectedIdea.BookProfit == BookProfit.OneTo2))
                                 {
-                                    num2 += num4 * (2.0 * stopLossRange);
+                                    mtm += quantity * (2.0 * stopLossRange);
                                     stoploss = close;
-                                    num4 = 0;
+                                    quantity = 0;
                                     flag3 = true;
                                     break;
                                 }
@@ -712,27 +634,34 @@ namespace BAL
                             }
                             break;
                         }
-                        if ((num4 > 0) && (list2.Count<Candle>() > target.FinalCandle))
+                        if ((quantity > 0) && (list2.Count<Candle>() > target.FinalCandle))
                         {
-                            num2 += num4 * (list2[target.FinalCandle].Close - close);
+                            mtm += quantity * (list2[target.FinalCandle].Close - close);
                         }
                     }
                     PNL pnl1 = new PNL();
-                    pnl1.Amount = num2;
+                    pnl1.Amount = mtm;
                     pnl1.Date = gap.Value.Date;
                     pnl1.Stock = gap.Value.Stock;
                     pnl1.Entry = close;
                     pnl1.Quantity = num5;
                     pnl1.BookProfit1 = target.BookProfit1;
                     pnl1.BookProfit2 = target.BookProfit2;
-                    pnl1.BookProfit3 = list2[target.FinalCandle].Close;
+                    if (target.FinalCandle > list2.Count + 1)
+                    {
+                        pnl1.BookProfit3 = list2[list2.Count - 1].Close;
+                    }
+                    else
+                    {
+                        pnl1.BookProfit3 = list2[target.FinalCandle].Close;
+                    }
                     pnl1.Direction = gap.Value.Trade == Trade.BUY ? "BUY" : "SELL";
                     pnl1.ChartData = list2;
                     pnl1.Change = (Math.Abs(gap.Value.PreviousClose - gap.Value.Close) / gap.Value.PreviousClose) * 100;
                     PNL item = pnl1;
                     item.Stoploss = num7;
                     finalAmount.Add(item);
-                    myProgres($"PNL for stock {gap.Value.Stock} for Day{gap.Value.Date.Date} is : {num2}");
+                    myProgres($"PNL for stock {gap.Value.Stock} for Day{gap.Value.Date.Date} is : {mtm}");
                 }
             });
             List<PNL> source = (from a in finalAmount

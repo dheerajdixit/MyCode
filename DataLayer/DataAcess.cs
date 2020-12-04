@@ -105,7 +105,8 @@ namespace DAL
             Parallel.ForEach<KeyValuePair<string, string>>(source, parallelOptions, delegate (KeyValuePair<string, string> i)
             {
                 resultCollection.Add(h.GetHistoryFromFile(h.folderName, i.Value, fromDate.AddDays(-30), toDate));
-                progress($"Loading Data ... {i.Value}");
+                if (progress != null)
+                    progress($"Loading Data ... {i.Value}");
             });
             return resultCollection;
         }

@@ -150,6 +150,9 @@ namespace _15MCE
                         case "MACD":
                             ti.Add(Model.Technical.MACD);
                             break;
+                        case "Bollinger Band":
+                            ti.Add(Model.Technical.BollingerBand);
+                            break;
                     }
                 }
             }

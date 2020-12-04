@@ -1314,7 +1314,7 @@ public class TokenChannel : IDisposable
     //    ds.Tables.Add(dt);
     //    return ds;
     //}
-    public static List<Candle> ConvertToJason(string jSon, bool heikenAshi = false)
+    public static List<Candle> ConvertToJason(string jSon, string stockName="", bool heikenAshi = false)
     {
         List<Candle> history = new List<Candle>();
 
@@ -1430,1022 +1430,358 @@ public class TokenChannel : IDisposable
                 HOpen = xO,
                 HClose = xC,
                 HLow = xLow,
-                HHigh = xH
-
-            };
-            latestCandle.CP = CandlePattern(secondLastCandle, lastCandle, latestCandle);
-            latestCandle.Treding = Trending(latestCandle, lastCandle);
-            history.Add(latestCandle);
+                HHigh = xH,
+                PreviousCandle = lastCandle,
+                AllIndicators = new Model.AllTechnicals { SuperTrend = new SuperTrend { Trend = (int)sObj.Trend } },
+                Stock =  stockName
 
 
-            secondLastCandle = lastCandle;
-            lastCandle = latestCandle;
-        }
+        };
+        latestCandle.CP = CandlePattern(secondLastCandle, lastCandle, latestCandle);
+        latestCandle.Treding = Trending(latestCandle, lastCandle);
+        history.Add(latestCandle);
+
+
+        secondLastCandle = lastCandle;
+        lastCandle = latestCandle;
+    }
 
         return history;
     }
 
-    public static double ATR(int rowIndex, double high, double low, double close, double prevAtr, double prevclose, int period)
+public static double ATR(int rowIndex, double high, double low, double close, double prevAtr, double prevclose, int period)
+{
+    double atrValue = 0;
+    if (rowIndex == period - 1)
     {
-        double atrValue = 0;
-        if (rowIndex == period - 1)
+        atrValue = Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose)) / period;
+    }
+    else if (rowIndex >= period)
+    {
+        atrValue = (prevAtr * (period - 1) + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose))) / period;
+    }
+    else if (rowIndex == 0)
+    {
+        atrValue = 0;
+    }
+    else
+    {
+        atrValue = prevAtr + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose));
+    }
+    return atrValue;
+}
+public static SuperTrendInd GetSuperTrend(int rowIndex, double ATR7, double high, double low, double close, double prevclose, SuperTrendInd prevSuperTrend, int period)
+{
+
+    double FUB = 0;
+    double LUB = 0;
+    double SuperTrend = 0;
+    double basicUpperBand = ((high + low) / 2) - (ATR7 * 3);
+    double basicLowerBand = ((high + low) / 2) + (ATR7 * 3);
+    if (rowIndex == 0)
+    {
+
+        return new SuperTrendInd
         {
-            atrValue = Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose)) / period;
-        }
-        else if (rowIndex >= period)
+            FinalLowerBand = 0,
+            FinalUpperBand = 0,
+            Trend = 1,
+            SuperTrend = 0,
+            AvgTr = 0
+
+        };
+    }
+    else if (rowIndex < period)
+    {
+
+        return new SuperTrendInd
         {
-            atrValue = (prevAtr * (period - 1) + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose))) / period;
-        }
-        else if (rowIndex == 0)
+            FinalLowerBand = 0,
+            FinalUpperBand = 0,
+            Trend = 1,
+            SuperTrend = 0,
+            AvgTr = prevSuperTrend.AvgTr + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose))
+        };
+    }
+    else
+    {
+
+        if (prevclose > prevSuperTrend.FinalUpperBand)
         {
-            atrValue = 0;
+            FUB = Math.Max(basicUpperBand, prevSuperTrend.FinalUpperBand);
         }
         else
         {
-            atrValue = prevAtr + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose));
+            FUB = basicUpperBand;
         }
-        return atrValue;
-    }
-    public static SuperTrendInd GetSuperTrend(int rowIndex, double ATR7, double high, double low, double close, double prevclose, SuperTrendInd prevSuperTrend, int period)
-    {
 
-        double FUB = 0;
-        double LUB = 0;
-        double SuperTrend = 0;
-        double basicUpperBand = ((high + low) / 2) - (ATR7 * 3);
-        double basicLowerBand = ((high + low) / 2) + (ATR7 * 3);
-        if (rowIndex == 0)
+        if (prevclose < prevSuperTrend.FinalLowerBand)
         {
-
-            return new SuperTrendInd
-            {
-                FinalLowerBand = 0,
-                FinalUpperBand = 0,
-                Trend = 1,
-                SuperTrend = 0,
-                AvgTr = 0
-
-            };
-        }
-        else if (rowIndex < period)
-        {
-
-            return new SuperTrendInd
-            {
-                FinalLowerBand = 0,
-                FinalUpperBand = 0,
-                Trend = 1,
-                SuperTrend = 0,
-                AvgTr = prevSuperTrend.AvgTr + Math.Max(Math.Max(high - low, Math.Abs(high - prevclose)), Math.Abs(low - prevclose))
-            };
+            LUB = Math.Min(basicLowerBand, prevSuperTrend.FinalLowerBand);
         }
         else
         {
-
-            if (prevclose > prevSuperTrend.FinalUpperBand)
-            {
-                FUB = Math.Max(basicUpperBand, prevSuperTrend.FinalUpperBand);
-            }
-            else
-            {
-                FUB = basicUpperBand;
-            }
-
-            if (prevclose < prevSuperTrend.FinalLowerBand)
-            {
-                LUB = Math.Min(basicLowerBand, prevSuperTrend.FinalLowerBand);
-            }
-            else
-            {
-                LUB = basicLowerBand;
-            }
-
-            double trend = close > LUB ? 1 : (close < FUB ? -1 : prevSuperTrend.Trend);
-            if (trend == 1)
-            {
-                SuperTrend = FUB;
-            }
-            else
-            {
-                SuperTrend = LUB;
-            }
-            return new SuperTrendInd
-            {
-                FinalLowerBand = LUB,
-                FinalUpperBand = FUB,
-                Trend = trend,
-                SuperTrend = SuperTrend
-
-            };
+            LUB = basicLowerBand;
         }
 
+        double trend = close > LUB ? 1 : (close < FUB ? -1 : prevSuperTrend.Trend);
+        if (trend == 1)
+        {
+            SuperTrend = FUB;
+        }
+        else
+        {
+            SuperTrend = LUB;
+        }
+        return new SuperTrendInd
+        {
+            FinalLowerBand = LUB,
+            FinalUpperBand = FUB,
+            Trend = trend,
+            SuperTrend = SuperTrend
+
+        };
     }
 
-    public static Order OpenEntry(Equity e, bool startFromScratch)
+}
+
+public static Order OpenEntry(Equity e, bool startFromScratch)
+{
+
+    try
     {
-
-        try
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 70)
         {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 70)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = 0;
-            switch (e.TestAtMinute)
-            {
-                case 9:
-                    k = 0;
-                    break;
-                case 21:
-                    k = 1;
-                    break;
-                case 33:
-                    k = 2;
-                    break;
-                case 45:
-                    k = 3;
-                    break;
-                case 57:
-                    k = 4;
-                    break;
-            }
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp60(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
-            //   if (prevDayData.Where(a => a.HCandleType == "G" || a.HCandleType == "R").Count() == 0)
-            if ((Math.Abs(prevDayData.Last().Close - prevDayData1.Last().Close) / prevDayData1.Last().Close) * 100 > 4)
-            {
-                Candle drLast = null;
-                Candle drFirst = data[k];
-                if (k == 0)
-                {
-                    drLast = prevDayData.Last();
-                }
-                else
-                {
-                    drLast = data[k - 1];
-                }
-                //Candle drPrevious = data[k + 1];
-
-                Candle drCurrentDayfirst = data[0];
-
-                //double prevHigh = drPrevious.High;
-                //double prevLow = drPrevious.Low;
-
-
-                double currentDayOpen = drCurrentDayfirst.Open;
-                double open = drFirst.Open;
-                double close = drFirst.Close;
-                double high = drFirst.High;
-                double low = drFirst.Low;
-                double vol = drFirst.Volume;
-
-                string candle = drFirst.CandleType;
-
-
-
-                double sma501 = drFirst.SMA50;
-                double sma2001 = drFirst.SMA200;
-                double sma201 = drFirst.SMA20;
-                double atr = drFirst.ATR * 1.25;
-                double supertrend = drFirst.STrend.SuperTrend;
-
-                List<double> l = new List<double>();
-                l.Add(sma201);
-                l.Add(sma501);
-                l.Add(sma2001);
-                l.Add(supertrend);
-
-
-
-
-
-                DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-                DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-
-                double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
-                double breakoutHigh = data.Max(a => a.High);
-                double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
-
-                double breakoutLow = data.Min(a => a.Low);
-                double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
-                double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
-                double maxV = drCurrentDayfirst.Volume;
-                string maxVCandle = drCurrentDayfirst.CandleType;
-
-                double per = (drFirst.ATRStopLoss * 3 / close) * 100;
-                var dataToProcess = data.ToList();
-                int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
-                int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
-
-                List<Liner> listOfClose = new List<Liner>();
-
-
-                File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
-
-
-                //if (drFirst.HCandleType == "G" && drFirst.CandleType == "G" && drFirst.HClose > l.Max() && drFirst.HOpen > l.Max() && (k == 0 || data[k - 1].HCandleType != "G"))
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //}
-                //else if (drFirst.HCandleType == "R" && drFirst.CandleType == "R" && drFirst.HClose < l.Min() && drFirst.HOpen < l.Min() && (k == 0 || data[k - 1].HCandleType != "R"))
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //}
-                if (drFirst.HCandleType == "GD" || drFirst.HCandleType == "G")
-                {
-                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                }
-                else if (drFirst.HCandleType == "RD" || drFirst.HCandleType == "R")
-                {
-                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                }
-
-                // close = {High Low } = Trade Immediately
-                //if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drCurrentDayfirst.Close + drCurrentDayfirst.Close * 0.00005 >= drCurrentDayfirst.High)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //}
-                //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drCurrentDayfirst.Close - drCurrentDayfirst.Close * 0.00005 <= drCurrentDayfirst.Low)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //}
-                //if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && Math.Abs(drCurrentDayfirst.Close - drCurrentDayfirst.Open) * 2.5 < (Math.Min(drCurrentDayfirst.Open, drCurrentDayfirst.Close) - drCurrentDayfirst.Low))
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //}
-                //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && Math.Abs(drCurrentDayfirst.Close - drCurrentDayfirst.Open) * 2 < (drCurrentDayfirst.High - Math.Max(drCurrentDayfirst.Open, drCurrentDayfirst.Close)))
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //}
-                //else if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drFirst.Treding == "BULLTRENDING" && high < breakoutHigh)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //}
-                //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drFirst.Treding == "BEARTRENDING" && low > breakoutLow)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //}
-                //else if (maxVCandle == "R" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drCurrentDayfirst.Open + drCurrentDayfirst.Open * 0.00005 >= drCurrentDayfirst.High)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //}
-                //else if (maxVCandle == "G" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drCurrentDayfirst.Open - drCurrentDayfirst.Open * 0.00005 <= drCurrentDayfirst.Low)
-                //{
-                //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //}
-
-
-
-                //}
-                return returnOrder;
-            }
-
-
+            return null;
         }
-        catch (Exception ex)
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = 0;
+        switch (e.TestAtMinute)
         {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+            case 9:
+                k = 0;
+                break;
+            case 21:
+                k = 1;
+                break;
+            case 33:
+                k = 2;
+                break;
+            case 45:
+                k = 3;
+                break;
+            case 57:
+                k = 4;
+                break;
         }
-
-        return null;
-    }
-
-    public static Order ContinuationSetup(Equity e, List<Candle> nifty)
-    {
-
-        try
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp60(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
+        //   if (prevDayData.Where(a => a.HCandleType == "G" || a.HCandleType == "R").Count() == 0)
+        if ((Math.Abs(prevDayData.Last().Close - prevDayData1.Last().Close) / prevDayData1.Last().Close) * 100 > 4)
         {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
+            Candle drLast = null;
+            Candle drFirst = data[k];
+            if (k == 0)
             {
-                return null;
+                drLast = prevDayData.Last();
             }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
-            //if(e.)
-            //switch (e.TestAtMinute)
+            else
+            {
+                drLast = data[k - 1];
+            }
+            //Candle drPrevious = data[k + 1];
+
+            Candle drCurrentDayfirst = data[0];
+
+            //double prevHigh = drPrevious.High;
+            //double prevLow = drPrevious.Low;
+
+
+            double currentDayOpen = drCurrentDayfirst.Open;
+            double open = drFirst.Open;
+            double close = drFirst.Close;
+            double high = drFirst.High;
+            double low = drFirst.Low;
+            double vol = drFirst.Volume;
+
+            string candle = drFirst.CandleType;
+
+
+
+            double sma501 = drFirst.SMA50;
+            double sma2001 = drFirst.SMA200;
+            double sma201 = drFirst.SMA20;
+            double atr = drFirst.ATR * 1.25;
+            double supertrend = drFirst.STrend.SuperTrend;
+
+            List<double> l = new List<double>();
+            l.Add(sma201);
+            l.Add(sma501);
+            l.Add(sma2001);
+            l.Add(supertrend);
+
+
+
+
+
+            DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+            DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+
+            double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
+            double breakoutHigh = data.Max(a => a.High);
+            double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
+
+            double breakoutLow = data.Min(a => a.Low);
+            double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
+            double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
+            double maxV = drCurrentDayfirst.Volume;
+            string maxVCandle = drCurrentDayfirst.CandleType;
+
+            double per = (drFirst.ATRStopLoss * 3 / close) * 100;
+            var dataToProcess = data.ToList();
+            int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
+            int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
+
+            List<Liner> listOfClose = new List<Liner>();
+
+
+            File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
+
+
+            //if (drFirst.HCandleType == "G" && drFirst.CandleType == "G" && drFirst.HClose > l.Max() && drFirst.HOpen > l.Max() && (k == 0 || data[k - 1].HCandleType != "G"))
             //{
-            //    case 9:
-            //        k = 0;
-            //        break;
-            //    case 21:
-            //        k = 1;
-            //        break;
-            //    case 33:
-            //        k = 2;
-            //        break;
-            //    case 45:
-            //        k = 3;
-            //        break;
-            //    case 57:
-            //        k = 4;
-            //        break;
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
             //}
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
-            //List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
-            //   if (prevDayData.Where(a => a.HCandleType == "G" || a.HCandleType == "R").Count() == 0)
-            if (true)
+            //else if (drFirst.HCandleType == "R" && drFirst.CandleType == "R" && drFirst.HClose < l.Min() && drFirst.HOpen < l.Min() && (k == 0 || data[k - 1].HCandleType != "R"))
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //}
+            if (drFirst.HCandleType == "GD" || drFirst.HCandleType == "G")
             {
-                double NiftyClose = dataNifty[k + 2].Close;
-                double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
-
-
-
-
-                Candle drLast = null;
-                Candle drFirst = data[k + 2];
-
-                //if (k == 0)
-                //{
-                //    drLast = prevDayData.Last();
-                //}
-                //else
-                //{
-                //    drLast = data[k - 1];
-                //}
-                //Candle drPrevious = data[k + 1];
-
-                Candle drCurrentDayfirst = data[0];
-
-                //double prevHigh = drPrevious.High;
-                //double prevLow = drPrevious.Low;
-
-
-                double currentDayOpen = drCurrentDayfirst.Open;
-                double open = drFirst.Open;
-                double close = drFirst.Close;
-                double high = drFirst.High;
-                double low = drFirst.Low;
-                double vol = drFirst.Volume;
-
-                string candle = drFirst.CandleType;
-
-
-
-                double sma501 = drFirst.SMA50;
-                double sma2001 = drFirst.SMA200;
-                double sma201 = drFirst.SMA20;
-                double atr = drFirst.ATR * 1.25;
-                double supertrend = drFirst.STrend.SuperTrend;
-
-                List<double> l = new List<double>();
-                l.Add(sma201);
-                l.Add(sma501);
-                l.Add(sma2001);
-                l.Add(supertrend);
-
-
-
-
-
-                DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-                DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-
-                double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
-                double breakoutHigh = data.Max(a => a.High);
-                double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
-
-                double breakoutLow = data.Min(a => a.Low);
-                double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
-                double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
-                double maxV = data.Max(a => a.Volume);
-                string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
-
-                double per = (drFirst.ATRStopLoss * 3 / close) * 100;
-                var dataToProcess = data.ToList();
-                int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
-                int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
-
-                List<Liner> listOfClose = new List<Liner>();
-                int period = 5;
-
-                File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
-
-                double stopLoss = drFirst.CandleType == "G" ? drFirst.Low : drFirst.High;
-                double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
-                double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
-
-                double quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow));
-                if (drFirst.Close > 100 && d2 <= d1 * 1.5) //Math.Abs(drFirst.Close - stopLoss) * quantity <= e.MaxRisk * 0.4)
-                {
-                    if (data.Where(a => a.STrend.Trend == -1).Count() == 0 && drFirst.Close > drFirst.SMA20 && drFirst.Close > drFirst.SMA50 && drFirst.Close > drFirst.SMA200 && drFirst.Close > drFirst.STrend.SuperTrend && drFirst.Low <= drFirst.SMA20 && drFirst.Close > drFirst.SMA20 && drFirst.CandleType == "G")
-                    {
-
-                        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
-                        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-                        double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
-                        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
-                        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-                        double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
-                        double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp == previousTouchTimeStamp2).First().Low, l.Min());
-                        DateTime previousTouchTimeStamp3 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp2).Last().TimeStamp;
-                        int val3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2 && a.Close < a.SMA20).Count();
-                        int z = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Count();
-                        double max3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Max(a => a.Close);
-                        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && max1 > max2)
-                        {
-                            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                        }
-                    }
-                    else if (data.Where(a => a.STrend.Trend == 1).Count() == 0 && drFirst.Close < drFirst.SMA20 && drFirst.Close < drFirst.SMA50 && drFirst.Close < drFirst.SMA200 && drFirst.Close < drFirst.STrend.SuperTrend && drFirst.High >= drFirst.SMA20 && drFirst.Close < drFirst.SMA20 && drFirst.CandleType == "R")
-                    {
-                        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-                        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
-                        double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
-
-                        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-                        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
-                        double min2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Min(a => a.Close);
-                        double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp == previousTouchTimeStamp2).First().High, l.Max());
-                        DateTime previousTouchTimeStamp3 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp2).Last().TimeStamp;
-                        int z = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Count();
-                        int val3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2 && a.Close > a.SMA20).Count();
-                        double min3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Min(a => a.Close);
-
-                        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && min1 < min2)
-                        {
-                            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                        }
-                    }
-
-                }
-                return returnOrder;
+                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            }
+            else if (drFirst.HCandleType == "RD" || drFirst.HCandleType == "R")
+            {
+                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / Math.Abs(drFirst.HClose - drFirst.HOpen)), Scrip = e.Name, Stoploss = drFirst.HOpen, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
             }
 
-
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-
-        return null;
-    }
-
-    public static Order FailureSetup(Equity e, List<Candle> nifty)
-    {
-
-        try
-        {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
-
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
-
-            if (true)
-            {
-                double NiftyClose = dataNifty[k + 2].Close;
-                double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
-
-
-
-
-                Candle drLast = null;
-                Candle drFirst = data[k + 2];
-
-
-                Candle drCurrentDayfirst = data[0];
-
-
-
-
-                double currentDayOpen = drCurrentDayfirst.Open;
-                double open = drFirst.Open;
-                double close = drFirst.Close;
-                double high = drFirst.High;
-                double low = drFirst.Low;
-                double vol = drFirst.Volume;
-
-                string candle = drFirst.CandleType;
-
-
-
-                double sma501 = drFirst.SMA50;
-                double sma2001 = drFirst.SMA200;
-                double sma201 = drFirst.SMA20;
-                double atr = drFirst.ATR * 1.25;
-                double supertrend = drFirst.STrend.SuperTrend;
-
-                List<double> l = new List<double>();
-                l.Add(sma201);
-                l.Add(sma501);
-                l.Add(sma2001);
-                l.Add(supertrend);
-
-
-
-
-
-                DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-                DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-
-                double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
-                double breakoutHigh = data.Max(a => a.High);
-                double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
-
-                double breakoutLow = data.Min(a => a.Low);
-                double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
-                double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
-                double maxV = data.Max(a => a.Volume);
-                string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
-
-                double per = (drFirst.ATRStopLoss * 3 / close) * 100;
-                var dataToProcess = data.ToList();
-                int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
-                int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
-
-                List<Liner> listOfClose = new List<Liner>();
-                int period = 5;
-
-                File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
-
-                double stopLoss = drFirst.CandleType == "G" ? drFirst.Low : drFirst.High;
-                double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
-                double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
-
-                double quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow));
-                if (drFirst.Close > 100) //Math.Abs(drFirst.Close - stopLoss) * quantity <= e.MaxRisk * 0.4)
-                {
-                    if (drFirst.Close > drFirst.SMA20 && drFirst.Open < drFirst.SMA20 && drFirst.CandleType == "G" && drFirst.Close > l.Max())
-                    {
-
-                        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-                        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
-                        double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
-
-                        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-                        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
-
-
-
-
-                        double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2).Min(b => b.Low), l.Min());
-                        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
-                        {
-                            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                        }
-                    }
-                    else if (drFirst.Close < drFirst.SMA20 && drFirst.Open > drFirst.SMA20 && drFirst.CandleType == "R" && drFirst.Close < l.Min())
-                    {
-                        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
-                        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-                        double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
-                        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
-                        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-                        double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
-                        double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2).Max(b => b.High), l.Max());
-
-                        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
-                        {
-                            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                        }
-                    }
-
-                }
-                return returnOrder;
-            }
-
-
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-
-        return null;
-    }
-
-    public static Order MyTradeSetup(Equity e, List<Candle> nifty)
-    {
-        if (e.Name == "NIFTY 50")
-            return null;
-        try
-        {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
-
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayData2 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData1.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayData3 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData2.First()) - 1].TimeStamp.Date).ToList();
-            //List<Candle> prevDayData4 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData3.First()) - 1].TimeStamp.Date).ToList();
-            List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
-
-            if (true)
-            {
-                double NiftyClose = dataNifty[k + 2].Close;
-                double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
-
-                Candle drFirst = data[k + 2];
-
-                Candle drCurrentDayfirst = data[0];
-
-                double currentDayOpen = drCurrentDayfirst.Open;
-                double open = drFirst.Open;
-                double close = drFirst.Close;
-                double high = drFirst.High;
-                double low = drFirst.Low;
-                double vol = drFirst.Volume;
-
-                string candle = drFirst.CandleType;
-
-                double sma501 = drFirst.SMA50;
-                double sma2001 = drFirst.SMA200;
-                double sma201 = drFirst.SMA20;
-                double atr = drFirst.ATR * 1.25;
-                double supertrend = drFirst.STrend.SuperTrend;
-
-                List<double> l = new List<double>();
-                l.Add(sma201);
-                l.Add(sma501);
-                l.Add(sma2001);
-                l.Add(supertrend);
-
-                DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-                DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-
-
-                double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
-                double previousDayMaxVolume1 = prevDayData1.Max(a => a.Volume);
-                double previousDayMaxVolume2 = prevDayData2.Max(a => a.Volume);
-                double previousDayMaxVolume3 = prevDayData3.Max(a => a.Volume);
-                //double previousDayMaxVolume4 = prevDayData4.Max(a => a.Volume);
-                double breakoutHigh = data.Max(a => a.High);
-                double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
-
-                double breakoutLow = data.Min(a => a.Low);
-                double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
-                double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
-                double maxV = data.Max(a => a.Volume);
-                double maxV1 = prevDayData[0].Volume;
-                double maxV2 = prevDayData1[0].Volume;
-                double maxV3 = prevDayData2[0].Volume;
-                double maxV4 = prevDayData3[0].Volume;
-                //double maxV5 = prevDayData4[0].Volume;
-
-
-                double maxV22 = 0;
-
-                if (e.TestAtMinute > -2)
-                {
-                    maxV22 = data.Where(a => a.Volume < maxV).Max(a => a.Volume);
-                }
-
-
-                string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
-
-                List<Liner> listOfClose = new List<Liner>();
-
-
-
-
-
-                double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
-                double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
-                if (e.TestAtMinute == 10)
-                {
-                    //if ((maxV >= 3 * previousDayMaxVolume || maxV1 > 3 * previousDayMaxVolume1 || maxV2 > 3 * previousDayMaxVolume2 || maxV3 > 3 * previousDayMaxVolume3 || maxV4 > 3 * previousDayMaxVolume4))
-                    //{
-                    if (data.All(a => a.Close <= drCurrentDayfirst.High && a.Close >= drCurrentDayfirst.Low))
-                    {
-                        DateTime buyB = DateTime.MaxValue;
-                        DateTime sellB = DateTime.MaxValue;
-                        var buyX = e.allDaa.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date && a.TimeStamp > drFirst.TimeStamp && a.Close > drCurrentDayfirst.High && a.TimeStamp < TokenChannel.GetTimeStamp(55, a.TimeStamp.Date));
-                        var buyY = e.allDaa.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date && a.TimeStamp > drFirst.TimeStamp && a.Close < drCurrentDayfirst.Low && a.TimeStamp < TokenChannel.GetTimeStamp(55, a.TimeStamp.Date));
-                        if (buyX.Count() > 0)
-                        {
-                            buyB = buyX.First().TimeStamp;
-                        }
-                        else if (buyY.Count() > 0)
-                        {
-                            sellB = buyY.First().TimeStamp;
-                        }
-                        if (buyB < sellB)
-                        {
-                            returnOrder = new Order() { EntryPrice = buyX.First().Close, High = drCurrentDayfirst.High, Low = drCurrentDayfirst.Low, Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Low, Strategy = "Gap", TimeStamp = buyX.First().TimeStamp, TransactionType = "BM", Volume = vol };
-                        }
-                        else if (sellB < buyB)
-                        {
-                            returnOrder = new Order() { EntryPrice = buyY.First().Close, High = drCurrentDayfirst.High, Low = drCurrentDayfirst.Low, Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.High, Strategy = "Gap", TimeStamp = buyY.First().TimeStamp, TransactionType = "SM", Volume = vol };
-                        }
-                    }
-                    //if (maxVolume > 10000000)
-                    //{
-                    //    if (drFirst.CandleType == "G" && close > l.Max() && low <= l.Max() && sma201 > sma501 && sma501 > sma2001)
-                    //    {
-                    //        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow)), Scrip = e.Name, Stoploss = drFirst.Low, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                    //    }
-                    //    else if (drFirst.CandleType == "R" && close < l.Min() && high >= l.Min() && sma201 < sma501 && sma501 < sma2001)
-                    //    {
-                    //        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow)), Scrip = e.Name, Stoploss = drFirst.High, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                    //    }
-                    //}
-                    //}
-                }
-                return returnOrder;
-
-                //if (drFirst.Close > 100)
-                //{
-                //    if (e.TestAtMinute > 1)
-                //    {
-                //        List<Candle> str = data.Where(a => a.TimeStamp < drFirst.TimeStamp).OrderByDescending(a => a.TimeStamp).Take(4).OrderBy(a => a.TimeStamp).ToList();
-                //        double strHigh = str.Max(a => a.High);
-                //        double strLow = str.Min(a => a.Low);
-                //        double std = ((breakoutHigh - breakoutLow) * 70 / 100);
-                //        if (str[3].Volume < maxV22 && maxV > 3 * previousDayMaxVolume)
-                //        {
-                //            if (breakoutHigh == strHigh && str.Where(a => a.CandleType == "G").Count() >= 4 && drFirst.CandleType == "R" && str[0].Close < str[3].Close && str.Where(a => a.Close - a.Open > a.High - a.Close && a.Close - a.Open > a.Open - a.Low).Count() >= 3)
-                //            {
-                //                double stoploss = (str[3].High + str[0].Low) / 2;
-                //                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / std), Scrip = e.Name, Stoploss = drFirst.Close - std, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-
-                //            }
-                //            else if (breakoutLow == strLow && drFirst.Close < drCurrentDayfirst.Open && str.Where(a => a.CandleType == "R").Count() >= 4 && drFirst.CandleType == "G" && str[0].Close > str[3].Close && str.Where(a => a.Open - a.Close > a.High - a.Open && a.Open - a.Close > a.Close - a.Low).Count() >= 3)
-                //            {
-
-                //                double stoploss = (str[0].High + str[3].Low) / 2;
-                //                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / std), Scrip = e.Name, Stoploss = drFirst.Close + std, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //            }
-                //        }
-                //    }
-
-
-
-                //    if (e.TestAtMinute < 5 && maxV > previousDayMaxVolume && maxVolume > 10000000)
-                //    {
-                //        if (drFirst.Close > l.Max() && breakoutLow < l.Min())
-                //        {
-
-                //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - breakoutLow)), Scrip = e.Name, Stoploss = l.Min(), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-
-                //        }
-                //        else if (drFirst.Close < l.Min() && breakoutHigh > l.Max())
-                //        {
-
-                //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - drFirst.Close)), Scrip = e.Name, Stoploss = l.Max(), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //        }
-                //    }
-
-
-
-                //    if (drFirst.Close > l.Max() && drFirst.Close > drFirst.SMA20 && drFirst.Low <= drFirst.SMA20)
-                //    {
-                //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
-                //        var e1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp);
-                //        int x = e1.Count();
-                //        if (x > 0)
-                //        {
-                //            double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
-                //            DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                //            int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
-                //            var e2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1);
-                //            int y = e2.Count();
-                //            if (y > 0)
-                //            {
-                //                double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
-
-
-                //                if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && max1 > max2 && d2 <= d1 * 1.5 && data.Where(a => a.STrend.Trend == -1).Count() == 0 && drFirst.CandleType == "G")
-                //                {
-                //                    double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).First().Low, l.Min());
-                //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Continuation", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //                }
-                //            }
-                //        }
-
-                //    }
-                //    else if (drFirst.High >= drFirst.SMA20 && drFirst.Close < l.Min() && drFirst.Close < drFirst.STrend.SuperTrend && drFirst.Close < drFirst.SMA20)
-                //    {
-                //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                //        var e1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp);
-                //        int x = e1.Count();
-                //        if (x > 0)
-                //        {
-                //            int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
-
-                //            double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
-
-                //            DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                //            var e2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1);
-                //            int y = e2.Count();
-                //            if (y > 0)
-                //            {
-                //                int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
-                //                double min2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Min(a => a.Close);
-
-
-                //                if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && min1 < min2 && d2 <= d1 * 1.5 && data.Where(a => a.STrend.Trend == 1).Count() == 0 && drFirst.CandleType == "R")
-                //                {
-                //                    double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).First().High, l.Max());
-                //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Continuation", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //                }
-                //            }
-                //        }
-
-                //    }
-
-
-
-                //    if (drFirst.Close > drFirst.SMA20 && drFirst.Open < drFirst.SMA20 && drFirst.CandleType == "G" && drFirst.Close > l.Max())
-                //    {
-
-                //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                //        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-                //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
-
-
-                //        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                //        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-                //        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
-
-
-
-                //        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
-                //        {
-
-                //            double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).Min(b => b.Low), l.Min());
-                //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                //        }
-                //    }
-
-
-                //    else if (drFirst.Close < drFirst.SMA20 && drFirst.Open > drFirst.SMA20 && drFirst.CandleType == "R" && drFirst.Close < l.Min())
-                //    {
-                //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
-                //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
-                //        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
-
-                //        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
-                //        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
-                //        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
-
-
-
-                //        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
-                //        {
-                //            double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).Max(b => b.High), l.Max());
-                //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-                //        }
-
-                //    }
-
-
-                //}
-                return returnOrder;
-            }
-
-
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-
-        return null;
-
-    }
-
-
-    public static Order MyGapSetup(Equity e, List<Candle> nifty)
-    {
-        if (e.Name == "NIFTY 50")
-            return null;
-        try
-        {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
-
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-
-
-
-            Candle drFirst = data.Last();
-
-            Candle drCurrentDayfirst = data[0];
-
-            double currentDayOpen = drCurrentDayfirst.Open;
-            double open = drFirst.Open;
-            double close = drFirst.Close;
-            double high = drFirst.High;
-            double low = drFirst.Low;
-            double vol = drFirst.Volume;
-
-            string candle = drFirst.CandleType;
-
-            double sma501 = drFirst.SMA50;
-            double sma2001 = drFirst.SMA200;
-            double sma201 = drFirst.SMA20;
-            double atr = drFirst.ATR * 1.25;
-            //double supertrend = drFirst.STrend.SuperTrend;
-
-            //List<double> l = new List<double>();
-            //l.Add(sma201);
-            //l.Add(sma501);
-            //l.Add(sma2001);
-            //l.Add(supertrend);
-
-            DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-            DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-
-
-
-            if (e.TestAtMinute >= -2)
-            {
-                List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(9, e.TransactionTradingDate)).ToList();
-
-                if (drCurrentDayfirst.CandleType == "G")
-                {
-                    //if (((close - data.Min(b => b.Low)) / close) * 100 >= 1)
-                    ////{
-                    returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Close - ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2), Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-                    //}
-                }
-                else if (drCurrentDayfirst.CandleType == "R")
-                {
-                    //if (((data.Max(b => b.High) - drFirst.Close)) * 100 >= 1)
-                    //{
-                    returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Close + ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2), Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
-
-                    //}
-                }
-
-            }
+            // close = {High Low } = Trade Immediately
+            //if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drCurrentDayfirst.Close + drCurrentDayfirst.Close * 0.00005 >= drCurrentDayfirst.High)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //}
+            //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drCurrentDayfirst.Close - drCurrentDayfirst.Close * 0.00005 <= drCurrentDayfirst.Low)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //}
+            //if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && Math.Abs(drCurrentDayfirst.Close - drCurrentDayfirst.Open) * 2.5 < (Math.Min(drCurrentDayfirst.Open, drCurrentDayfirst.Close) - drCurrentDayfirst.Low))
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //}
+            //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && Math.Abs(drCurrentDayfirst.Close - drCurrentDayfirst.Open) * 2 < (drCurrentDayfirst.High - Math.Max(drCurrentDayfirst.Open, drCurrentDayfirst.Close)))
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //}
+            //else if (maxVCandle == "G" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drFirst.Treding == "BULLTRENDING" && high < breakoutHigh)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //}
+            //else if (maxVCandle == "R" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drFirst.Treding == "BEARTRENDING" && low > breakoutLow)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //}
+            //else if (maxVCandle == "R" && drCurrentDayfirst.Close > l.Max() && drCurrentDayfirst.Open > l.Max() && drCurrentDayfirst.Open + drCurrentDayfirst.Open * 0.00005 >= drCurrentDayfirst.High)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = (close + drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //}
+            //else if (maxVCandle == "G" && drCurrentDayfirst.Close < l.Min() && drCurrentDayfirst.Open < l.Min() && drCurrentDayfirst.Open - drCurrentDayfirst.Open * 0.00005 <= drCurrentDayfirst.Low)
+            //{
+            //    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.ATRStopLoss * 3)), Scrip = e.Name, Stoploss = close - (drFirst.ATRStopLoss * 3), Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //}
+
+
+
+            //}
             return returnOrder;
+        }
 
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-        return null;
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
     }
 
-    public static Order MyTrendSetup(Equity e, List<Candle> nifty)
+    return null;
+}
+
+public static Order ContinuationSetup(Equity e, List<Candle> nifty)
+{
+
+    try
     {
-        if (e.Name == "NIFTY 50")
-            return null;
-        try
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
+        //if(e.)
+        //switch (e.TestAtMinute)
+        //{
+        //    case 9:
+        //        k = 0;
+        //        break;
+        //    case 21:
+        //        k = 1;
+        //        break;
+        //    case 33:
+        //        k = 2;
+        //        break;
+        //    case 45:
+        //        k = 3;
+        //        break;
+        //    case 57:
+        //        k = 4;
+        //        break;
+        //}
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
+        //List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
+        //   if (prevDayData.Where(a => a.HCandleType == "G" || a.HCandleType == "R").Count() == 0)
+        if (true)
+        {
+            double NiftyClose = dataNifty[k + 2].Close;
+            double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
 
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
 
 
 
-            Candle drFirst = data.Last();
+            Candle drLast = null;
+            Candle drFirst = data[k + 2];
+
+            //if (k == 0)
+            //{
+            //    drLast = prevDayData.Last();
+            //}
+            //else
+            //{
+            //    drLast = data[k - 1];
+            //}
+            //Candle drPrevious = data[k + 1];
 
             Candle drCurrentDayfirst = data[0];
 
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            double previousLow = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Min(b => b.Low);
-            double previousHigh = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Max(b => b.High);
+            //double prevHigh = drPrevious.High;
+            //double prevLow = drPrevious.Low;
+
 
             double currentDayOpen = drCurrentDayfirst.Open;
             double open = drFirst.Open;
@@ -2455,6 +1791,8 @@ public class TokenChannel : IDisposable
             double vol = drFirst.Volume;
 
             string candle = drFirst.CandleType;
+
+
 
             double sma501 = drFirst.SMA50;
             double sma2001 = drFirst.SMA200;
@@ -2468,64 +1806,133 @@ public class TokenChannel : IDisposable
             l.Add(sma2001);
             l.Add(supertrend);
 
+
+
+
+
             DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
             DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
 
+            double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
+            double breakoutHigh = data.Max(a => a.High);
+            double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
 
+            double breakoutLow = data.Min(a => a.Low);
+            double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
+            double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
+            double maxV = data.Max(a => a.Volume);
+            string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
 
-            if (e.TestAtMinute >= -2)
+            double per = (drFirst.ATRStopLoss * 3 / close) * 100;
+            var dataToProcess = data.ToList();
+            int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
+            int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
+
+            List<Liner> listOfClose = new List<Liner>();
+            int period = 5;
+
+            File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
+
+            double stopLoss = drFirst.CandleType == "G" ? drFirst.Low : drFirst.High;
+            double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
+            double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
+
+            double quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow));
+            if (drFirst.Close > 100 && d2 <= d1 * 1.5) //Math.Abs(drFirst.Close - stopLoss) * quantity <= e.MaxRisk * 0.4)
             {
-                List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-
-                if (drFirst.STrend.Trend == 1)
+                if (data.Where(a => a.STrend.Trend == -1).Count() == 0 && drFirst.Close > drFirst.SMA20 && drFirst.Close > drFirst.SMA50 && drFirst.Close > drFirst.SMA200 && drFirst.Close > drFirst.STrend.SuperTrend && drFirst.Low <= drFirst.SMA20 && drFirst.Close > drFirst.SMA20 && drFirst.CandleType == "G")
                 {
 
-                    returnOrder = new Order() { EntryPrice = drFirst.STrend.SuperTrend, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.High - drFirst.STrend.SuperTrend))), Scrip = e.Name, Stoploss = drFirst.STrend.SuperTrend - (drFirst.High - drFirst.STrend.SuperTrend), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
-
+                    DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+                    int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
+                    int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+                    double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
+                    DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+                    int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
+                    int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+                    double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
+                    double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp == previousTouchTimeStamp2).First().Low, l.Min());
+                    DateTime previousTouchTimeStamp3 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp2).Last().TimeStamp;
+                    int val3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2 && a.Close < a.SMA20).Count();
+                    int z = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Count();
+                    double max3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Max(a => a.Close);
+                    if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && max1 > max2)
+                    {
+                        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                    }
                 }
-                else if (drFirst.STrend.Trend == -1)
+                else if (data.Where(a => a.STrend.Trend == 1).Count() == 0 && drFirst.Close < drFirst.SMA20 && drFirst.Close < drFirst.SMA50 && drFirst.Close < drFirst.SMA200 && drFirst.Close < drFirst.STrend.SuperTrend && drFirst.High >= drFirst.SMA20 && drFirst.Close < drFirst.SMA20 && drFirst.CandleType == "R")
                 {
-                    returnOrder = new Order() { EntryPrice = drFirst.STrend.SuperTrend, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.STrend.SuperTrend - drFirst.Low))), Scrip = e.Name, Stoploss = drFirst.STrend.SuperTrend + (drFirst.STrend.SuperTrend - drFirst.Low), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                    DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+                    int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+                    int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
+                    double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
 
+                    DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+                    int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+                    int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
+                    double min2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Min(a => a.Close);
+                    double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp == previousTouchTimeStamp2).First().High, l.Max());
+                    DateTime previousTouchTimeStamp3 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp2).Last().TimeStamp;
+                    int z = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Count();
+                    int val3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2 && a.Close > a.SMA20).Count();
+                    double min3 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp3 && a.TimeStamp < previousTouchTimeStamp2).Min(a => a.Close);
+
+                    if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && min1 < min2)
+                    {
+                        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "1", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                    }
                 }
 
             }
             return returnOrder;
+        }
 
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-        return null;
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
     }
 
-    public static Order MyDoziSetup(Equity e, List<Candle> nifty)
+    return null;
+}
+
+public static Order FailureSetup(Equity e, List<Candle> nifty)
+{
+
+    try
     {
-        if (e.Name == "NIFTY 50")
-            return null;
-        try
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
 
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
+
+        if (true)
+        {
+            double NiftyClose = dataNifty[k + 2].Close;
+            double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
 
 
 
-            Candle drFirst = data.Last();
+
+            Candle drLast = null;
+            Candle drFirst = data[k + 2];
+
 
             Candle drCurrentDayfirst = data[0];
 
-            List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-            double previousLow = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Min(b => b.Low);
-            double previousHigh = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Max(b => b.High);
+
+
 
             double currentDayOpen = drCurrentDayfirst.Open;
             double open = drFirst.Open;
@@ -2535,6 +1942,8 @@ public class TokenChannel : IDisposable
             double vol = drFirst.Volume;
 
             string candle = drFirst.CandleType;
+
+
 
             double sma501 = drFirst.SMA50;
             double sma2001 = drFirst.SMA200;
@@ -2548,56 +1957,121 @@ public class TokenChannel : IDisposable
             l.Add(sma2001);
             l.Add(supertrend);
 
+
+
+
+
             DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
             DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
 
+            double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
+            double breakoutHigh = data.Max(a => a.High);
+            double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
 
+            double breakoutLow = data.Min(a => a.Low);
+            double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
+            double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
+            double maxV = data.Max(a => a.Volume);
+            string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
 
-            if (e.TestAtMinute >= -2)
+            double per = (drFirst.ATRStopLoss * 3 / close) * 100;
+            var dataToProcess = data.ToList();
+            int cB = data.Where(a => a.Close < a.SMA20 || a.Close < a.SMA50 || a.Close < a.SMA200 || a.Close < a.STrend.SuperTrend).Count();
+            int cS = data.Where(a => a.Close > a.SMA20 || a.Close > a.SMA50 || a.Close > a.SMA200 || a.Close > a.STrend.SuperTrend).Count();
+
+            List<Liner> listOfClose = new List<Liner>();
+            int period = 5;
+
+            File.AppendAllText(@"C:\Jai Sri Thakur Ji\abc.txt", e.Name + e.TransactionTradingDate + Environment.NewLine);
+
+            double stopLoss = drFirst.CandleType == "G" ? drFirst.Low : drFirst.High;
+            double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
+            double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
+
+            double quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow));
+            if (drFirst.Close > 100) //Math.Abs(drFirst.Close - stopLoss) * quantity <= e.MaxRisk * 0.4)
             {
-                List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
-
-                if (drFirst.CandleType == "G")
+                if (drFirst.Close > drFirst.SMA20 && drFirst.Open < drFirst.SMA20 && drFirst.CandleType == "G" && drFirst.Close > l.Max())
                 {
 
-                    returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.Close - drFirst.Low))), Scrip = e.Name, Stoploss = drFirst.Low, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                    DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+                    int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+                    int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
+                    double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
 
+                    DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+                    int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+                    int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
+
+
+
+
+                    double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2).Min(b => b.Low), l.Min());
+                    if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
+                    {
+                        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                    }
                 }
-                else if (drFirst.CandleType == "R")
+                else if (drFirst.Close < drFirst.SMA20 && drFirst.Open > drFirst.SMA20 && drFirst.CandleType == "R" && drFirst.Close < l.Min())
                 {
-                    returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.High - drFirst.Close))), Scrip = e.Name, Stoploss = drFirst.High, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                    DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+                    int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
+                    int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+                    double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
+                    DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+                    int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
+                    int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+                    double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
+                    double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2).Max(b => b.High), l.Max());
 
+                    if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
+                    {
+                        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                    }
                 }
 
             }
             return returnOrder;
+        }
 
-        }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
-        return null;
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
     }
 
-    public static Order MyBreakoutSetup(Equity e, List<Candle> nifty)
+    return null;
+}
+
+public static Order MyTradeSetup(Equity e, List<Candle> nifty)
+{
+    if (e.Name == "NIFTY 50")
+        return null;
+    try
     {
-        if (e.Name == "NIFTY 50")
-            return null;
-        try
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            if (e.TestAtMinute < 9 || e.TestAtMinute > 60)
-            {
-                return null;
-            }
-            Order returnOrder = null;
-            string scrip = e.Name;
-            int k = e.TestAtMinute;
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
 
-            List<Candle> allCandle = e.allDaa;
-            List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> dataNifty = nifty.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(data.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayData1 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayData2 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData1.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayData3 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData2.First()) - 1].TimeStamp.Date).ToList();
+        //List<Candle> prevDayData4 = allCandle.Where(a => a.TimeStamp.Date == allCandle[allCandle.IndexOf(prevDayData3.First()) - 1].TimeStamp.Date).ToList();
+        List<Candle> prevDayDatNifty = nifty.Where(a => a.TimeStamp.Date == nifty[nifty.IndexOf(dataNifty.First()) - 1].TimeStamp.Date).ToList();
 
-
+        if (true)
+        {
+            double NiftyClose = dataNifty[k + 2].Close;
+            double prevDayCloseNIfty = prevDayDatNifty.Last().Close;
 
             Candle drFirst = data[k + 2];
 
@@ -2628,734 +2102,1264 @@ public class TokenChannel : IDisposable
             DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
 
 
+            double previousDayMaxVolume = prevDayData.Max(a => a.Volume);
+            double previousDayMaxVolume1 = prevDayData1.Max(a => a.Volume);
+            double previousDayMaxVolume2 = prevDayData2.Max(a => a.Volume);
+            double previousDayMaxVolume3 = prevDayData3.Max(a => a.Volume);
+            //double previousDayMaxVolume4 = prevDayData4.Max(a => a.Volume);
+            double breakoutHigh = data.Max(a => a.High);
+            double bHVol = data.Where(a => a.High == breakoutHigh).First().Volume;
 
-            if (e.TestAtMinute > 9)
+            double breakoutLow = data.Min(a => a.Low);
+            double bLVol = data.Where(a => a.Low == breakoutLow).First().Volume;
+            double maxVolume = drCurrentDayfirst.Close * drCurrentDayfirst.Volume;
+            double maxV = data.Max(a => a.Volume);
+            double maxV1 = prevDayData[0].Volume;
+            double maxV2 = prevDayData1[0].Volume;
+            double maxV3 = prevDayData2[0].Volume;
+            double maxV4 = prevDayData3[0].Volume;
+            //double maxV5 = prevDayData4[0].Volume;
+
+
+            double maxV22 = 0;
+
+            if (e.TestAtMinute > -2)
             {
-                List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(9, e.TransactionTradingDate)).ToList();
+                maxV22 = data.Where(a => a.Volume < maxV).Max(a => a.Volume);
+            }
 
-                if (dataTill9.All(a => a.Close <= drCurrentDayfirst.High && a.Close >= drCurrentDayfirst.Low))
+
+            string maxVCandle = data.Where(a => a.Volume == maxV).First().CandleType;
+
+            List<Liner> listOfClose = new List<Liner>();
+
+
+
+
+
+            double d1 = Math.Abs(drFirst.Close - drFirst.STrend.SuperTrend);
+            double d2 = Math.Abs(drFirst.Close - drFirst.SMA200);
+            if (e.TestAtMinute == 10)
+            {
+                //if ((maxV >= 3 * previousDayMaxVolume || maxV1 > 3 * previousDayMaxVolume1 || maxV2 > 3 * previousDayMaxVolume2 || maxV3 > 3 * previousDayMaxVolume3 || maxV4 > 3 * previousDayMaxVolume4))
+                //{
+                if (data.All(a => a.Close <= drCurrentDayfirst.High && a.Close >= drCurrentDayfirst.Low))
                 {
-
-
-                    if (drFirst.Close > dataTill9.Max(a => a.High))
+                    DateTime buyB = DateTime.MaxValue;
+                    DateTime sellB = DateTime.MaxValue;
+                    var buyX = e.allDaa.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date && a.TimeStamp > drFirst.TimeStamp && a.Close > drCurrentDayfirst.High && a.TimeStamp < TokenChannel.GetTimeStamp(55, a.TimeStamp.Date));
+                    var buyY = e.allDaa.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date && a.TimeStamp > drFirst.TimeStamp && a.Close < drCurrentDayfirst.Low && a.TimeStamp < TokenChannel.GetTimeStamp(55, a.TimeStamp.Date));
+                    if (buyX.Count() > 0)
                     {
-                        if (data.Any(a => a.Low < a.SMA20) && data.Any(a => a.STrend.Trend == -1) && data.Any(a => a.Low < a.SMA50) && close > Math.Max(sma201, sma501) && drFirst.STrend.Trend == 1)
-                            returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Low, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                        buyB = buyX.First().TimeStamp;
                     }
-                    else if (drFirst.Close < dataTill9.Min(a => a.Low))
+                    else if (buyY.Count() > 0)
                     {
-                        if (data.Any(a => a.High > a.SMA20) && data.Any(a => a.STrend.Trend == 1) && data.Any(a => a.High > a.SMA50) && close < Math.Min(sma201, sma501) && drFirst.STrend.Trend == -1)
-                            returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drFirst.Close)), Scrip = e.Name, Stoploss = drCurrentDayfirst.High, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                        sellB = buyY.First().TimeStamp;
+                    }
+                    if (buyB < sellB)
+                    {
+                        returnOrder = new Order() { EntryPrice = buyX.First().Close, High = drCurrentDayfirst.High, Low = drCurrentDayfirst.Low, Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Low, Strategy = "Gap", TimeStamp = buyX.First().TimeStamp, TransactionType = "BM", Volume = vol };
+                    }
+                    else if (sellB < buyB)
+                    {
+                        returnOrder = new Order() { EntryPrice = buyY.First().Close, High = drCurrentDayfirst.High, Low = drCurrentDayfirst.Low, Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.High, Strategy = "Gap", TimeStamp = buyY.First().TimeStamp, TransactionType = "SM", Volume = vol };
                     }
                 }
-
+                //if (maxVolume > 10000000)
+                //{
+                //    if (drFirst.CandleType == "G" && close > l.Max() && low <= l.Max() && sma201 > sma501 && sma501 > sma2001)
+                //    {
+                //        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow)), Scrip = e.Name, Stoploss = drFirst.Low, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                //    }
+                //    else if (drFirst.CandleType == "R" && close < l.Min() && high >= l.Min() && sma201 < sma501 && sma501 < sma2001)
+                //    {
+                //        returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - breakoutLow)), Scrip = e.Name, Stoploss = drFirst.High, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                //    }
+                //}
+                //}
             }
             return returnOrder;
 
+            //if (drFirst.Close > 100)
+            //{
+            //    if (e.TestAtMinute > 1)
+            //    {
+            //        List<Candle> str = data.Where(a => a.TimeStamp < drFirst.TimeStamp).OrderByDescending(a => a.TimeStamp).Take(4).OrderBy(a => a.TimeStamp).ToList();
+            //        double strHigh = str.Max(a => a.High);
+            //        double strLow = str.Min(a => a.Low);
+            //        double std = ((breakoutHigh - breakoutLow) * 70 / 100);
+            //        if (str[3].Volume < maxV22 && maxV > 3 * previousDayMaxVolume)
+            //        {
+            //            if (breakoutHigh == strHigh && str.Where(a => a.CandleType == "G").Count() >= 4 && drFirst.CandleType == "R" && str[0].Close < str[3].Close && str.Where(a => a.Close - a.Open > a.High - a.Close && a.Close - a.Open > a.Open - a.Low).Count() >= 3)
+            //            {
+            //                double stoploss = (str[3].High + str[0].Low) / 2;
+            //                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / std), Scrip = e.Name, Stoploss = drFirst.Close - std, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+
+            //            }
+            //            else if (breakoutLow == strLow && drFirst.Close < drCurrentDayfirst.Open && str.Where(a => a.CandleType == "R").Count() >= 4 && drFirst.CandleType == "G" && str[0].Close > str[3].Close && str.Where(a => a.Open - a.Close > a.High - a.Open && a.Open - a.Close > a.Close - a.Low).Count() >= 3)
+            //            {
+
+            //                double stoploss = (str[0].High + str[3].Low) / 2;
+            //                returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / std), Scrip = e.Name, Stoploss = drFirst.Close + std, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //            }
+            //        }
+            //    }
+
+
+
+            //    if (e.TestAtMinute < 5 && maxV > previousDayMaxVolume && maxVolume > 10000000)
+            //    {
+            //        if (drFirst.Close > l.Max() && breakoutLow < l.Min())
+            //        {
+
+            //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - breakoutLow)), Scrip = e.Name, Stoploss = l.Min(), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+
+            //        }
+            //        else if (drFirst.Close < l.Min() && breakoutHigh > l.Max())
+            //        {
+
+            //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (breakoutHigh - drFirst.Close)), Scrip = e.Name, Stoploss = l.Max(), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //        }
+            //    }
+
+
+
+            //    if (drFirst.Close > l.Max() && drFirst.Close > drFirst.SMA20 && drFirst.Low <= drFirst.SMA20)
+            //    {
+            //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+            //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
+            //        var e1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp);
+            //        int x = e1.Count();
+            //        if (x > 0)
+            //        {
+            //            double max1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Max(a => a.Close);
+            //            DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+            //            int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
+            //            var e2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1);
+            //            int y = e2.Count();
+            //            if (y > 0)
+            //            {
+            //                double max2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Max(a => a.Close);
+
+
+            //                if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && max1 > max2 && d2 <= d1 * 1.5 && data.Where(a => a.STrend.Trend == -1).Count() == 0 && drFirst.CandleType == "G")
+            //                {
+            //                    double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).First().Low, l.Min());
+            //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Continuation", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //                }
+            //            }
+            //        }
+
+            //    }
+            //    else if (drFirst.High >= drFirst.SMA20 && drFirst.Close < l.Min() && drFirst.Close < drFirst.STrend.SuperTrend && drFirst.Close < drFirst.SMA20)
+            //    {
+            //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+            //        var e1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp);
+            //        int x = e1.Count();
+            //        if (x > 0)
+            //        {
+            //            int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
+
+            //            double min1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Min(a => a.Close);
+
+            //            DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+            //            var e2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1);
+            //            int y = e2.Count();
+            //            if (y > 0)
+            //            {
+            //                int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
+            //                double min2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Min(a => a.Close);
+
+
+            //                if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4 && min1 < min2 && d2 <= d1 * 1.5 && data.Where(a => a.STrend.Trend == 1).Count() == 0 && drFirst.CandleType == "R")
+            //                {
+            //                    double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).First().High, l.Max());
+            //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Continuation", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //                }
+            //            }
+            //        }
+
+            //    }
+
+
+
+            //    if (drFirst.Close > drFirst.SMA20 && drFirst.Open < drFirst.SMA20 && drFirst.CandleType == "G" && drFirst.Close > l.Max())
+            //    {
+
+            //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+            //        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+            //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close > a.SMA20).Count();
+
+
+            //        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.High >= a.SMA20 && a.Close <= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+            //        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+            //        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close > a.SMA20).Count();
+
+
+
+            //        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
+            //        {
+
+            //            double stoploss = Math.Min(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).Min(b => b.Low), l.Min());
+            //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - stoploss)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+            //        }
+            //    }
+
+
+            //    else if (drFirst.Close < drFirst.SMA20 && drFirst.Open > drFirst.SMA20 && drFirst.CandleType == "R" && drFirst.Close < l.Min())
+            //    {
+            //        DateTime previousTouchTimeStamp1 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < drFirst.TimeStamp).Last().TimeStamp;
+            //        int val1 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp && a.Close < a.SMA20).Count();
+            //        int x = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp1 && a.TimeStamp < drFirst.TimeStamp).Count();
+
+            //        DateTime previousTouchTimeStamp2 = allCandle.Where(a => a.Low <= a.SMA20 && a.Close >= a.SMA20 && a.TimeStamp < previousTouchTimeStamp1).Last().TimeStamp;
+            //        int val2 = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1 && a.Close < a.SMA20).Count();
+            //        int y = allCandle.Where(a => a.TimeStamp > previousTouchTimeStamp2 && a.TimeStamp < previousTouchTimeStamp1).Count();
+
+
+
+            //        if (val1 == 0 && val2 == 0 && y >= 4 && x >= 4)
+            //        {
+            //            double stoploss = Math.Max(allCandle.Where(a => a.TimeStamp >= previousTouchTimeStamp2).Max(b => b.High), l.Max());
+            //            returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / (stoploss - drFirst.Close)), Scrip = e.Name, Stoploss = stoploss, Strategy = "Failure", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+            //        }
+
+            //    }
+
+
+            //}
+            return returnOrder;
         }
-        catch (Exception ex)
-        {
-            File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-        }
+
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+    }
+
+    return null;
+
+}
+
+
+public static Order MyGapSetup(Equity e, List<Candle> nifty)
+{
+    if (e.Name == "NIFTY 50")
         return null;
-    }
-
-
-
-    //public static Order ADX30Minute(Equity e, bool startFromScratch)
-    //{
-
-    //    try
-    //    {
-    //        if (e.TestAtMinute < -2 || e.TestAtMinute > 70)
-    //        {
-    //            return null;
-    //        }
-    //        Order returnOrder = null;
-    //        string scrip = e.Name;
-
-    //        string FileName = string.Empty;
-    //        FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\5\" + scrip.Replace("-", string.Empty) + ".txt";
-    //        string json = File.ReadAllText(FileName).Replace("]}}", string.Empty).Replace("\"", "").Replace("T", " ").Replace("+", " ");
-
-    //        DataSet ds = new DataSet();
-    //        ds.ReadXml(FileName);
-
-    //        DataTable dt = ds.Tables[0];
-
-
-    //        bool prev = false;
-    //        List<Ohlc> ohlcList = new List<Ohlc>();
-    //        foreach (DataRow dr in ds.Tables[0].Rows)
-    //        {
-    //            Ohlc ohlc = new Ohlc();
-    //            ohlc.Date = Convert.ToDateTime(dr["TimeStamp"]);
-    //            ohlc.Open = Convert.ToDouble(dr["f5"]);
-    //            ohlc.High = Convert.ToDouble(dr["f3"]);
-    //            ohlc.Low = Convert.ToDouble(dr["f4"]);
-    //            ohlc.Close = Convert.ToDouble(dr["f2"]);
-    //            ohlc.Volume = Convert.ToDouble(dr["f6"]);
-    //            ohlc.AdjClose = Convert.ToDouble(dr["f2"]);
-
-    //            ohlcList.Add(ohlc);
-
-    //        }
-    //        DateTime dateIndicator = e.TransactionTradingDate;
-
-    //        ADX adx = new ADX(14);
-    //        // fill ohlcList
-    //        adx.Load(ohlcList);
-    //        ADXSerie serie = adx.Calculate();
-    //        ds.Tables[0].Columns.Add("ADX", typeof(double));
-    //        ds.Tables[0].Columns.Add("DIP", typeof(double));
-    //        ds.Tables[0].Columns.Add("DIN", typeof(double));
-    //        ds.Tables[0].Columns.Add("adb", typeof(int));
-
-    //        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-    //        {
-    //            ds.Tables[0].Rows[i]["ADX"] = serie.ADX[i] ?? 0;
-    //            ds.Tables[0].Rows[i]["DIP"] = serie.DIPositive[i] ?? 0;
-    //            ds.Tables[0].Rows[i]["DIN"] = serie.DINegative[i] ?? 0;
-    //            if ((serie.ADX[i] ?? 0) <= (serie.DIPositive[i] ?? 0) && (serie.ADX[i] ?? 0) <= (serie.DINegative[i] ?? 0))
-    //            {
-    //                ds.Tables[0].Rows[i]["adb"] = 1;
-    //            }
-    //            else
-    //            {
-    //                ds.Tables[0].Rows[i]["adb"] = 0;
-    //            }
-
-    //        }
-
-
-    //        startFromScratch = false;
-
-
-    //        //finalCandle = 60;
-    //        for (int k = e.TestAtMinute; k <= e.TestAtMinute; k++)
-    //        {
-    //            DataRow drFirst = ds.Tables[0].Select("TimeStamp='" + GetTimeStamp(k, e.TransactionTradingDate) + "'")[0];
-    //            DataRow drLast = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 1];
-    //            DataRow drCurrentDayfirst = ds.Tables[0].Select("TimeStamp='" + GetTimeStamp(-2, e.TransactionTradingDate) + "'")[0];
-    //            DataRow drLastPrev = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drCurrentDayfirst) - 1];
-
-    //            DateTime previousDay = Convert.ToDateTime(drLastPrev["timestamp"]).Date;
-
-    //            DataRow drLast1 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 2];
-    //            DataRow drLast2 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 3];
-    //            DataRow drLast3 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 4];
-
-    //            double adx0 = Convert.ToDouble(drFirst["adb"]);
-
-
-    //            double adx1 = Convert.ToDouble(drLast1["adb"]);
-
-
-    //            double adx2 = Convert.ToDouble(drLast2["adb"]);
-
-    //            double adx3 = Convert.ToDouble(drLast2["adb"]);
-
-
-
-
-
-
-    //            double currentDayOpen = Convert.ToDouble(drCurrentDayfirst["f5"]);
-    //            double open = Convert.ToDouble(drFirst["f5"]);
-    //            double close = Convert.ToDouble(drFirst["f2"]);
-    //            double high = Convert.ToDouble(drFirst["f3"]);
-    //            double low = Convert.ToDouble(drFirst["f4"]);
-    //            double vol = Convert.ToDouble(drFirst["f6"]);
-
-    //            string candle = Convert.ToString(drFirst["candle"]);
-    //            string prevCandle = Convert.ToString(drLast["candle"]);
-    //            string pattern = Convert.ToString(drFirst["pattern"]);
-
-    //            double sma501 = Convert.ToDouble(drFirst["50"]);
-    //            double sma2001 = Convert.ToDouble(drFirst["200"]);
-    //            double sma201 = Convert.ToDouble(drFirst["20"]);
-    //            double atr = Convert.ToDouble(drFirst["atr14"]) * 1.25;
-    //            double supertrend = Convert.ToDouble(drFirst["supertrend"]);
-
-    //            List<double> l = new List<double>();
-    //            l.Add(sma201);
-    //            l.Add(sma501);
-    //            l.Add(sma2001);
-    //            l.Add(supertrend);
-
-
-
-    //            date timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
-    //            string timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
-    //            string prevTimeStamp = GetTimeStamp(-2, previousDay);
-    //            string prevTimeStampLast = drLastPrev["timestamp"].ToString();
-
-    //            var data = ds.Tables[0].AsEnumerable().Where(a => Convert.ToDateTime(a.Field<String>("Timestamp")) >= Convert.ToDateTime(timeStamp) && Convert.ToDateTime(a.Field<String>("Timestamp")) <= Convert.ToDateTime(timeStampLast));
-    //            var previousDayMaxVolume = ds.Tables[0].AsEnumerable().Where(a => Convert.ToDateTime(a.Field<String>("Timestamp")) >= Convert.ToDateTime(prevTimeStamp) && Convert.ToDateTime(a.Field<String>("Timestamp")) <= Convert.ToDateTime(prevTimeStampLast)).Max(a => a.Field<double>("f6"));
-
-    //            double breakoutHigh = data.Max(a => a.Field<double>("f3"));
-    //            double breakoutLow = data.Min(a => a.Field<double>("f4"));
-    //            double maxVolume = data.Max(a => a.Field<double>("f2") * a.Field<double>("f6"));
-    //            double maxV = data.Max(a => a.Field<double>("f6"));
-    //            string maxVCandle = data.Where(a => a.Field<double>("f6") == maxV).First().Field<string>("candle");
-    //            DataRow bullP = null;
-    //            DataRow bearP = null;
-    //            double distFromS = Math.Abs(close - supertrend);
-
-    //            double atrStopLoss = Math.Max(atr, distFromS);
-    //            double per = (atrStopLoss / close) * 100;
-    //            var dataToProcess = data.ToList();
-    //            List<Liner> listOfClose = new List<Liner>();
-
-    //            if (adx0 == 0 && adx1 == 1 && adx2 == 1 && adx3 == 1)
-    //            {
-    //                if (candle == "G")
-    //                {
-
-    //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / atrStopLoss), Scrip = e.Name, Stoploss = close - atrStopLoss, Strategy = "2", TimeStamp = Convert.ToDateTime(drFirst["Timestamp"]), TransactionType = "BM", Volume = vol };
-    //                }
-    //                else if (candle == "R")
-    //                {
-
-    //                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / atrStopLoss), Scrip = e.Name, Stoploss = close + atrStopLoss, Strategy = "2", TimeStamp = Convert.ToDateTime(drFirst["Timestamp"]), TransactionType = "SM", Volume = vol };
-    //                }
-    //            }
-
-
-    //            return returnOrder;
-    //        }
-
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
-    //    }
-
-    //    return null;
-    //}
-
-
-    public static bool isBullorBear(Candle c)
+    try
     {
-        double upperWick = 0, body = 0, lowerwick = 0, bullpoint = 0, bearpoint = 0;
-        if (c.CandleType == "G")
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            //upperWick = c.High - c.Close;
-            //lowerwick = c.Close - c.Low;
-            //body = c.Close - c.Low;
-            //bullpoint = lowerwick + body - upperWick;
-
-            upperWick = c.High - c.Close;
-            lowerwick = c.Close - c.Low;
-            body = c.Close - c.Open;
-            bullpoint = lowerwick + body - upperWick;
+            return null;
         }
-        else if (c.CandleType == "R")
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
+
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+
+
+        Candle drFirst = data.Last();
+
+        Candle drCurrentDayfirst = data[0];
+
+        double currentDayOpen = drCurrentDayfirst.Open;
+        double open = drFirst.Open;
+        double close = drFirst.Close;
+        double high = drFirst.High;
+        double low = drFirst.Low;
+        double vol = drFirst.Volume;
+
+        string candle = drFirst.CandleType;
+
+        double sma501 = drFirst.SMA50;
+        double sma2001 = drFirst.SMA200;
+        double sma201 = drFirst.SMA20;
+        double atr = drFirst.ATR * 1.25;
+        //double supertrend = drFirst.STrend.SuperTrend;
+
+        //List<double> l = new List<double>();
+        //l.Add(sma201);
+        //l.Add(sma501);
+        //l.Add(sma2001);
+        //l.Add(supertrend);
+
+        DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+        DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+
+
+
+        if (e.TestAtMinute >= -2)
         {
-            //upperWick = c.High - c.Open;
-            //lowerwick = c.Close - c.Low;
-            //body = c.Open - c.Close;
-            //bearpoint = upperWick + body - lowerwick;
+            List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(9, e.TransactionTradingDate)).ToList();
 
-            upperWick = c.High - c.Open;
-            lowerwick = c.Close - c.Low;
-            body = c.Open - c.Close;
-            bearpoint = upperWick + body - lowerwick;
-        }
-        else
-        {
-            upperWick = c.High - c.Close;
-            lowerwick = c.Close - c.Low;
-            bullpoint = lowerwick - upperWick;
-            bearpoint = upperWick - lowerwick;
-        }
-
-
-
-
-        if (bullpoint > bearpoint)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
-
-    public static string GetPattern(double close, double low, double high, double open, double r1, double s1, double p, double st, double s50, double s20, double pdc, double ps20, double ps50, int TAM, string candleType)
-    {
-        string finalPattern = Touches(r1, low, high) + Touches(s1, low, high) + Touches(st, low, high) + Touches(p, low, high) + Touches(s50, low, high) + Touches(s20, low, high);
-        finalPattern += Closes(r1, close) + Closes(s1, close) + Closes(st, close) + Closes(p, close) + Closes(s50, close) + Closes(s20, close) + Closes(pdc, close) + Closes(s20, s50) + Closes(ps20, ps50);
-        finalPattern += candleType;
-        return finalPattern;
-    }
-
-    public static string Closes(double level, double close)
-    {
-        if (close >= level)
-        {
-            return "1";
-        }
-        else
-        {
-            return "0";
-        }
-    }
-
-    public static string Touches(double level, double low, double high)
-    {
-        if (low <= level && high >= level)
-        {
-            return "1";
-        }
-        else
-        {
-            return "0";
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static List<SR> WildAnalysis(double low, double high, double close, double open, List<SR> fullList)
-    {
-        List<SR> resultSet = new List<SR>();
-
-        foreach (SR srObje in fullList)
-        {
-            if (close < srObje.price && high > srObje.price)
+            if (drCurrentDayfirst.CandleType == "G")
             {
-                SR x = new SR();
-                x.price = srObje.price;
-                x.LevelName = srObje.LevelName;
-                x.SupportOrResistance = "R";
-                resultSet.Add(x);
+                //if (((close - data.Min(b => b.Low)) / close) * 100 >= 1)
+                ////{
+                returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Close - ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2), Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                //}
             }
-            else if (close > srObje.price && low < srObje.price)
+            else if (drCurrentDayfirst.CandleType == "R")
             {
-                SR x = new SR();
-                x.price = srObje.price;
-                x.LevelName = srObje.LevelName;
-                x.SupportOrResistance = "S";
-                resultSet.Add(x);
-            }
-        }
-        return resultSet;
+                //if (((data.Max(b => b.High) - drFirst.Close)) * 100 >= 1)
+                //{
+                returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Close + ((drCurrentDayfirst.High - drCurrentDayfirst.Low) / 2), Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
 
-    }
-
-    private bool _disposedValue = false; // To detect redundant calls
-    // IDisposable
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-                _stop = true;
-        }
-        _disposedValue = true;
-    }
-
-
-    // This code added by Visual Basic to correctly implement the disposable pattern.
-    public void Dispose()
-    {
-        // Do not change this code.  Put cleanup code in Dispose(ByVal disposing As Boolean) above.
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-
-
-    public static bool iSBearishEngulfing(Candle c1, Candle c2)
-    {
-        if (c2.Open >= c1.Close && c1.CandleType == "G" && c2.CandleType == "R" && c2.Close <= c1.Low)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public static bool isStockBullishUsingVolume(params Candle[] c)
-    {
-        double bullVol = 0, bearVol = 0;
-        foreach (Candle obj in c)
-        {
-            if (obj.CandleType == "G" || obj.CandleType == "D")
-            {
-                bullVol += obj.Volume;
-            }
-            else
-            {
-                bearVol += obj.Volume;
-            }
-        }
-        if (bullVol > bearVol)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-
-    public static double GetLowest(params Candle[] c)
-    {
-        double lowest = 999999;
-        foreach (Candle obj in c)
-        {
-            if (obj.Low < lowest)
-            {
-                lowest = obj.Low;
+                //}
             }
 
         }
+        return returnOrder;
 
-        return lowest;
     }
-
-    public static double GetHighest(params Candle[] c)
+    catch (Exception ex)
     {
-        double highest = 0;
-        foreach (Candle obj in c)
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+    }
+    return null;
+}
+
+public static Order MyTrendSetup(Equity e, List<Candle> nifty)
+{
+    if (e.Name == "NIFTY 50")
+        return null;
+    try
+    {
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            if (obj.High > highest)
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
+
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+
+
+        Candle drFirst = data.Last();
+
+        Candle drCurrentDayfirst = data[0];
+
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        double previousLow = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Min(b => b.Low);
+        double previousHigh = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Max(b => b.High);
+
+        double currentDayOpen = drCurrentDayfirst.Open;
+        double open = drFirst.Open;
+        double close = drFirst.Close;
+        double high = drFirst.High;
+        double low = drFirst.Low;
+        double vol = drFirst.Volume;
+
+        string candle = drFirst.CandleType;
+
+        double sma501 = drFirst.SMA50;
+        double sma2001 = drFirst.SMA200;
+        double sma201 = drFirst.SMA20;
+        double atr = drFirst.ATR * 1.25;
+        double supertrend = drFirst.STrend.SuperTrend;
+
+        List<double> l = new List<double>();
+        l.Add(sma201);
+        l.Add(sma501);
+        l.Add(sma2001);
+        l.Add(supertrend);
+
+        DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+        DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+
+
+
+        if (e.TestAtMinute >= -2)
+        {
+            List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+            if (drFirst.STrend.Trend == 1)
             {
-                highest = obj.High;
+
+                returnOrder = new Order() { EntryPrice = drFirst.STrend.SuperTrend, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.High - drFirst.STrend.SuperTrend))), Scrip = e.Name, Stoploss = drFirst.STrend.SuperTrend - (drFirst.High - drFirst.STrend.SuperTrend), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+
+            }
+            else if (drFirst.STrend.Trend == -1)
+            {
+                returnOrder = new Order() { EntryPrice = drFirst.STrend.SuperTrend, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.STrend.SuperTrend - drFirst.Low))), Scrip = e.Name, Stoploss = drFirst.STrend.SuperTrend + (drFirst.STrend.SuperTrend - drFirst.Low), Strategy = "AllCross", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+
             }
 
         }
+        return returnOrder;
 
-        return highest;
     }
-    public static bool isMACDCrossBearishOver(Candle c1, Candle c2)
+    catch (Exception ex)
     {
-        if (c1.MACD - c1.MACD9 >= 0 && c2.MACD - c2.MACD9 < 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-
-        }
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
     }
+    return null;
+}
 
-    public static bool isMACDBearish(params Candle[] c)
+public static Order MyDoziSetup(Equity e, List<Candle> nifty)
+{
+    if (e.Name == "NIFTY 50")
+        return null;
+    try
     {
-        foreach (Candle cd in c)
+        if (e.TestAtMinute < -2 || e.TestAtMinute > 60)
         {
-            if (cd.MACD - cd.MACD9 >= 0)
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
+
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+
+
+        Candle drFirst = data.Last();
+
+        Candle drCurrentDayfirst = data[0];
+
+        List<Candle> prevDayData = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+        double previousLow = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Min(b => b.Low);
+        double previousHigh = e.allDaa.Where(b => b.TimeStamp.Date == e.allDaa[e.allDaa.IndexOf(drCurrentDayfirst) - 1].TimeStamp.Date).Max(b => b.High);
+
+        double currentDayOpen = drCurrentDayfirst.Open;
+        double open = drFirst.Open;
+        double close = drFirst.Close;
+        double high = drFirst.High;
+        double low = drFirst.Low;
+        double vol = drFirst.Volume;
+
+        string candle = drFirst.CandleType;
+
+        double sma501 = drFirst.SMA50;
+        double sma2001 = drFirst.SMA200;
+        double sma201 = drFirst.SMA20;
+        double atr = drFirst.ATR * 1.25;
+        double supertrend = drFirst.STrend.SuperTrend;
+
+        List<double> l = new List<double>();
+        l.Add(sma201);
+        l.Add(sma501);
+        l.Add(sma2001);
+        l.Add(supertrend);
+
+        DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+        DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+
+
+
+        if (e.TestAtMinute >= -2)
+        {
+            List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+            if (drFirst.CandleType == "G")
             {
-                return false;
-            }
-        }
 
+                returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.Close - drFirst.Low))), Scrip = e.Name, Stoploss = drFirst.Low, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+
+            }
+            else if (drFirst.CandleType == "R")
+            {
+                returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32((e.MaxRisk / 3) / ((drFirst.High - drFirst.Close))), Scrip = e.Name, Stoploss = drFirst.High, Strategy = "Strength", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+
+            }
+
+        }
+        return returnOrder;
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+    }
+    return null;
+}
+
+public static Order MyBreakoutSetup(Equity e, List<Candle> nifty)
+{
+    if (e.Name == "NIFTY 50")
+        return null;
+    try
+    {
+        if (e.TestAtMinute < 9 || e.TestAtMinute > 60)
+        {
+            return null;
+        }
+        Order returnOrder = null;
+        string scrip = e.Name;
+        int k = e.TestAtMinute;
+
+        List<Candle> allCandle = e.allDaa;
+        List<Candle> data = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(e.TestAtMinute, e.TransactionTradingDate)).ToList();
+
+
+
+        Candle drFirst = data[k + 2];
+
+        Candle drCurrentDayfirst = data[0];
+
+        double currentDayOpen = drCurrentDayfirst.Open;
+        double open = drFirst.Open;
+        double close = drFirst.Close;
+        double high = drFirst.High;
+        double low = drFirst.Low;
+        double vol = drFirst.Volume;
+
+        string candle = drFirst.CandleType;
+
+        double sma501 = drFirst.SMA50;
+        double sma2001 = drFirst.SMA200;
+        double sma201 = drFirst.SMA20;
+        double atr = drFirst.ATR * 1.25;
+        double supertrend = drFirst.STrend.SuperTrend;
+
+        List<double> l = new List<double>();
+        l.Add(sma201);
+        l.Add(sma501);
+        l.Add(sma2001);
+        l.Add(supertrend);
+
+        DateTime timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+        DateTime timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+
+
+
+        if (e.TestAtMinute > 9)
+        {
+            List<Candle> dataTill9 = allCandle.Where(a => a.TimeStamp.Date == e.TransactionTradingDate.Date & a.TimeStamp <= GetTimeStamp(9, e.TransactionTradingDate)).ToList();
+
+            if (dataTill9.All(a => a.Close <= drCurrentDayfirst.High && a.Close >= drCurrentDayfirst.Low))
+            {
+
+
+                if (drFirst.Close > dataTill9.Max(a => a.High))
+                {
+                    if (data.Any(a => a.Low < a.SMA20) && data.Any(a => a.STrend.Trend == -1) && data.Any(a => a.Low < a.SMA50) && close > Math.Max(sma201, sma501) && drFirst.STrend.Trend == 1)
+                        returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32(e.MaxRisk / (drFirst.Close - drCurrentDayfirst.Low)), Scrip = e.Name, Stoploss = drCurrentDayfirst.Low, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "BM", Volume = vol };
+                }
+                else if (drFirst.Close < dataTill9.Min(a => a.Low))
+                {
+                    if (data.Any(a => a.High > a.SMA20) && data.Any(a => a.STrend.Trend == 1) && data.Any(a => a.High > a.SMA50) && close < Math.Min(sma201, sma501) && drFirst.STrend.Trend == -1)
+                        returnOrder = new Order() { EntryPrice = drFirst.Close, High = dataTill9.Max(a => a.High), Low = dataTill9.Min(a => a.Low), Quantity = Convert.ToInt32(e.MaxRisk / (drCurrentDayfirst.High - drFirst.Close)), Scrip = e.Name, Stoploss = drCurrentDayfirst.High, Strategy = "Gap", TimeStamp = drFirst.TimeStamp, TransactionType = "SM", Volume = vol };
+                }
+            }
+
+        }
+        return returnOrder;
+
+    }
+    catch (Exception ex)
+    {
+        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+    }
+    return null;
+}
+
+
+
+//public static Order ADX30Minute(Equity e, bool startFromScratch)
+//{
+
+//    try
+//    {
+//        if (e.TestAtMinute < -2 || e.TestAtMinute > 70)
+//        {
+//            return null;
+//        }
+//        Order returnOrder = null;
+//        string scrip = e.Name;
+
+//        string FileName = string.Empty;
+//        FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\5\" + scrip.Replace("-", string.Empty) + ".txt";
+//        string json = File.ReadAllText(FileName).Replace("]}}", string.Empty).Replace("\"", "").Replace("T", " ").Replace("+", " ");
+
+//        DataSet ds = new DataSet();
+//        ds.ReadXml(FileName);
+
+//        DataTable dt = ds.Tables[0];
+
+
+//        bool prev = false;
+//        List<Ohlc> ohlcList = new List<Ohlc>();
+//        foreach (DataRow dr in ds.Tables[0].Rows)
+//        {
+//            Ohlc ohlc = new Ohlc();
+//            ohlc.Date = Convert.ToDateTime(dr["TimeStamp"]);
+//            ohlc.Open = Convert.ToDouble(dr["f5"]);
+//            ohlc.High = Convert.ToDouble(dr["f3"]);
+//            ohlc.Low = Convert.ToDouble(dr["f4"]);
+//            ohlc.Close = Convert.ToDouble(dr["f2"]);
+//            ohlc.Volume = Convert.ToDouble(dr["f6"]);
+//            ohlc.AdjClose = Convert.ToDouble(dr["f2"]);
+
+//            ohlcList.Add(ohlc);
+
+//        }
+//        DateTime dateIndicator = e.TransactionTradingDate;
+
+//        ADX adx = new ADX(14);
+//        // fill ohlcList
+//        adx.Load(ohlcList);
+//        ADXSerie serie = adx.Calculate();
+//        ds.Tables[0].Columns.Add("ADX", typeof(double));
+//        ds.Tables[0].Columns.Add("DIP", typeof(double));
+//        ds.Tables[0].Columns.Add("DIN", typeof(double));
+//        ds.Tables[0].Columns.Add("adb", typeof(int));
+
+//        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+//        {
+//            ds.Tables[0].Rows[i]["ADX"] = serie.ADX[i] ?? 0;
+//            ds.Tables[0].Rows[i]["DIP"] = serie.DIPositive[i] ?? 0;
+//            ds.Tables[0].Rows[i]["DIN"] = serie.DINegative[i] ?? 0;
+//            if ((serie.ADX[i] ?? 0) <= (serie.DIPositive[i] ?? 0) && (serie.ADX[i] ?? 0) <= (serie.DINegative[i] ?? 0))
+//            {
+//                ds.Tables[0].Rows[i]["adb"] = 1;
+//            }
+//            else
+//            {
+//                ds.Tables[0].Rows[i]["adb"] = 0;
+//            }
+
+//        }
+
+
+//        startFromScratch = false;
+
+
+//        //finalCandle = 60;
+//        for (int k = e.TestAtMinute; k <= e.TestAtMinute; k++)
+//        {
+//            DataRow drFirst = ds.Tables[0].Select("TimeStamp='" + GetTimeStamp(k, e.TransactionTradingDate) + "'")[0];
+//            DataRow drLast = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 1];
+//            DataRow drCurrentDayfirst = ds.Tables[0].Select("TimeStamp='" + GetTimeStamp(-2, e.TransactionTradingDate) + "'")[0];
+//            DataRow drLastPrev = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drCurrentDayfirst) - 1];
+
+//            DateTime previousDay = Convert.ToDateTime(drLastPrev["timestamp"]).Date;
+
+//            DataRow drLast1 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 2];
+//            DataRow drLast2 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 3];
+//            DataRow drLast3 = ds.Tables[0].Rows[ds.Tables[0].Rows.IndexOf(drFirst) - 4];
+
+//            double adx0 = Convert.ToDouble(drFirst["adb"]);
+
+
+//            double adx1 = Convert.ToDouble(drLast1["adb"]);
+
+
+//            double adx2 = Convert.ToDouble(drLast2["adb"]);
+
+//            double adx3 = Convert.ToDouble(drLast2["adb"]);
+
+
+
+
+
+
+//            double currentDayOpen = Convert.ToDouble(drCurrentDayfirst["f5"]);
+//            double open = Convert.ToDouble(drFirst["f5"]);
+//            double close = Convert.ToDouble(drFirst["f2"]);
+//            double high = Convert.ToDouble(drFirst["f3"]);
+//            double low = Convert.ToDouble(drFirst["f4"]);
+//            double vol = Convert.ToDouble(drFirst["f6"]);
+
+//            string candle = Convert.ToString(drFirst["candle"]);
+//            string prevCandle = Convert.ToString(drLast["candle"]);
+//            string pattern = Convert.ToString(drFirst["pattern"]);
+
+//            double sma501 = Convert.ToDouble(drFirst["50"]);
+//            double sma2001 = Convert.ToDouble(drFirst["200"]);
+//            double sma201 = Convert.ToDouble(drFirst["20"]);
+//            double atr = Convert.ToDouble(drFirst["atr14"]) * 1.25;
+//            double supertrend = Convert.ToDouble(drFirst["supertrend"]);
+
+//            List<double> l = new List<double>();
+//            l.Add(sma201);
+//            l.Add(sma501);
+//            l.Add(sma2001);
+//            l.Add(supertrend);
+
+
+
+//            date timeStamp = GetTimeStamp(-2, e.TransactionTradingDate);
+//            string timeStampLast = GetTimeStamp(k, e.TransactionTradingDate);
+//            string prevTimeStamp = GetTimeStamp(-2, previousDay);
+//            string prevTimeStampLast = drLastPrev["timestamp"].ToString();
+
+//            var data = ds.Tables[0].AsEnumerable().Where(a => Convert.ToDateTime(a.Field<String>("Timestamp")) >= Convert.ToDateTime(timeStamp) && Convert.ToDateTime(a.Field<String>("Timestamp")) <= Convert.ToDateTime(timeStampLast));
+//            var previousDayMaxVolume = ds.Tables[0].AsEnumerable().Where(a => Convert.ToDateTime(a.Field<String>("Timestamp")) >= Convert.ToDateTime(prevTimeStamp) && Convert.ToDateTime(a.Field<String>("Timestamp")) <= Convert.ToDateTime(prevTimeStampLast)).Max(a => a.Field<double>("f6"));
+
+//            double breakoutHigh = data.Max(a => a.Field<double>("f3"));
+//            double breakoutLow = data.Min(a => a.Field<double>("f4"));
+//            double maxVolume = data.Max(a => a.Field<double>("f2") * a.Field<double>("f6"));
+//            double maxV = data.Max(a => a.Field<double>("f6"));
+//            string maxVCandle = data.Where(a => a.Field<double>("f6") == maxV).First().Field<string>("candle");
+//            DataRow bullP = null;
+//            DataRow bearP = null;
+//            double distFromS = Math.Abs(close - supertrend);
+
+//            double atrStopLoss = Math.Max(atr, distFromS);
+//            double per = (atrStopLoss / close) * 100;
+//            var dataToProcess = data.ToList();
+//            List<Liner> listOfClose = new List<Liner>();
+
+//            if (adx0 == 0 && adx1 == 1 && adx2 == 1 && adx3 == 1)
+//            {
+//                if (candle == "G")
+//                {
+
+//                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / atrStopLoss), Scrip = e.Name, Stoploss = close - atrStopLoss, Strategy = "2", TimeStamp = Convert.ToDateTime(drFirst["Timestamp"]), TransactionType = "BM", Volume = vol };
+//                }
+//                else if (candle == "R")
+//                {
+
+//                    returnOrder = new Order() { EntryPrice = close, High = high, Low = low, Quantity = Convert.ToInt32(e.MaxRisk / atrStopLoss), Scrip = e.Name, Stoploss = close + atrStopLoss, Strategy = "2", TimeStamp = Convert.ToDateTime(drFirst["Timestamp"]), TransactionType = "SM", Volume = vol };
+//                }
+//            }
+
+
+//            return returnOrder;
+//        }
+
+
+//    }
+//    catch (Exception ex)
+//    {
+//        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message + " : " + e.Name + Environment.NewLine);
+//    }
+
+//    return null;
+//}
+
+
+public static bool isBullorBear(Candle c)
+{
+    double upperWick = 0, body = 0, lowerwick = 0, bullpoint = 0, bearpoint = 0;
+    if (c.CandleType == "G")
+    {
+        //upperWick = c.High - c.Close;
+        //lowerwick = c.Close - c.Low;
+        //body = c.Close - c.Low;
+        //bullpoint = lowerwick + body - upperWick;
+
+        upperWick = c.High - c.Close;
+        lowerwick = c.Close - c.Low;
+        body = c.Close - c.Open;
+        bullpoint = lowerwick + body - upperWick;
+    }
+    else if (c.CandleType == "R")
+    {
+        //upperWick = c.High - c.Open;
+        //lowerwick = c.Close - c.Low;
+        //body = c.Open - c.Close;
+        //bearpoint = upperWick + body - lowerwick;
+
+        upperWick = c.High - c.Open;
+        lowerwick = c.Close - c.Low;
+        body = c.Open - c.Close;
+        bearpoint = upperWick + body - lowerwick;
+    }
+    else
+    {
+        upperWick = c.High - c.Close;
+        lowerwick = c.Close - c.Low;
+        bullpoint = lowerwick - upperWick;
+        bearpoint = upperWick - lowerwick;
+    }
+
+
+
+
+    if (bullpoint > bearpoint)
+    {
         return true;
-
+    }
+    else
+    {
+        return false;
     }
 
-    public static bool isMACDBullish(params Candle[] c)
-    {
-        foreach (Candle cd in c)
-        {
-            if (cd.MACD - cd.MACD9 <= 0)
-            {
-                return false;
-            }
-        }
+}
 
+public static string GetPattern(double close, double low, double high, double open, double r1, double s1, double p, double st, double s50, double s20, double pdc, double ps20, double ps50, int TAM, string candleType)
+{
+    string finalPattern = Touches(r1, low, high) + Touches(s1, low, high) + Touches(st, low, high) + Touches(p, low, high) + Touches(s50, low, high) + Touches(s20, low, high);
+    finalPattern += Closes(r1, close) + Closes(s1, close) + Closes(st, close) + Closes(p, close) + Closes(s50, close) + Closes(s20, close) + Closes(pdc, close) + Closes(s20, s50) + Closes(ps20, ps50);
+    finalPattern += candleType;
+    return finalPattern;
+}
+
+public static string Closes(double level, double close)
+{
+    if (close >= level)
+    {
+        return "1";
+    }
+    else
+    {
+        return "0";
+    }
+}
+
+public static string Touches(double level, double low, double high)
+{
+    if (low <= level && high >= level)
+    {
+        return "1";
+    }
+    else
+    {
+        return "0";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public static List<SR> WildAnalysis(double low, double high, double close, double open, List<SR> fullList)
+{
+    List<SR> resultSet = new List<SR>();
+
+    foreach (SR srObje in fullList)
+    {
+        if (close < srObje.price && high > srObje.price)
+        {
+            SR x = new SR();
+            x.price = srObje.price;
+            x.LevelName = srObje.LevelName;
+            x.SupportOrResistance = "R";
+            resultSet.Add(x);
+        }
+        else if (close > srObje.price && low < srObje.price)
+        {
+            SR x = new SR();
+            x.price = srObje.price;
+            x.LevelName = srObje.LevelName;
+            x.SupportOrResistance = "S";
+            resultSet.Add(x);
+        }
+    }
+    return resultSet;
+
+}
+
+private bool _disposedValue = false; // To detect redundant calls
+                                     // IDisposable
+protected virtual void Dispose(bool disposing)
+{
+    if (!_disposedValue)
+    {
+        if (disposing)
+            _stop = true;
+    }
+    _disposedValue = true;
+}
+
+
+// This code added by Visual Basic to correctly implement the disposable pattern.
+public void Dispose()
+{
+    // Do not change this code.  Put cleanup code in Dispose(ByVal disposing As Boolean) above.
+    Dispose(true);
+    GC.SuppressFinalize(this);
+}
+
+
+
+public static bool iSBearishEngulfing(Candle c1, Candle c2)
+{
+    if (c2.Open >= c1.Close && c1.CandleType == "G" && c2.CandleType == "R" && c2.Close <= c1.Low)
+    {
         return true;
-
     }
-
-    public static bool isMACDBullishIncreasing(params Candle[] c)
+    else
     {
-        double x = 999999;
-        foreach (Candle cd in c)
+        return false;
+    }
+}
+
+public static bool isStockBullishUsingVolume(params Candle[] c)
+{
+    double bullVol = 0, bearVol = 0;
+    foreach (Candle obj in c)
+    {
+        if (obj.CandleType == "G" || obj.CandleType == "D")
         {
-            if (cd.MACD - cd.MACD9 <= 0 && (cd.MACD - cd.MACD9) < x)
-            {
-
-                return false;
-            }
-            x = cd.MACD - cd.MACD9;
+            bullVol += obj.Volume;
         }
-
+        else
+        {
+            bearVol += obj.Volume;
+        }
+    }
+    if (bullVol > bearVol)
+    {
         return true;
     }
-
-
-
-    public static bool isLongerBearShadow(Candle c)
+    else
     {
-        if ((c.Open - c.Close) <= (c.Close - c.Low))
+        return false;
+    }
+}
+
+
+public static double GetLowest(params Candle[] c)
+{
+    double lowest = 999999;
+    foreach (Candle obj in c)
+    {
+        if (obj.Low < lowest)
         {
-            return true;
+            lowest = obj.Low;
         }
-        else
+
+    }
+
+    return lowest;
+}
+
+public static double GetHighest(params Candle[] c)
+{
+    double highest = 0;
+    foreach (Candle obj in c)
+    {
+        if (obj.High > highest)
+        {
+            highest = obj.High;
+        }
+
+    }
+
+    return highest;
+}
+public static bool isMACDCrossBearishOver(Candle c1, Candle c2)
+{
+    if (c1.MACD - c1.MACD9 >= 0 && c2.MACD - c2.MACD9 < 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+
+    }
+}
+
+public static bool isMACDBearish(params Candle[] c)
+{
+    foreach (Candle cd in c)
+    {
+        if (cd.MACD - cd.MACD9 >= 0)
         {
             return false;
         }
     }
 
-    public static bool isSpinningBottomBull(Candle c)
+    return true;
+
+}
+
+public static bool isMACDBullish(params Candle[] c)
+{
+    foreach (Candle cd in c)
     {
-        if ((c.High - c.Close) >= 2 * (c.Open - c.Low) & (c.High - c.Close) >= 2 * (c.Close - c.Open))
-        {
-            return true;
-        }
-        else
+        if (cd.MACD - cd.MACD9 <= 0)
         {
             return false;
         }
     }
 
-    public static bool isSpinningBottomBear(Candle c)
+    return true;
+
+}
+
+public static bool isMACDBullishIncreasing(params Candle[] c)
+{
+    double x = 999999;
+    foreach (Candle cd in c)
     {
-        if ((c.High - c.Open) >= 1.25 * (c.Close - c.Low) & (c.High - c.Open) >= 2 * (c.Open - c.Close))
+        if (cd.MACD - cd.MACD9 <= 0 && (cd.MACD - cd.MACD9) < x)
         {
-            return true;
-        }
-        else
-        {
+
             return false;
         }
+        x = cd.MACD - cd.MACD9;
     }
 
-    public static bool isBearWithNoBottomShadow(Candle c)
+    return true;
+}
+
+
+
+public static bool isLongerBearShadow(Candle c)
+{
+    if ((c.Open - c.Close) <= (c.Close - c.Low))
     {
-        if (((c.Close - c.Low) / c.Close) * 100 < 0.15)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return true;
     }
-
-    public static bool isBullWithNoUpperShadow(Candle c)
+    else
     {
-        if (((c.High - c.Close) / c.Close) * 100 < 0.15)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
-    public static bool isBearishMaribozu(Candle c)
+}
+
+public static bool isSpinningBottomBull(Candle c)
+{
+    if ((c.High - c.Close) >= 2 * (c.Open - c.Low) & (c.High - c.Close) >= 2 * (c.Close - c.Open))
     {
-        if (((c.Open - c.Close) / c.Close) * 100 > 2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return true;
     }
-
-    public static bool isBullishMaribozu(Candle c)
+    else
     {
-        if (((c.Close - c.Open) / c.Open) * 100 > 2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
+}
 
-
-    public static string CandlePattern(Candle c2, Candle c1, Candle c)
+public static bool isSpinningBottomBear(Candle c)
+{
+    if ((c.High - c.Open) >= 1.25 * (c.Close - c.Low) & (c.High - c.Open) >= 2 * (c.Open - c.Close))
     {
-        string Label = string.Empty;
-        double O = c.Open;
-        double C = c.Close;
-        double L = c.Low;
-        double H = c.High;
-        double O1 = c1.Open;
-        double C1 = c1.Close;
-        double L1 = c1.Low;
-        double H1 = c1.High;
-        double O2 = c2.Open;
-        double C2 = c2.Close;
-        double L2 = c2.Low;
-        double H2 = c2.High;
-        double V = c.Volume;
-
-        if (c.Open == c.Close || Math.Abs(c.Open - c.Close) <= ((c.High - c.Low) * 0.1))
-        {
-            Label = "DOZI";
-        }
-        if (((O1 > C1) && (C > O) && (C >= O1) && (C1 >= O) && ((C - O) > (O1 - C1))))
-        {
-            Label = "BULLISHENGULFING";
-        }
-        if (((C1 > O1) && (O > C) && (O >= C1) && (O1 >= C) && ((O - C) > (C1 - O1))))
-        {
-            Label = "BEARISHENGULFING";
-        }
-        if ((((H - L) > 3 * (O - C) && ((C - L) / (.001 + H - L) > 0.6) && ((O - L) / (.001 + H - L) > 0.6))))
-        {
-            Label = "HAMMER";
-        }
-        if (((((H - L) > 4 * Math.Abs(O - C)) && ((C - L) / (.001 + H - L) >= 0.75) && ((O - L) / (.001 + H - L) >= .075))))
-        {
-            Label = "HANGINGMAN";
-        }
-        if ((C1 < O1) && (((O1 + C1) / 2) < C) && (O < C) && (O < C1) && (C < O1) && ((C - O) / (.001 + (H - L)) > 0.6))
-        {
-            Label = "PIERCINGLINE";
-        }
-        if ((C1 > O1) && (((C1 + O1) / 2) > C) && (O > C) && (O > C1) && (C > O1) && ((O - C) / (.001 + (H - L)) > .6))
-        {
-            Label = "DARKCLOUD";
-        }
-        if ((O1 > C1) && (C > O) && (C <= O1) && (C1 <= O) && ((C - O) < (O1 - C1)))
-        {
-            Label = "BULLISHHARAMI";
-        }
-        if ((C1 > O1) && (O > C) && (O <= C1) && (O1 <= C) && ((O - C) < (C1 - O1)))
-        {
-            Label = "BEARISHHARAMI";
-        }
-        if ((O2 > C2) && ((O2 - C2) / (.001 + H2 - L2) > .6) && (C2 > O1) && (O1 > C1) && ((H1 - L1) > (3 * (C1 - O1))) && (C > O) && (O > O1))
-        {
-            Label = "MORNINGSTAR";
-        }
-        if ((O1 > C1) && (O >= O1) && (C > O))
-        {
-            Label = "BULLISHKICKER";
-        }
-        if ((O1 < C1) && (O <= O1) && (C <= O))
-        {
-            Label = "BEARISHKICKER";
-        }
-        if (((H - L) > 4 * (O - C)) && ((H - C) / (.001 + H - L) >= 0.75) && ((H - O) / (.001 + H - L) >= 0.75))
-        {
-            Label = "SHOOTINGSTAR";
-        }
-        if (((H - L) > 3 * (O - C)) && ((H - C) / (.001 + H - L) > 0.6) && ((H - O) / (.001 + H - L) > 0.6))
-        {
-            Label = "INVERTEDHAMMER";
-        }
-
-
-
-        return Label;
-
+        return true;
     }
-
-    public static string Trending(Candle c, Candle c1)
+    else
     {
-        string Label = string.Empty;
-        double O = c.Open;
-        double C = c.Close;
-        double L = c.Low;
-        double H = c.High;
-        double O1 = c1.Open;
-        double C1 = c1.Close;
-        double L1 = c1.Low;
-        double H1 = c1.High;
-        double V = c.Volume;
-        if (C > O && (C - O) > (H - C) && (O - L) > (H - C) && (H - C) < (C - O) && (H - C) < (O - L) && (H - C) < C * 0.002 && C > C1 && (H - L) > C * 0.005 && (H - L) < C * 0.01 && (O - L) > C * 0.002)
-        {
-            Label = "BULLTRENDING";
-        }
-        else if (O > C && (O - C) > (C - L) && (H - O) > (C - L) && (C - L) < (O - C) && (C - L) < (H - O) && (C - L) < C * 0.002 && C < C1 && (H - L) > C * 0.005 && (H - L) > C * 0.01 && (H - O) > C * 0.002)
-        {
-            Label = "BEARTRENDING";
-        }
-        return Label;
+        return false;
     }
+}
 
-    //public static string[] BearishPattern = new string[] { "SHOOTINGSTAR", "BEARISHKICKER", "BEARISHHARAMI", "DARKCLOUD", "HANGINGMAN", "BEARISHENGULFING", "DOZI", "INVERTEDHAMMER", "BULLTRENDING" };
-    //public static string[] BullishPattern = new string[] { "BULLISHKICKER", "MORNINGSTAR", "BULLISHHARAMI", "PIERCINGLINE", "HAMMER", "BULLISHENGULFING", "DOZI", "BEARTRENDING" };
-
-    public static string[] BearishPattern = new string[] { "BEARTRENDING" };
-    public static string[] BullishPattern = new string[] { "BULLTRENDING" };
-
-    public static List<SR> GetPredifinedLevels(StockData todaysLevel)
+public static bool isBearWithNoBottomShadow(Candle c)
+{
+    if (((c.Close - c.Low) / c.Close) * 100 < 0.15)
     {
-        List<SR> list = new List<SR>();
-        list.Add(new SR { price = Math.Round(todaysLevel.dPP, 1), LevelName = "dPP" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dR1, 1), LevelName = "dR1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dR2, 1), LevelName = "dR2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dR3, 1), LevelName = "dR3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dS1, 1), LevelName = "dS1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dS2, 1), LevelName = "dS2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.dS3, 1), LevelName = "dS3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wPP, 1), LevelName = "wPP" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wR1, 1), LevelName = "wR1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wR2, 1), LevelName = "wR2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wR3, 1), LevelName = "wR3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wS1, 1), LevelName = "wS1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wS2, 1), LevelName = "wS2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.wS3, 1), LevelName = "wS3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mPP, 1), LevelName = "mPP" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mR1, 1), LevelName = "mR1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mR2, 1), LevelName = "mR2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mR3, 1), LevelName = "mR3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mS1, 1), LevelName = "mS1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mS2, 1), LevelName = "mS2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.mS3, 1), LevelName = "mS3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yPP, 1), LevelName = "yPP" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yR1, 1), LevelName = "yR1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yR2, 1), LevelName = "yR2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yR3, 1), LevelName = "yR3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yS1, 1), LevelName = "yS1" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yS2, 1), LevelName = "yS2" });
-        list.Add(new SR { price = Math.Round(todaysLevel.yS3, 1), LevelName = "yS3" });
-        list.Add(new SR { price = Math.Round(todaysLevel.SuperTrend, 1), LevelName = "DST" });
-        list.Add(new SR { price = Math.Round(todaysLevel.SMA20, 1), LevelName = "D20" });
-        list.Add(new SR { price = Math.Round(todaysLevel.SMA50, 1), LevelName = "D50" });
-        list.Add(new SR { price = Math.Round(todaysLevel.SMA200, 1), LevelName = "D200" });
-        return list;
+        return true;
     }
-
-    public static void Backup()
+    else
     {
-        DirectoryInfo dr = new DirectoryInfo(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA");
-
-        string sourcePath = @"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA";
-
-        string destFolder = @"C:\Jai Sri Thakur Ji\";
-
-        string destFilename = string.Format("Backup_{0}.zip", DateTime.Now.ToString("ddMMyyyyhhmmss"));
-
-        Telerik.WinControls.Zip.Extensions.ZipFile.CreateFromDirectory(sourcePath, destFolder + destFilename);
-
+        return false;
     }
+}
+
+public static bool isBullWithNoUpperShadow(Candle c)
+{
+    if (((c.High - c.Close) / c.Close) * 100 < 0.15)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+public static bool isBearishMaribozu(Candle c)
+{
+    if (((c.Open - c.Close) / c.Close) * 100 > 2)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+public static bool isBullishMaribozu(Candle c)
+{
+    if (((c.Close - c.Open) / c.Open) * 100 > 2)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+public static string CandlePattern(Candle c2, Candle c1, Candle c)
+{
+    string Label = string.Empty;
+    double O = c.Open;
+    double C = c.Close;
+    double L = c.Low;
+    double H = c.High;
+    double O1 = c1.Open;
+    double C1 = c1.Close;
+    double L1 = c1.Low;
+    double H1 = c1.High;
+    double O2 = c2.Open;
+    double C2 = c2.Close;
+    double L2 = c2.Low;
+    double H2 = c2.High;
+    double V = c.Volume;
+
+    if (c.Open == c.Close || Math.Abs(c.Open - c.Close) <= ((c.High - c.Low) * 0.1))
+    {
+        Label = "DOZI";
+    }
+    if (((O1 > C1) && (C > O) && (C >= O1) && (C1 >= O) && ((C - O) > (O1 - C1))))
+    {
+        Label = "BULLISHENGULFING";
+    }
+    if (((C1 > O1) && (O > C) && (O >= C1) && (O1 >= C) && ((O - C) > (C1 - O1))))
+    {
+        Label = "BEARISHENGULFING";
+    }
+    if ((((H - L) > 3 * (O - C) && ((C - L) / (.001 + H - L) > 0.6) && ((O - L) / (.001 + H - L) > 0.6))))
+    {
+        Label = "HAMMER";
+    }
+    if (((((H - L) > 4 * Math.Abs(O - C)) && ((C - L) / (.001 + H - L) >= 0.75) && ((O - L) / (.001 + H - L) >= .075))))
+    {
+        Label = "HANGINGMAN";
+    }
+    if ((C1 < O1) && (((O1 + C1) / 2) < C) && (O < C) && (O < C1) && (C < O1) && ((C - O) / (.001 + (H - L)) > 0.6))
+    {
+        Label = "PIERCINGLINE";
+    }
+    if ((C1 > O1) && (((C1 + O1) / 2) > C) && (O > C) && (O > C1) && (C > O1) && ((O - C) / (.001 + (H - L)) > .6))
+    {
+        Label = "DARKCLOUD";
+    }
+    if ((O1 > C1) && (C > O) && (C <= O1) && (C1 <= O) && ((C - O) < (O1 - C1)))
+    {
+        Label = "BULLISHHARAMI";
+    }
+    if ((C1 > O1) && (O > C) && (O <= C1) && (O1 <= C) && ((O - C) < (C1 - O1)))
+    {
+        Label = "BEARISHHARAMI";
+    }
+    if ((O2 > C2) && ((O2 - C2) / (.001 + H2 - L2) > .6) && (C2 > O1) && (O1 > C1) && ((H1 - L1) > (3 * (C1 - O1))) && (C > O) && (O > O1))
+    {
+        Label = "MORNINGSTAR";
+    }
+    if ((O1 > C1) && (O >= O1) && (C > O))
+    {
+        Label = "BULLISHKICKER";
+    }
+    if ((O1 < C1) && (O <= O1) && (C <= O))
+    {
+        Label = "BEARISHKICKER";
+    }
+    if (((H - L) > 4 * (O - C)) && ((H - C) / (.001 + H - L) >= 0.75) && ((H - O) / (.001 + H - L) >= 0.75))
+    {
+        Label = "SHOOTINGSTAR";
+    }
+    if (((H - L) > 3 * (O - C)) && ((H - C) / (.001 + H - L) > 0.6) && ((H - O) / (.001 + H - L) > 0.6))
+    {
+        Label = "INVERTEDHAMMER";
+    }
+
+
+
+    return Label;
+
+}
+
+public static string Trending(Candle c, Candle c1)
+{
+    string Label = string.Empty;
+    double O = c.Open;
+    double C = c.Close;
+    double L = c.Low;
+    double H = c.High;
+    double O1 = c1.Open;
+    double C1 = c1.Close;
+    double L1 = c1.Low;
+    double H1 = c1.High;
+    double V = c.Volume;
+    if (C > O && (C - O) > (H - C) && (O - L) > (H - C) && (H - C) < (C - O) && (H - C) < (O - L) && (H - C) < C * 0.002 && C > C1 && (H - L) > C * 0.005 && (H - L) < C * 0.01 && (O - L) > C * 0.002)
+    {
+        Label = "BULLTRENDING";
+    }
+    else if (O > C && (O - C) > (C - L) && (H - O) > (C - L) && (C - L) < (O - C) && (C - L) < (H - O) && (C - L) < C * 0.002 && C < C1 && (H - L) > C * 0.005 && (H - L) > C * 0.01 && (H - O) > C * 0.002)
+    {
+        Label = "BEARTRENDING";
+    }
+    return Label;
+}
+
+//public static string[] BearishPattern = new string[] { "SHOOTINGSTAR", "BEARISHKICKER", "BEARISHHARAMI", "DARKCLOUD", "HANGINGMAN", "BEARISHENGULFING", "DOZI", "INVERTEDHAMMER", "BULLTRENDING" };
+//public static string[] BullishPattern = new string[] { "BULLISHKICKER", "MORNINGSTAR", "BULLISHHARAMI", "PIERCINGLINE", "HAMMER", "BULLISHENGULFING", "DOZI", "BEARTRENDING" };
+
+public static string[] BearishPattern = new string[] { "BEARTRENDING" };
+public static string[] BullishPattern = new string[] { "BULLTRENDING" };
+
+public static List<SR> GetPredifinedLevels(StockData todaysLevel)
+{
+    List<SR> list = new List<SR>();
+    list.Add(new SR { price = Math.Round(todaysLevel.dPP, 1), LevelName = "dPP" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dR1, 1), LevelName = "dR1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dR2, 1), LevelName = "dR2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dR3, 1), LevelName = "dR3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dS1, 1), LevelName = "dS1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dS2, 1), LevelName = "dS2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.dS3, 1), LevelName = "dS3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wPP, 1), LevelName = "wPP" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wR1, 1), LevelName = "wR1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wR2, 1), LevelName = "wR2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wR3, 1), LevelName = "wR3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wS1, 1), LevelName = "wS1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wS2, 1), LevelName = "wS2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.wS3, 1), LevelName = "wS3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mPP, 1), LevelName = "mPP" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mR1, 1), LevelName = "mR1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mR2, 1), LevelName = "mR2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mR3, 1), LevelName = "mR3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mS1, 1), LevelName = "mS1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mS2, 1), LevelName = "mS2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.mS3, 1), LevelName = "mS3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yPP, 1), LevelName = "yPP" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yR1, 1), LevelName = "yR1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yR2, 1), LevelName = "yR2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yR3, 1), LevelName = "yR3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yS1, 1), LevelName = "yS1" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yS2, 1), LevelName = "yS2" });
+    list.Add(new SR { price = Math.Round(todaysLevel.yS3, 1), LevelName = "yS3" });
+    list.Add(new SR { price = Math.Round(todaysLevel.SuperTrend, 1), LevelName = "DST" });
+    list.Add(new SR { price = Math.Round(todaysLevel.SMA20, 1), LevelName = "D20" });
+    list.Add(new SR { price = Math.Round(todaysLevel.SMA50, 1), LevelName = "D50" });
+    list.Add(new SR { price = Math.Round(todaysLevel.SMA200, 1), LevelName = "D200" });
+    return list;
+}
+
+public static void Backup()
+{
+    DirectoryInfo dr = new DirectoryInfo(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA");
+
+    string sourcePath = @"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA";
+
+    string destFolder = @"C:\Jai Sri Thakur Ji\";
+
+    string destFilename = string.Format("Backup_{0}.zip", DateTime.Now.ToString("ddMMyyyyhhmmss"));
+
+    Telerik.WinControls.Zip.Extensions.ZipFile.CreateFromDirectory(sourcePath, destFolder + destFilename);
+
+}
 
 
 

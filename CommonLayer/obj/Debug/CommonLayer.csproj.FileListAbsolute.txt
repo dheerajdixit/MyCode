@@ -1,5 +1,3 @@
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csprojResolveAssemblyReference.cache
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\bin\Debug\CommonLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\bin\Debug\CommonLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\bin\Debug\ModelLayer.dll
@@ -8,3 +6,6 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonL
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\bin\Debug\Newtonsoft.Json.xml
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.dll
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.pdb
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csprojAssemblyReference.cache
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache

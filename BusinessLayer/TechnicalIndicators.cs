@@ -11,9 +11,12 @@ namespace BAL
 
     public class TechnicalIndicators
     {
+
         public static Dictionary<string, List<Candle>> AddIndicators(Dictionary<string, List<Candle>> dsList, List<Technical> listofIndicators, DateTime fromDate, DateTime toDate)
         {
             Dictionary<string, List<Candle>> dictionary;
+
+            Dictionary<string, Dictionary<DateTime, Candle>> pivotStore = new Dictionary<string, Dictionary<DateTime, Candle>>();
             if ((listofIndicators == null) || (listofIndicators.Count == 0))
             {
                 dictionary = dsList;
@@ -81,6 +84,30 @@ namespace BAL
                     int num12 = 0;
                     foreach (Candle candle in ds.Value)
                     {
+                        if (pivotStore.ContainsKey(ds.Key))
+                        {
+
+
+                            if (pivotStore[ds.Key].ContainsKey(candle.TimeStamp.Date))
+                            {
+                                var point = pivotStore[ds.Key][candle.TimeStamp.Date];
+                                point.High = Math.Max(point.High, candle.High);
+                                point.Low = Math.Min(point.Low, candle.Low);
+                                point.Close = candle.Close;
+                                pivotStore[ds.Key][candle.TimeStamp.Date] = point;
+                            }
+                            else
+                            {
+                                pivotStore[ds.Key].Add(candle.TimeStamp.Date, new Candle { High = candle.High, Low = candle.Low, Close = candle.Close });
+                            }
+                        }
+                        else
+                        {
+                            var c = new Dictionary<DateTime, Candle>();
+                            c.Add(candle.TimeStamp.Date, new Candle { High = candle.High, Low = candle.Low, Close = candle.Close });
+                            pivotStore.Add(ds.Key, c);
+                        }
+
                         candle.AllIndicators = new Model.AllTechnicals();
                         if (movingAverage)
                         {
@@ -201,6 +228,7 @@ namespace BAL
                             candle.AllIndicators.MACD.macd = num8;
                             candle.AllIndicators.MACD.macd9 = num5;
                             candle.AllIndicators.MACD.histogram = num8 - num5;
+
                         }
                     }
                 });
@@ -210,9 +238,36 @@ namespace BAL
             foreach (var a in dsList)
             {
                 List<Candle> l = a.Value;
-                var dateRangeCandles = l.Where(d => d.TimeStamp >= fromDate && d.TimeStamp <= toDate).ToList();
+                var dateRangeCandles = l.Where(e => e.TimeStamp >= fromDate && e.TimeStamp <= toDate).ToList();
                 dictionary.Add(a.Key, dateRangeCandles);
             }
+
+            List<DateTime> d = pivotStore.First().Value.GroupBy(c=>c.Key.Date).Select(c=>c.Key).ToList();
+            Parallel.ForEach(dictionary, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (a) =>
+                              {
+                                  Parallel.ForEach(a.Value, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (b) =>
+                                  {
+                                      DateTime prevDateTime = d.OrderBy(t => t.Date < b.TimeStamp.Date).Last();
+                                      if (pivotStore[a.Key].ContainsKey(prevDateTime.Date))
+                                      {
+                                          var c = pivotStore[a.Key][prevDateTime.Date];
+
+
+                                          double prevDayHigh = c.High;
+                                          double prevDayLow = c.Low;
+                                          double dailyPivot = (c.Close + prevDayHigh + prevDayLow) / 3;
+                                          b.dPP = Math.Round(dailyPivot, 2);
+                                          b.dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
+                                          b.dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
+                                          b.dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
+                                          b.dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
+                                          b.dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
+                                          b.dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
+                                      }
+
+                                  });
+                              });
+
 
             //dictionary = LoadDailyNPivotsDataZerodha(dictionary);
             return dictionary;
@@ -292,173 +347,178 @@ namespace BAL
                         Candle dr1 = loadmydataDaily[s].Where(a => a.TimeStamp.Date == dr.TimeStamp.Date).First();
                         if (true)
                         {
+
                             DateTime currentDay = dr1.TimeStamp.Date;
                             DateTime prevDate = loadmydataDaily[s].Where(a => a.TimeStamp.Date < currentDay).Last().TimeStamp.Date;
-                            Candle prevDayDailyCandle = loadmydataDaily[s].Where(a => a.TimeStamp.Date == prevDate).First();
-                            double prevDayClose = loadmydata5[s].Where(a => a.TimeStamp.Date == prevDate).OrderBy(a => a.TimeStamp).Last().Close;
-
-
-                            double prevDayOpen = prevDayDailyCandle.Open;
-                            double prevDayHigh = prevDayDailyCandle.High;
-                            double prevDayLow = prevDayDailyCandle.Low;
-                            double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
-                            dr.dPP = Math.Round(dailyPivot, 2);
-                            dr.dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
-                            dr.dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
-                            dr.dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
-                            dr.dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
-                            dr.dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
-                            dr.dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
-                            dr.dClose = prevDayClose;
-                            dr.dHigh = prevDayHigh;
-                            dr.dLow = prevDayLow;
-                            dr.dOpen = prevDayOpen;
-                            //pivot calculation for monthly & weekly chart - range is one year
-                            int currentYear = dr.TimeStamp.Date.Year;
-                            int lastYear = currentYear - 1;
-                            if (loadmydata5[s].Where(a => a.TimeStamp.Year == lastYear).Count() > 0)
+                            var query1 = loadmydata5[s].Where(a => a.TimeStamp.Date == prevDate);
+                            if (query1.Count() > 0)
                             {
-                                double lastYearClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).Last().Close;
-                                double lastYearHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).Max(a => a.High);
-                                double lastYearLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).Min(a => a.Low);
-                                double lastYearOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).First().Open;
-                                double yearPivot = (lastYearClose + lastYearHigh + lastYearLow) / 3;
-                                dr.yPP = Math.Round(yearPivot, 2);
-                                dr.yR1 = Math.Round((2 * yearPivot) - lastYearLow, 2);
-                                dr.yS1 = Math.Round((2 * yearPivot) - lastYearHigh, 2);
-                                dr.yR2 = Math.Round(yearPivot + (lastYearHigh - lastYearLow), 2);
-                                dr.yS2 = Math.Round(yearPivot - (lastYearHigh - lastYearLow), 2);
-                                dr.yR3 = Math.Round(yearPivot + 2 * (lastYearHigh - lastYearLow), 2);
-                                dr.yS3 = Math.Round(yearPivot - 2 * (lastYearHigh - lastYearLow), 2);
-                                dr.yClose = lastYearClose;
-                                dr.yHigh = lastYearHigh;
-                                dr.yLow = lastYearLow;
-                                dr.yOpen = lastYearOpen;
-                                dr.YearStartDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).First().TimeStamp.Date;
-                                dr.YearEndDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).Last().TimeStamp.Date;
-                            }
-
-                            //pivot calculation for daily chart -range is one month
+                                Candle prevDayDailyCandle = loadmydataDaily[s].Where(a => a.TimeStamp.Date == prevDate).First();
+                                double prevDayClose = query1.OrderBy(a => a.TimeStamp).Last().Close;
 
 
-                            int currentMonth = dr.TimeStamp.Month;
-                            int lastMonth = currentMonth - 1;
-                            if (lastMonth == 0)
-                            {
-                                lastMonth = 12;
-                                currentYear = currentYear - 1;
-                            }
-                            if (loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Count() > 0)
-                            {
-                                double lastMonthClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp.Date).Last().Close;
-                                double lastMonthHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Max(a => a.High);
-                                double lastMonthLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Min(a => a.Low);
-                                double lastMonthOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).First().Open;
-                                double monthPivot = (lastMonthClose + lastMonthHigh + lastMonthLow) / 3;
-                                dr.mPP = Math.Round(monthPivot, 2);
-                                dr.mR1 = Math.Round((2 * monthPivot) - lastMonthLow, 2);
-                                dr.mS1 = Math.Round((2 * monthPivot) - lastMonthHigh, 2);
-                                dr.mR2 = Math.Round(monthPivot + (lastMonthHigh - lastMonthLow), 2);
-                                dr.mS2 = Math.Round(monthPivot - (lastMonthHigh - lastMonthLow), 2);
-                                dr.mR3 = Math.Round(monthPivot + 2 * (lastMonthHigh - lastMonthLow), 2);
-                                dr.mS3 = Math.Round(monthPivot - 2 * (lastMonthHigh - lastMonthLow), 2);
-                                dr.mClose = lastMonthClose;
-                                dr.mHigh = lastMonthHigh;
-                                dr.mLow = lastMonthLow;
-                                dr.mOpen = lastMonthOpen;
-                                dr.MonthStartDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp).First().TimeStamp.Date;
-                                dr.MonthEndDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp).Last().TimeStamp.Date;
-                                try
+                                double prevDayOpen = prevDayDailyCandle.Open;
+                                double prevDayHigh = prevDayDailyCandle.High;
+                                double prevDayLow = prevDayDailyCandle.Low;
+                                double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
+                                dr.dPP = Math.Round(dailyPivot, 2);
+                                dr.dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
+                                dr.dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
+                                dr.dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
+                                dr.dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
+                                dr.dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
+                                dr.dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
+                                dr.dClose = prevDayClose;
+                                dr.dHigh = prevDayHigh;
+                                dr.dLow = prevDayLow;
+                                dr.dOpen = prevDayOpen;
+                                //pivot calculation for monthly & weekly chart - range is one year
+                                int currentYear = dr.TimeStamp.Date.Year;
+                                int lastYear = currentYear - 1;
+                                if (loadmydata5[s].Where(a => a.TimeStamp.Year == lastYear).Count() > 0)
                                 {
-                                    dr.curMonthClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).OrderBy(a => a.TimeStamp).Last().Close;
-                                    dr.curMonthHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).Max(a => a.High);
-                                    dr.curMonthLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).Min(a => a.Low);
-                                    dr.curMonthOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).First().Open;
+                                    double lastYearClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).Last().Close;
+                                    double lastYearHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).Max(a => a.High);
+                                    double lastYearLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).Min(a => a.Low);
+                                    double lastYearOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).First().Open;
+                                    double yearPivot = (lastYearClose + lastYearHigh + lastYearLow) / 3;
+                                    dr.yPP = Math.Round(yearPivot, 2);
+                                    dr.yR1 = Math.Round((2 * yearPivot) - lastYearLow, 2);
+                                    dr.yS1 = Math.Round((2 * yearPivot) - lastYearHigh, 2);
+                                    dr.yR2 = Math.Round(yearPivot + (lastYearHigh - lastYearLow), 2);
+                                    dr.yS2 = Math.Round(yearPivot - (lastYearHigh - lastYearLow), 2);
+                                    dr.yR3 = Math.Round(yearPivot + 2 * (lastYearHigh - lastYearLow), 2);
+                                    dr.yS3 = Math.Round(yearPivot - 2 * (lastYearHigh - lastYearLow), 2);
+                                    dr.yClose = lastYearClose;
+                                    dr.yHigh = lastYearHigh;
+                                    dr.yLow = lastYearLow;
+                                    dr.yOpen = lastYearOpen;
+                                    dr.YearStartDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).First().TimeStamp.Date;
+                                    dr.YearEndDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == lastYear).OrderBy(a => a.TimeStamp.Date).Last().TimeStamp.Date;
                                 }
-                                catch
+
+                                //pivot calculation for daily chart -range is one month
+
+
+                                int currentMonth = dr.TimeStamp.Month;
+                                int lastMonth = currentMonth - 1;
+                                if (lastMonth == 0)
                                 {
-                                }
-                            }
-                            currentYear = dr.TimeStamp.Year;
-
-                            //pivot calculation for 30 Min & 60 Min chart - range is 1 week
-
-
-                            int curretnWeek = GetWeekOfMonth(dr.TimeStamp.Date);
-                            int lastWeek = curretnWeek - 1;
-                            if (lastWeek == 0)
-                            {
-                                if (currentMonth == 1 && curretnWeek == 1)
-                                {
+                                    lastMonth = 12;
                                     currentYear = currentYear - 1;
-                                    currentMonth = 12;
-                                    curretnWeek = GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
                                 }
-                                else if (curretnWeek == 1)
+                                if (loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Count() > 0)
                                 {
-                                    currentMonth = 12;
-                                    curretnWeek = GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
+                                    double lastMonthClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp.Date).Last().Close;
+                                    double lastMonthHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Max(a => a.High);
+                                    double lastMonthLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).Min(a => a.Low);
+                                    double lastMonthOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).First().Open;
+                                    double monthPivot = (lastMonthClose + lastMonthHigh + lastMonthLow) / 3;
+                                    dr.mPP = Math.Round(monthPivot, 2);
+                                    dr.mR1 = Math.Round((2 * monthPivot) - lastMonthLow, 2);
+                                    dr.mS1 = Math.Round((2 * monthPivot) - lastMonthHigh, 2);
+                                    dr.mR2 = Math.Round(monthPivot + (lastMonthHigh - lastMonthLow), 2);
+                                    dr.mS2 = Math.Round(monthPivot - (lastMonthHigh - lastMonthLow), 2);
+                                    dr.mR3 = Math.Round(monthPivot + 2 * (lastMonthHigh - lastMonthLow), 2);
+                                    dr.mS3 = Math.Round(monthPivot - 2 * (lastMonthHigh - lastMonthLow), 2);
+                                    dr.mClose = lastMonthClose;
+                                    dr.mHigh = lastMonthHigh;
+                                    dr.mLow = lastMonthLow;
+                                    dr.mOpen = lastMonthOpen;
+                                    dr.MonthStartDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp).First().TimeStamp.Date;
+                                    dr.MonthEndDate = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == lastMonth).OrderBy(a => a.TimeStamp).Last().TimeStamp.Date;
+                                    try
+                                    {
+                                        dr.curMonthClose = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).OrderBy(a => a.TimeStamp).Last().Close;
+                                        dr.curMonthHigh = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).Max(a => a.High);
+                                        dr.curMonthLow = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).Min(a => a.Low);
+                                        dr.curMonthOpen = loadmydataDaily[s].Where(a => a.TimeStamp.Year == currentYear && a.TimeStamp.Month == dr.TimeStamp.Month).First().Open;
+                                    }
+                                    catch
+                                    {
+                                    }
                                 }
-                            }
+                                currentYear = dr.TimeStamp.Year;
 
-                            DateTime thisWeekMonday = dr.TimeStamp.Date.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
-                            DateTime thisWeekTuesday = thisWeekMonday.AddDays(1);
-                            DateTime thisWeekWednesday = thisWeekMonday.AddDays(2);
-                            DateTime thisWeekThursday = thisWeekMonday.AddDays(3);
-                            DateTime thisWeekFriday = thisWeekMonday.AddDays(4);
-                            List<DateTime> weekDayList = new List<DateTime>();
-                            weekDayList.Add(thisWeekMonday);
-                            weekDayList.Add(thisWeekTuesday);
-                            weekDayList.Add(thisWeekWednesday);
-                            weekDayList.Add(thisWeekThursday);
-                            weekDayList.Add(thisWeekFriday);
-
-                            var lstWeekData = loadmydataDaily[s].Where(a => weekDayList.Contains(a.TimeStamp.Date)).OrderBy(a => a.TimeStamp.Date).ToList();
+                                //pivot calculation for 30 Min & 60 Min chart - range is 1 week
 
 
-                            DateTime curWeekMonday = dr.TimeStamp.Date.StartOfWeek(DayOfWeek.Monday);
-                            DateTime curWeekTuesday = curWeekMonday.AddDays(1);
-                            DateTime curWeekWednesday = curWeekMonday.AddDays(2);
-                            DateTime curWeekThursday = curWeekMonday.AddDays(3);
-                            DateTime curWeekFriday = curWeekMonday.AddDays(4);
-                            List<DateTime> curweekDayList = new List<DateTime>();
-                            curweekDayList.Add(curWeekMonday);
-                            curweekDayList.Add(curWeekTuesday);
-                            curweekDayList.Add(curWeekWednesday);
-                            curweekDayList.Add(curWeekThursday);
-                            curweekDayList.Add(curWeekFriday);
+                                int curretnWeek = GetWeekOfMonth(dr.TimeStamp.Date);
+                                int lastWeek = curretnWeek - 1;
+                                if (lastWeek == 0)
+                                {
+                                    if (currentMonth == 1 && curretnWeek == 1)
+                                    {
+                                        currentYear = currentYear - 1;
+                                        currentMonth = 12;
+                                        curretnWeek = GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
+                                    }
+                                    else if (curretnWeek == 1)
+                                    {
+                                        currentMonth = 12;
+                                        curretnWeek = GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
+                                    }
+                                }
 
-                            var curWeekData = loadmydataDaily[s].Where(a => curweekDayList.Contains(a.TimeStamp.Date)).OrderBy(a => a.TimeStamp.Date).ToList();
-                            if (curWeekData.Count() > 0)
-                            {
-                                dr.curWeekOpen = curWeekData.First().Open;
-                                dr.curWeekHigh = curWeekData.Max(a => a.High);
-                                dr.curWeekLow = curWeekData.Min(a => a.Low);
-                                dr.curWeekClose = curWeekData.Last().Close;
-                            }
+                                DateTime thisWeekMonday = dr.TimeStamp.Date.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
+                                DateTime thisWeekTuesday = thisWeekMonday.AddDays(1);
+                                DateTime thisWeekWednesday = thisWeekMonday.AddDays(2);
+                                DateTime thisWeekThursday = thisWeekMonday.AddDays(3);
+                                DateTime thisWeekFriday = thisWeekMonday.AddDays(4);
+                                List<DateTime> weekDayList = new List<DateTime>();
+                                weekDayList.Add(thisWeekMonday);
+                                weekDayList.Add(thisWeekTuesday);
+                                weekDayList.Add(thisWeekWednesday);
+                                weekDayList.Add(thisWeekThursday);
+                                weekDayList.Add(thisWeekFriday);
 
-                            if (lstWeekData.Count() > 0)
-                            {
+                                var lstWeekData = loadmydataDaily[s].Where(a => weekDayList.Contains(a.TimeStamp.Date)).OrderBy(a => a.TimeStamp.Date).ToList();
 
-                                double lastWeekclose = lstWeekData.Last().Close;
-                                double lastWeekHigh = lstWeekData.Max(a => a.High);
-                                double lastWeekLow = lstWeekData.Min(a => a.Low);
-                                double lastWeekOpen = lstWeekData.First().Open;
-                                double weekPivot = (lastWeekclose + lastWeekHigh + lastWeekLow) / 3;
-                                dr.wPP = Math.Round(weekPivot, 2);
-                                dr.wR1 = Math.Round((2 * weekPivot) - lastWeekLow, 2);
-                                dr.wS1 = Math.Round((2 * weekPivot) - lastWeekHigh, 2);
-                                dr.wR2 = Math.Round(weekPivot + (lastWeekHigh - lastWeekLow), 2);
-                                dr.wS2 = Math.Round(weekPivot - (lastWeekHigh - lastWeekLow), 2);
-                                dr.wR3 = Math.Round(weekPivot + 2 * (lastWeekHigh - lastWeekLow), 2);
-                                dr.wS3 = Math.Round(weekPivot - 2 * (lastWeekHigh - lastWeekLow), 2);
-                                dr.wClose = lastWeekclose;
-                                dr.wHigh = lastWeekHigh;
-                                dr.wLow = lastWeekLow;
-                                dr.wOpen = lastWeekOpen;
-                                dr.WeekStartDate = lstWeekData.First().TimeStamp.Date;
-                                dr.WeekEndDate = lstWeekData.Last().TimeStamp.Date;
 
+                                DateTime curWeekMonday = dr.TimeStamp.Date.StartOfWeek(DayOfWeek.Monday);
+                                DateTime curWeekTuesday = curWeekMonday.AddDays(1);
+                                DateTime curWeekWednesday = curWeekMonday.AddDays(2);
+                                DateTime curWeekThursday = curWeekMonday.AddDays(3);
+                                DateTime curWeekFriday = curWeekMonday.AddDays(4);
+                                List<DateTime> curweekDayList = new List<DateTime>();
+                                curweekDayList.Add(curWeekMonday);
+                                curweekDayList.Add(curWeekTuesday);
+                                curweekDayList.Add(curWeekWednesday);
+                                curweekDayList.Add(curWeekThursday);
+                                curweekDayList.Add(curWeekFriday);
+
+                                var curWeekData = loadmydataDaily[s].Where(a => curweekDayList.Contains(a.TimeStamp.Date)).OrderBy(a => a.TimeStamp.Date).ToList();
+                                if (curWeekData.Count() > 0)
+                                {
+                                    dr.curWeekOpen = curWeekData.First().Open;
+                                    dr.curWeekHigh = curWeekData.Max(a => a.High);
+                                    dr.curWeekLow = curWeekData.Min(a => a.Low);
+                                    dr.curWeekClose = curWeekData.Last().Close;
+                                }
+
+                                if (lstWeekData.Count() > 0)
+                                {
+
+                                    double lastWeekclose = lstWeekData.Last().Close;
+                                    double lastWeekHigh = lstWeekData.Max(a => a.High);
+                                    double lastWeekLow = lstWeekData.Min(a => a.Low);
+                                    double lastWeekOpen = lstWeekData.First().Open;
+                                    double weekPivot = (lastWeekclose + lastWeekHigh + lastWeekLow) / 3;
+                                    dr.wPP = Math.Round(weekPivot, 2);
+                                    dr.wR1 = Math.Round((2 * weekPivot) - lastWeekLow, 2);
+                                    dr.wS1 = Math.Round((2 * weekPivot) - lastWeekHigh, 2);
+                                    dr.wR2 = Math.Round(weekPivot + (lastWeekHigh - lastWeekLow), 2);
+                                    dr.wS2 = Math.Round(weekPivot - (lastWeekHigh - lastWeekLow), 2);
+                                    dr.wR3 = Math.Round(weekPivot + 2 * (lastWeekHigh - lastWeekLow), 2);
+                                    dr.wS3 = Math.Round(weekPivot - 2 * (lastWeekHigh - lastWeekLow), 2);
+                                    dr.wClose = lastWeekclose;
+                                    dr.wHigh = lastWeekHigh;
+                                    dr.wLow = lastWeekLow;
+                                    dr.wOpen = lastWeekOpen;
+                                    dr.WeekStartDate = lstWeekData.First().TimeStamp.Date;
+                                    dr.WeekEndDate = lstWeekData.Last().TimeStamp.Date;
+
+                                }
                             }
                         }
 
@@ -470,8 +530,6 @@ namespace BAL
                         //}
                     }
                     // assign values here
-
-
 
                 });
 

@@ -222,6 +222,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppDateTime.cs" />
     <Compile Include="DialogBoxes\TechnicalParameters.cs">
       <SubType>Form</SubType>
     </Compile>

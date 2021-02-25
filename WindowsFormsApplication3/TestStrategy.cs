@@ -281,7 +281,7 @@ namespace _15MCE
                 this.rgvStocks.DataSource = x;
             }
 
-            foreach(var x1 in this.rgvStocks.Rows)
+            foreach (var x1 in this.rgvStocks.Rows)
             {
                 x1.Cells[0].ReadOnly = true;
             }
@@ -365,7 +365,7 @@ namespace _15MCE
 
         }
 
-       
+
         public void FinalWork(System.Threading.Tasks.Task[] allTask)
         {
             rgvStocks.Columns.Clear();
@@ -941,6 +941,21 @@ namespace _15MCE
                         cdTransformation.Append(c.Low);
 
                     cdTransformation.Append(",");
+                    cdTransformation.Append(c.dPP);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR1);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR2);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR3);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS1);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS2);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS3);
+
+                    cdTransformation.Append(",");
                     cdTransformation.Append(c.Low);
                     cdTransformation.Append(",");
                     cdTransformation.Append(c.Open);
@@ -991,6 +1006,21 @@ namespace _15MCE
                         cdTransformation.Append(c.AllIndicators.BollingerBand.Lower);
                     else
                         cdTransformation.Append(c.Low);
+
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dPP);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR1);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR2);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dR3);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS1);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS2);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.dS3);
 
                     cdTransformation.Append(",");
                     cdTransformation.Append(c.High);

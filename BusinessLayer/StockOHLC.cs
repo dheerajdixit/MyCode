@@ -12,8 +12,6 @@ using System.Xml.Serialization;
 
 namespace BAL
 {
-
-
     public class StockOHLC
     {
         public Dictionary<string, List<Candle>> GetOHLC(DateTime startDate, DateTime endDate, int period, ProgressDelegate myProgres)
@@ -154,6 +152,7 @@ namespace BAL
                 filter1.Add(this.PrepareFirstLevelOfFiltering(allCandles, selectedIdea, t).Select(b =>
                     new StrategyModel
                     {
+                        Open = b.Open,
                         Stock = b.Stock,
                         Volume = b.Volume * b.Close,
                         Range = this.GetRange(b, selectedIdea.Range),
@@ -161,7 +160,6 @@ namespace BAL
                         Close = b.Close,
                         High = b.High,
                         Low = b.Low,
-                        Open = b.Open,
                         PreviousClose = b.PreviousCandle.Close,
                         Imp1 = 0,
                         Trade = b.Trade,
@@ -310,33 +308,23 @@ namespace BAL
                              where ((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))
                              select b;
             }
-            else if (selctedIdea.CandleType == CandleType.ThreeCandle)
-            {
-                //enumerable = from b in enumerable
-                //    where ((b.CandleType != "G") || ((b.PreviousCandle.CandleType != "R") || ((b.PreviousCandle.PreviousCandle.CandleType != "G") || ((b.Close <= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.Low >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.AllIndicators.MACD.histogram <= 0.0) || ((b.Close <= b.PreviousCandle.PreviousCandle.Close) || ((b.AllIndicators.SMA20 <= b.AllIndicators.SMA50) || (b.AllIndicators.SMA50 <= b.AllIndicators.SMA200))))))))) ? ((IEnumerable<Candle>) (((b.CandleType == "R") && ((b.PreviousCandle.CandleType == "G") && ((b.PreviousCandle.PreviousCandle.CandleType == "R") && ((b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.High > Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.AllIndicators.MACD.histogram < 0.0) && ((b.Close < b.PreviousCandle.PreviousCandle.Close) && (b.AllIndicators.SMA20 < b.AllIndicators.SMA50)))))))) && (b.AllIndicators.SMA50 < b.AllIndicators.SMA200))) : ((IEnumerable<Candle>) true)
-                //    select b;
-            }
             if (selctedIdea.Name == "BollingerBand3")
             {
                 enumerable = from b in enumerable
                              where
-                             (
-                             (b.PreviousCandle.CandleType == "G" && b.PreviousCandle.Close > b.AllIndicators.BollingerBand.Upper && b.CandleType == "R")
-                             ||
-                              (b.PreviousCandle.CandleType == "R" && b.PreviousCandle.Close < b.AllIndicators.BollingerBand.Lower && b.CandleType == "G"))
+                             b.TimeStamp.Minute == 15 &&
+                            ((b.Close < b.AllIndicators.BollingerBand.Lower) || (b.Close > b.AllIndicators.BollingerBand.Upper))
+                            && (b.High> Math.Max(b.AllIndicators.SMA20,b.AllIndicators.SMA50) && b.Low< Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50)) 
                              select b;
-
 
                 foreach (var c in enumerable)
                 {
-
                     if (c.CandleType == "R")
-                        c.Trade = Trade.BUY;
-                    else if (c.CandleType == "G")
                         c.Trade = Trade.SELL;
+                    else if (c.CandleType == "G")
+                        c.Trade = Trade.BUY;
                     else
                         c.Trade = Trade.NONE;
-
                 }
             }
 
@@ -386,10 +374,7 @@ namespace BAL
                 }
                 open = c.Open;
                 c = c.PreviousCandle;
-
-
             }
-
             return new Candle { High = max.Count() > 0 ? max.Max() : d.Close, Low = min.Count() > 0 ? min.Min() : d.Close, Open = open, Close = d.Close };
         }
 

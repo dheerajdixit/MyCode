@@ -32,7 +32,6 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.StockSelection.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\_15MCE.IdeaCreator.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\_15MCE.TestStrategy.resources
-C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\_15MCE.TScan.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.Properties.Resources.resources
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.csproj.GenerateResource.Cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\NSA.exe.licenses
@@ -102,3 +101,4 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Windows
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\StaticData\Settings.json
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\StaticData\Stocks.json
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\bin\Debug\StaticData\Strategy.json
+C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\WindowsFormsApplication3\obj\Debug\_15MCE.Pivot.resources

@@ -7,6 +7,8 @@ namespace Model
 
     public class StockData
     {
+        public string InstrumentId { get; set; }
+        public double EntryPrice { get; set; }
         public double ATR14 { get; set; }
 
         public int Category { get; set; }

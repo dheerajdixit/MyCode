@@ -23,3 +23,16 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\Zerodha.dll
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\Zerodha.pdb
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.dll
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\CommonLayer.pdb
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.xml
+C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
+C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.dll
+C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.pdb

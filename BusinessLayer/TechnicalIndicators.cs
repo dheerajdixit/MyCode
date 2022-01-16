@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Globalization;
+using Skender.Stock.Indicators;
 
 namespace BAL
 {
@@ -24,8 +25,14 @@ namespace BAL
                 bool movingAverage = false;
                 bool macdInd = false;
                 bool bollingerBand = false;
+                bool stochastic = false;
                 foreach (Technical technical in listofIndicators)
                 {
+                    if (technical == Technical.Stochastic)
+                    {
+                        stochastic = true;
+                        continue;
+                    }
                     if (technical == Technical.SuperTrend)
                     {
                         superTrend = true;
@@ -54,14 +61,19 @@ namespace BAL
                     IMovingAverage average = null;
                     IMovingAverage average2 = null;
                     IMovingAverage average3 = null;
+                    IMovingAverage avgStoch = null;
+                    IMovingAverage avgfast = null;
+                    IEnumerable<Skender.Stock.Indicators.Quote> c = new List<Skender.Stock.Indicators.Quote>();
+
 
                     if (movingAverage)
                     {
                         average = new SimpleMovingAverage(20);
                         average2 = new SimpleMovingAverage(50);
                         average3 = new SimpleMovingAverage(200);
-                    }
 
+                    }
+                   
                     double num5 = 0.0;
                     double num6 = 0.0;
                     double num7 = 0.0;
@@ -91,6 +103,7 @@ namespace BAL
                                 candle.AllIndicators.BollingerBand = average.BollingerBand;
                             }
                             average2.AddSample((float)Convert.ToDouble(candle.Close));
+
                             candle.AllIndicators.SMA50 = average2.Average;
                             average3.AddSample((float)Convert.ToDouble(candle.Close));
                             candle.AllIndicators.SMA200 = average3.Average;
@@ -202,11 +215,33 @@ namespace BAL
                             candle.AllIndicators.MACD.macd9 = num5;
                             candle.AllIndicators.MACD.histogram = num8 - num5;
                         }
+                        
                     }
                 });
-                //dictionary = dsList;
+                if (stochastic)
+                {
+                    foreach (var b in dsList)
+                    {
+                        List<Candle> l = b.Value;
+                        List<Quote> quotes = new List<Quote>();
+                        foreach (var c in l)
+                        {
+                            quotes.Add(new Quote { Close = (decimal)c.Close, Date = c.TimeStamp, High = (decimal)c.High, Low = (decimal)c.Low, Open = (decimal)c.Open, Volume = (decimal)c.Volume });
+                        }
+
+                        var stochResult = Skender.Stock.Indicators.Indicator.GetStoch<Quote>(quotes, 14, 3, 3).ToArray();
+                        for (int i = 0; i < l.Count; i++)
+                        {
+                            l[i].AllIndicators.Stochastic = new Stochastic(80, 20, l[i]);
+                            l[i].AllIndicators.Stochastic.fast =Math.Round( (double)(stochResult[i].K??0),2);
+                            l[i].AllIndicators.Stochastic.slow =Math.Round( (double)(stochResult[i].D??0),2);
+                        }
+
+                    }
+                }
             }
             dictionary = new Dictionary<string, List<Candle>>();
+            
             foreach (var a in dsList)
             {
                 List<Candle> l = a.Value;

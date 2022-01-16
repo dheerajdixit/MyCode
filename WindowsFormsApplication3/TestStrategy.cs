@@ -281,7 +281,7 @@ namespace _15MCE
                 this.rgvStocks.DataSource = x;
             }
 
-            foreach(var x1 in this.rgvStocks.Rows)
+            foreach (var x1 in this.rgvStocks.Rows)
             {
                 x1.Cells[0].ReadOnly = true;
             }
@@ -318,41 +318,95 @@ namespace _15MCE
                 //Model.Idea selectedIdea = myideas.Where(a => a.Name == radDropDownList1.SelectedItem.Text).First();
                 foreach (var selectedIdea in myideas.OrderBy(a => a.runOrder))
                 {
-                    StockOHLC stockOHLC = new StockOHLC();
-
-                    //Load Data
-                    Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
-                    allTask.Add(loadmydata);
-                    //loadmydata.Wait();
-                    //Apply indicators
-                    loadmydata.ContinueWith((t0) =>
+                    if (selectedIdea.Name == "Dual_Time_Frame_Momentum")
                     {
-                        SetText("Applying indicators");
-                        Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
-                        allTask.Add(withIndicators);
-                        Task getTradingStocks = withIndicators.ContinueWith((t1) =>
+                        StockOHLC stockOHLC = new StockOHLC();
+
+                        //Load Data
+                        Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
+                        allTask.Add(loadmydata);
+                        loadmydata.ContinueWith((t0) =>
                         {
-                            Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.GetTopMostSolidGapOpenerDayWise(t1.Result, selectedIdea, myProgres));
-                            allTask.Add(getTradedStocks);
-                            Task tradeMyStocks = getTradedStocks.ContinueWith((t2) =>
+                            SetText("Applying stochastic indicators to small timeframe");
+                            Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
+                            withIndicators.ContinueWith((t1) =>
                             {
-                                Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
-                                allTask.Add(getTradedStocks);
-                                calculation.ContinueWith((t3) =>
+                                Task<Dictionary<string, List<Model.Candle>>> loadmydata2 = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval2, myProgres));
+                                allTask.Add(loadmydata2);
+                                loadmydata2.ContinueWith((t2) =>
                                 {
-                                    l.Add(new CustomizedPNL { order = selectedIdea.runOrder, selectedIdea = selectedIdea, Strategyoutput = t3.Result });
+                                    SetText("Applying stochastic indicators to large time frame");
+                                    Task<Dictionary<string, List<Model.Candle>>> withIndicators2 = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t2.Result, selectedIdea.TI, new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
+                                    allTask.Add(withIndicators2);
+
+                                    withIndicators2.ContinueWith((t3) =>
+                                    {
+
+                                        Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.ApplyDualMomentumStrategyModel(t1.Result, t3.Result, selectedIdea, myProgres));
+                                        allTask.Add(getTradedStocks);
+                                        Task tradeMyStocks = getTradedStocks.ContinueWith((t4) =>
+                                        {
+
+                                            var stocksList = t4.Result;
+                                            List<PNL> p = new List<PNL>();
+                                            foreach (var s in stocksList)
+                                            {
+
+                                                p.Add(new PNL { Stock = s.Value.Stock, Date = s.Value.Date, Direction = Enum.GetName(typeof(Model.Trade), s.Value.Trade) });
+                                            }
+                                            l.Add(new CustomizedPNL { order = selectedIdea.runOrder, selectedIdea = selectedIdea, Strategyoutput = p });
+
+
+                                        });
+
+
+
+
+                                    });
 
                                 });
+                            });
+
+                        });
+                    }
+                    else
+                    {
+                        StockOHLC stockOHLC = new StockOHLC();
+
+                        //Load Data
+                        Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
+                        allTask.Add(loadmydata);
+                        //loadmydata.Wait();
+                        //Apply indicators
+                        loadmydata.ContinueWith((t0) =>
+                        {
+                            SetText("Applying indicators");
+                            Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(Convert.ToInt32(ddlStartYear.SelectedItem.Text), Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
+                            allTask.Add(withIndicators);
+                            Task getTradingStocks = withIndicators.ContinueWith((t1) =>
+                            {
+                                Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.GetTopMostSolidGapOpenerDayWise(t1.Result, selectedIdea, myProgres));
+                                allTask.Add(getTradedStocks);
+                                Task tradeMyStocks = getTradedStocks.ContinueWith((t2) =>
+                                {
+                                    Task<List<Model.PNL>> calculation = Task<List<Model.PNL>>.Run(() => stockOHLC.TradeStocks(t2.Result, t1.Result, selectedIdea, myProgres));
+                                    allTask.Add(getTradedStocks);
+                                    calculation.ContinueWith((t3) =>
+                                    {
+                                        l.Add(new CustomizedPNL { order = selectedIdea.runOrder, selectedIdea = selectedIdea, Strategyoutput = t3.Result });
+
+                                    });
                                 //calculation.Wait();
                             });
+                            });
                         });
-                    });
 
 
-                    //loadmydata.Wait();
-                    //Task.WaitAll();
+                        //loadmydata.Wait();
+                        //Task.WaitAll();
+                    }
+                    Task.Factory.ContinueWhenAll(allTask.ToArray(), FinalWork);
                 }
-                Task.Factory.ContinueWhenAll(allTask.ToArray(), FinalWork);
 
             }
             catch (Exception ex)
@@ -365,7 +419,7 @@ namespace _15MCE
 
         }
 
-       
+
         public void FinalWork(System.Threading.Tasks.Task[] allTask)
         {
             rgvStocks.Columns.Clear();
@@ -838,15 +892,15 @@ namespace _15MCE
                     Model.Idea selectedIdea = myideas.Where(a => a.Name == x.Text).First();
                     StockOHLC stockOHLC = new StockOHLC();
                     int year = 2019;
-                    //for (int year = 2015; year <= 2019; year++)
-                    //{
-                    //Load Data
-                    Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(year, Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(year + 1, Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
+            //for (int year = 2015; year <= 2019; year++)
+            //{
+            //Load Data
+            Task<Dictionary<string, List<Model.Candle>>> loadmydata = Task.Run<Dictionary<string, List<Model.Candle>>>(() => stockOHLC.GetOHLC(new DateTime(year, Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(year + 1, Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text)), selectedIdea.Interval, myProgres));
 
-                    //Apply indicators
+            //Apply indicators
 
-                    loadmydata.ContinueWith((t0) =>
-                    {
+            loadmydata.ContinueWith((t0) =>
+    {
                         SetText("Applying indicators");
                         Task<Dictionary<string, List<Model.Candle>>> withIndicators = Task.Run<Dictionary<string, List<Model.Candle>>>(() => TechnicalIndicators.AddIndicators(t0.Result, selectedIdea.TI, new DateTime(year, Convert.ToInt32(ddlStartMonth.SelectedItem.Text), Convert.ToInt32(ddlStartDate.SelectedItem.Text)), new DateTime(Convert.ToInt32(ddlEndYear.SelectedItem.Text), Convert.ToInt32(ddlEndMonth.SelectedItem.Text), Convert.ToInt32(ddlEndDate.SelectedItem.Text))));
                         Task getTradingStocks = withIndicators.ContinueWith((t1) =>
@@ -859,14 +913,14 @@ namespace _15MCE
                                 calculation.ContinueWith((t3) =>
                                 {
                                     consolidated.Add(t3.Result);
-                                    //SetDataSource(t3.Result);
-                                    //SetText("Idea ran successfully");
-                                });
+                            //SetDataSource(t3.Result);
+                            //SetText("Idea ran successfully");
+                        });
                             });
                         });
                     });
-                    //}
-                });
+            //}
+        });
                 //while(consolidated.Count()< radDropDownList1.Items.Count)
                 //{
                 //    Thread.Sleep(10000);

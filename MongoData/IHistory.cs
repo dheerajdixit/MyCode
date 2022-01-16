@@ -52,6 +52,7 @@ namespace MongoData
 
         public List<Candle> GetHistoryFromFile(string folderName, string stockName, DateTime fromDate, DateTime toDate)
         {
+            
             /// ConcurrentBag<Candle> result = new ConcurrentBag<Candle>();
             if (System.IO.File.Exists(folderName + stockName + ".json"))
             {

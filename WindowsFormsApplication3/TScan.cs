@@ -300,6 +300,7 @@ namespace _15MCE
         Kite kite;
         string myAPIKey = "253tendzrkq911h2";
         string mySecret = "g0wzr0vk9cmpypexzhfzkslwn351x0n1";
+        string myRequestToken = string.Empty;
         bool backLiveTest = false;
 
         //bool calculateBrokerage = Convert.ToBoolean(mySettings["Brokerage"]);
@@ -367,6 +368,7 @@ namespace _15MCE
                 risk = Convert.ToDouble(mySettings["risk"]);
                 myAPIKey = Convert.ToString(mySettings["myAPIKey"]);
                 mySecret = Convert.ToString(mySettings["mySecret"]);
+                myRequestToken = Convert.ToString(mySettings["requestToken"]);
                 backLiveTest = Convert.ToBoolean(mySettings["BackLiveTest"]);
                 if (rdoLive.IsChecked)
                 {
@@ -414,6 +416,9 @@ namespace _15MCE
                 try
                 {
                     kite = new Kite(myAPIKey, Debug: true);
+                    if (!DONT_DELETE)
+                        radButton2_Click(this, EventArgs.Empty);
+
                     string loginURL = kite.GetLoginURL();
                     string html = string.Empty;
                     //  txtloginURL.Text = loginURL;
@@ -483,6 +488,103 @@ namespace _15MCE
 
 
         }
+        public void GetDualTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
+        {
+            string HT = "day";
+            string LT = "minute";
+            if (lowerTimeFrame < 100)
+            {
+                LT = lowerTimeFrame + "minute";
+            }
+            else if (lowerTimeFrame == 100)
+            {
+                LT = "day";
+            }
+            if (higherTimeFrame < 100)
+            {
+                HT = higherTimeFrame + "minute";
+            }
+            else if (higherTimeFrame == 100)
+            {
+                HT = "day";
+            }
+
+            if (Convert.ToInt32(txtTam.Text) >= -2)
+            {
+                List<StockData> sGap = new List<StockData>();
+
+                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
+
+                var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
+                foreach (var a in finalStocks)
+                {
+                    try
+                    {
+                        if (a.Value.Trade == Model.Trade.BUY)
+                        {
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "BM",
+                                stopLoss = a.Value.Close - ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
+
+                        }
+                        else if (a.Value.Trade == Model.Trade.SELL)
+                        {
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "SM",
+                                stopLoss = a.Value.Close + ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                dClose = 0,
+                                Close = a.Value.Close
+
+                            });
+
+                        }
+
+
+                       
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+
+                }
+
+                foreach (var s in sGap)
+                {
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+
+                    if (o != null)
+                    {
+                        PlacePartialOrders(o);
+                    }
+
+                }
+
+
+            }
+        }
         public void RefreshData()
         {
             try
@@ -502,34 +604,42 @@ namespace _15MCE
 
                 orderDetails.Clear();
 
+                if (Convert.ToInt16(txtTam.Text) == -2)
+                {
+                    if (!DONT_DELETE) LoadDataDaily();
+                }
 
+                //if (!DONT_DELETE) LoadDataCommon(5);
+                //GetDualTimeFrameStocks(60, 5);
+                //GetDualTimeFrameStocks(30, 5);
 
-                //int t = Convert.ToInt32(txtTam.Text);
-                //if (t == -2)
-                //    LoadData(5);
-                //if (t > -2)
-                //    UpdateOrders(5);
-
-
+                //if (Convert.ToInt16(txtTam.Text) % 2 != 0)
+                //{
+                //    if (!DONT_DELETE) LoadDataCommon(10);
+                //    GetDualTimeFrameStocks(60, 10);
+                //    GetDualTimeFrameStocks(100, 10);
+                //}
                 if ((txtTam.Text == "0" || txtTam.Text == "3" || txtTam.Text == "6" || txtTam.Text == "9" || txtTam.Text == "12" || txtTam.Text == "15" || txtTam.Text == "12"
                         || txtTam.Text == "15" || txtTam.Text == "18" || txtTam.Text == "21" || txtTam.Text == "24" || txtTam.Text == "27" || txtTam.Text == "30" || txtTam.Text == "33"
                         || txtTam.Text == "36" || txtTam.Text == "39" || txtTam.Text == "42" || txtTam.Text == "45" || txtTam.Text == "48" || txtTam.Text == "51" || txtTam.Text == "54"
                         || txtTam.Text == "57" || txtTam.Text == "60" || txtTam.Text == "63" || txtTam.Text == "66" || txtTam.Text == "69"))
                 {
-                    // LoadData(15);
+                    if (!DONT_DELETE) LoadDataCommon(15);
+                    //GetDualTimeFrameStocks(100, 15);
+                    GetDualTimeFrameStocks(60, 15);
                 }
                 if ((txtTam.Text == "3" || txtTam.Text == "9" || txtTam.Text == "15" || txtTam.Text == "21" || txtTam.Text == "27" || txtTam.Text == "33" || txtTam.Text == "39" || txtTam.Text == "45" || txtTam.Text == "51" || txtTam.Text == "57" || txtTam.Text == "63"))
                 {
-                    int t = Convert.ToInt32(txtTam.Text);
-                    if (t == 15)
-                        LoadData(30);
-                    if (t > 15)
-                        UpdateOrders(30);
+                    if (!DONT_DELETE) LoadDataCommon(30);
+                    GetDualTimeFrameStocks(100, 30);
+
                 }
 
                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57"))
                 {
-                    //LoadData(60);
+                    if (!DONT_DELETE) LoadDataCommon(60);
+                    GetDualTimeFrameStocks(100, 60);
+
                 }
                 //UpdateOrders(30);
 
@@ -933,6 +1043,52 @@ namespace _15MCE
 
         }
 
+        public void LoadDataCommon(int period)
+        {
+            try
+            {
+
+                downlodableScrip = AllFNO.ToList();
+                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+                {
+
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute");
+
+                });
+
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        public void LoadDataDaily()
+        {
+            try
+            {
+
+                downlodableScrip = AllFNO.ToList();
+                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+                {
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-150).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "day");
+
+
+                });
+
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+
+
         double GetBody(Candle c)
         {
             return Math.Abs(c.Close - c.Open);
@@ -1023,6 +1179,8 @@ namespace _15MCE
         }
 
 
+
+
         List<StockData> fS1 = new List<StockData>();
         List<string> toptrades = new List<string>();
 
@@ -1059,19 +1217,7 @@ namespace _15MCE
         {
             try
             {
-                finalList.Columns.Clear();
-                finalList.Rows.Clear();
-                finalList.Columns.Add("stock", typeof(string));
-                finalList.Columns.Add("direction", typeof(string));
-                finalList.Columns.Add("per", typeof(double));
-                finalList.Columns.Add("high", typeof(double));
-                finalList.Columns.Add("low", typeof(double));
-                finalList.Columns.Add("isBreakOut", typeof(bool));
-                finalList.Columns.Add("Type", typeof(string));
-                RemoveFiles();
-                orderDetails.Clear();
-                //load data
-                //LoadDailyNPivotsData();
+                TestRunMarketWithoutLogin();
 
 
             }
@@ -2246,22 +2392,7 @@ namespace _15MCE
 
 
             bool orderplaced = false;
-            if (orders.Select("scrip ='" + o.Scrip + "'").Count() == 0)
-            {
-                int tc = 0;
-                if (o.Strategy.Contains("ThirdCandle"))
-                    tc = SMAQuanitty;
-                else if (o.Strategy.Contains("FirstCandle"))
-                    tc = PSAAQuantity;
-                else if (o.Strategy.Contains("Strength"))
-                    tc = SuperTrendQuanaity;
-                else if (o.Strategy.Contains("AllCross"))
-                    tc = _30MinQuantity;
-                else if (o.Strategy.Contains("Gap"))
-                    tc = _60MinQuantity;
-
-                if (tc > 0)
-                {
+           
 
                     //return false;
                     lock (orderPlacement)
@@ -2301,16 +2432,17 @@ namespace _15MCE
 
 
 
-                        drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
-                        orderDetails.Add(drOrderLeg2);
+                        //drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
+                        //orderDetails.Add(drOrderLeg2);
 
 
-                        drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
-                        orderDetails.Add(drOrderLeg3);
+                        //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
+                        //orderDetails.Add(drOrderLeg3);
 
 
                         orderplaced = true;
                         IncrementDecrement(o.Strategy, -1);
+                        /*
                         if (txtSwitchMode.Text != string.Empty)
                         {
                             //return orderplaced;
@@ -2528,13 +2660,13 @@ namespace _15MCE
                                 }
                             }
                         }
-
+                        */
                     }
 
 
 
-                }
-            }
+              
+           
             return orderplaced;
         }
 
@@ -3353,7 +3485,7 @@ namespace _15MCE
                         result = reader.ReadToEnd();
                         reader.Close();
                     }
-                    File.WriteAllText(@"C:\Users\dheeraj_kumar_dixit\Downloads\allData\allData\Backup" + period + "\\" + SymbolName + ".json", result);
+                    File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json", result);
                     ls = TokenChannel.ConvertToJason(result, SymbolName);
                 }
                 else
@@ -3982,18 +4114,7 @@ namespace _15MCE
         StockOHLC o;
         private void btnLive_Click(object sender, EventArgs e)
         {
-            o = new StockOHLC();
-            foreach (string a in AllFNO)
-            {
-                string s = instrToken.Tables[0].Select("tradingsymbol='" + a + "'")[0][0].ToString();
-                UploadData("5minute", s);
-                UploadData("10minute", s);
-                UploadData("15minute", s);
-                UploadData("30minute", s);
-                UploadData("60minute", s);
-                UploadData("day", s);
-            }
-
+            LiveRunMarket();
         }
 
         private void UploadData(string v, string InstrumentToken)
@@ -4375,201 +4496,9 @@ namespace _15MCE
         List<VolumeFilter> vList = new List<VolumeFilter>();
         private void goLiveTimer_Tick(object sender, EventArgs e)
         {
-            if (File.ReadAllText(@"C:\Jai Sri Thakur Ji\reset.txt") == "R")
-            {
-                CloseAllOrder();
-                if (txtSwitchMode.Text == string.Empty)
-                {
-                    ResetScreen(0);
-                }
-
-            }
-            //if (txtTam.Text == "12")
-            //{
-            //    SuperTrendQuanaity = 5;
-            //    CloseAllOrder();
-            //    if (txtSwitchMode.Text == string.Empty)
-            //    {
-            //        ResetScreen(0);
-            //    }
-            //}
-            else if (txtTam.Text == "-2")
-            {
-                //  SMAQuanitty = 5;
-                //CloseAllOrder();
-                //if (txtSwitchMode.Text == string.Empty)
-                //{
-                //    ResetScreen(0);
-                //}
-            }
-
-            //psrIdentification.Clear();
-            //DataSet ds = GetQuotesZerodha(APIKEY, ACCESSTOKEN);
-            int prevOrders = orders.Rows.Count;
             RefreshData();
-            int currentOrders = orders.Rows.Count;
+            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 3);
 
-
-
-            if (orders != null && orders.Rows.Count > 0)
-            {
-
-
-                if (orders.Rows.Count > 0)
-                {
-                    radLabel13.Text = "Today's Risk : " + TodaysRisk.ToString();
-                    radLabel14.Text = "Today's Target : " + TodaysTarget.ToString();
-                    //if (lowestTotalToday <= 0)
-                    //{
-                    //    radLabel13.Text = "Today's Risk : " + TodaysRisk.ToString();
-
-                    //}
-                    //if (HighestProfitToday >= 0)
-                    //{
-
-                    //}
-                    //Here you will write the following code in the code section
-                    double currentValue = Math.Round(Convert.ToDouble(orders.AsEnumerable().Sum(a => a.Field<double>("target") + a.Field<double>("BP"))), 1);
-                    //if (currentValue > 15000)
-                    //{
-                    //    radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                    //    ResetScreen(currentValue);
-                    //}
-                    //else if (currentValue < -5000)
-                    //{
-                    //    radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                    //    ResetScreen(currentValue);
-                    //}
-
-                    //if (orders.Rows.Count == 2)
-                    //{
-                    //    if (currentValue >= 0)
-                    //    {
-                    //        CloseAllOrder();
-                    //        if (txtSwitchMode.Text == string.Empty)
-                    //        {
-
-                    //            radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                    //            ResetScreen(currentValue);
-                    //        }
-                    //        else
-                    //        {
-                    //            RadMessageBox.Show("No profit no loss :  " + currentValue);
-                    //            goLiveTimer.Stop();
-                    //        }
-                    //    }
-                    //}
-
-
-
-                    //if (currentValue < lowestTotalToday)
-                    //{
-                    //    lowestTotalToday = currentValue;
-                    //    //   radLabel14.Text = "Today's Target : " + (lowestTotalToday + MaxRisk * 4);
-                    //}
-
-                    if (HighestProfitToday < currentValue)
-                    {
-                        HighestProfitToday = currentValue;
-                    }
-
-                    //if (HighestProfitToday > MaxRisk * 0.6)
-                    //{
-                    //    radLabel13.Text = "Today's Risk : " + (HighestProfitToday - MaxRisk * 2);
-                    //}
-
-                    if (currentValue < TodaysRisk && OriginalTradeCount > 2)
-                    {
-                        //CloseAllOrder();
-                        //if (txtSwitchMode.Text == string.Empty)
-                        //{
-
-                        //    radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                        //    ResetScreen(currentValue);
-                        //}
-                        //else
-                        //{
-                        //    RadMessageBox.Show("Stoploss Hit : Today's Total " + currentValue);
-                        //    goLiveTimer.Stop();
-                        //}
-                    }
-                    if (currentValue >= TodaysTarget)
-                    {
-                        //CloseAllOrder();
-                        //if (txtSwitchMode.Text == string.Empty)
-                        //{
-
-                        //    radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                        //    ResetScreen(currentValue);
-                        //}
-                        //else
-                        //{
-                        //    RadMessageBox.Show("Target Hit : Today's Total " + currentValue);
-                        //    goLiveTimer.Stop();
-                        //}
-                    }
-                }
-            }
-
-            if (Convert.ToInt16(txtTam.Text) >= 69 /*|| (orders.Rows.Count > 0 && orders != null && txtTam.Text != "-2" && orders.AsEnumerable().Sum(r => r.Field<int>("quantity")) == 0)*/)
-            {
-                double currentValue = 0;
-                try
-                {
-
-                    currentValue = Math.Round(Convert.ToDouble(orders.AsEnumerable().Sum(a => a.Field<double>("target")) + orders.AsEnumerable().Sum(a => a.Field<double>("BP"))), 1);
-                    //                    foreach (DataRow drx in orders.Rows)
-                    //                    {
-                    //                        double t = Convert.ToDouble(drx["target"]) + Convert.ToDouble(drx["bp"]);
-                    //                        double e1 = Convert.ToDouble(drx["entry"]);
-                    //                        if (t > 0)
-                    //                        {
-                    //                            analysisData.Where(a => a.Close == e1).First().Token = 1;
-
-                    //                        }
-                    //                        else
-                    //                        {
-                    //                            analysisData.Where(a => a.Close == e1).First().Token = 0;
-                    //                        }
-
-                    //                        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\AI.txt"
-                    //, string.Join(",", analysisData.Select(a => a.Close == e1).ToArray()));
-                    //                    }
-                }
-                catch
-                {
-                }
-                CloseAllOrder();
-
-                if (txtSwitchMode.Text == string.Empty)
-                {
-                    //File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\NEWPL.txt", CurrentTradingDate.ToString() + "," + currentValue.ToString() + Environment.NewLine);
-
-                    radLabel15.Text = Convert.ToString(Convert.ToDouble(radLabel15.Text) + currentValue);
-                    ResetScreen(currentValue);
-                }
-                else
-                {
-                    RadMessageBox.Show("Day End : Today's Total " + currentValue);
-                    goLiveTimer.Stop();
-                }
-            }
-
-            goTimeCount = Convert.ToInt16(txtTam.Text) + 6;
-            txtTam.Text = (Convert.ToInt16(txtTam.Text) + 6).ToString();
-
-
-            radLabelElement1.Text = "Last Candle Updated " + (Convert.ToInt16(txtTam.Text) + 6);
-            LogStatus("Orders & Data refreshed.");
-
-            if (prevOrders != currentOrders && takeBackupOfFiles)
-            {
-                TokenChannel.Backup();
-            }
-            if (string.IsNullOrEmpty(txtSwitchMode.Text))
-            {
-                goLiveTimer.Interval = 2500;
-            }
         }
 
         private static System.TimeZoneInfo INDIAN_ZONE = System.TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -4662,6 +4591,7 @@ namespace _15MCE
                             LoadInstruments();
                             txtSwitchMode.Enabled = true;
                         }
+                        /*
                         DateTime x = System.TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, INDIAN_ZONE); ;
                         if (DONT_DELETE == false && DateTime.Today == CurrentTradingDate && x.Second >= 6 && x.Minute % 5 == 0 && !goLiveTimer.Enabled && txtSwitchMode.Text != string.Empty)
                         {
@@ -4695,7 +4625,7 @@ namespace _15MCE
                                 goLiveTimer_Tick(this, System.EventArgs.Empty);
                                 txtTam.Text = TokenChannel.GetMinuteNumber(CurrentTradingDate).ToString();
                             }
-                        }
+                        }*/
 
                     }
 
@@ -4707,7 +4637,7 @@ namespace _15MCE
                     }
                     if (doLogin)
                     {
-                        checkLogin();
+                        //checkLogin();
                     }
                     if (!backLiveTest)
                     {
@@ -4727,21 +4657,23 @@ namespace _15MCE
 
                         else if (radLabel4.Text == txtMarketStart.Text)
                         {
-                            backTestStatus = false;
-                            if (string.IsNullOrEmpty(txtSwitchMode.Text))
-                            {
-                                goLiveTimer.Interval = 60000;
-                            }
-                            else
-                            {
-                                goLiveTimer.Interval = 1800000;
-                            }
-                            goLiveTimer.Start();
-                            goLiveTimer.Enabled = true;
-                            radLabelElement1.Text = "Live Mode Started";
-                            //CloseOrder();
-                            LogStatus("Market is stared now...");
-                            RefreshData();
+                            /*
+                        backTestStatus = false;
+                        if (string.IsNullOrEmpty(txtSwitchMode.Text))
+                        {
+                            goLiveTimer.Interval = 60000;
+                        }
+                        else
+                        {
+                            goLiveTimer.Interval = 1800000;
+                        }
+                        goLiveTimer.Start();
+                        goLiveTimer.Enabled = true;
+                        radLabelElement1.Text = "Live Mode Started";
+                        //CloseOrder();
+                        LogStatus("Market is stared now...");
+                        RefreshData();
+                            */
                         }
 
 
@@ -4760,8 +4692,46 @@ namespace _15MCE
             }
         }
 
+        public void TestRunMarketWithoutLogin()
+        {
+            backTestStatus = false;
+            goLiveTimer.Interval = 15000;
+            DONT_DELETE = true;
+            goLiveTimer.Start();
+            goLiveTimer.Enabled = true;
+            radLabelElement1.Text = "Test Mode Started";
+            //CloseOrder();
+            LogStatus("Test mode started  now...");
+        }
+        public void TestRunMarket()
+        {
+            LoadAllDateTillDate();
+            backTestStatus = false;
+            goLiveTimer.Interval = 60000;
+            DONT_DELETE = true;
+            goLiveTimer.Start();
+            goLiveTimer.Enabled = true;
+            radLabelElement1.Text = "Test Mode Started";
+            //CloseOrder();
+            LogStatus("Test mode started  now...");
+            //RefreshData();
+        }
 
+        public void LiveRunMarket()
+        {
+            backTestStatus = false;
 
+            txtTam.Text = TokenChannel.GetMinuteNumber(CurrentTradingDate).ToString();
+            DONT_DELETE = false;
+            goLiveTimer.Interval = 300000;
+
+            goLiveTimer.Start();
+            goLiveTimer.Enabled = true;
+            radLabelElement1.Text = "Live Mode Started";
+            //CloseOrder();
+            LogStatus("Market is stared now...");
+            RefreshData();
+        }
 
 
 
@@ -4817,16 +4787,19 @@ namespace _15MCE
         }
         private void radButton2_Click(object sender, EventArgs e)
         {
+
             try
+
             {
+                Login();
                 int i = 0;
                 XDocument doc = XDocument.Load(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
                 var Users = doc.Descendants("user");
 
                 foreach (Kite kiteUser in kUsers)
                 {
-                    string apiSecret = Users.ToList()[i].Descendants("apisecret").First().Value;
-                    string requestToken = Users.ToList()[i].Descendants("requestToken").First().Value;
+                    string apiSecret = mySecret;
+                    string requestToken = myRequestToken;
                     User Kuser = kiteUser.GenerateSession(requestToken, apiSecret);
                     ACCESSTOKEN = Kuser.AccessToken;
                     string userAccessToken = Kuser.AccessToken;
@@ -4836,6 +4809,9 @@ namespace _15MCE
                     isLogin = true;
                     i++;
                 }
+                LoadInstruments();
+                txtSwitchMode.Enabled = true;
+
             }
             catch (Exception ex)
             {
@@ -5523,7 +5499,7 @@ namespace _15MCE
             if (rdoLive.IsChecked)
             {
                 backLiveTest = false;
-                panel1.Visible = true;
+                //  panel1.Visible = true;
                 panel1.Height = 700;
                 panel1.Refresh();
                 LogStatus("Application Mode is changed from Simulation to Live.");
@@ -5531,7 +5507,7 @@ namespace _15MCE
             else if (rdoSimulation.IsChecked)
             {
                 backLiveTest = true;
-                panel1.Visible = false;
+                // panel1.Visible = false;
                 LogStatus("Application Mode is changed from Live to Simulation.");
 
             }
@@ -5601,11 +5577,11 @@ namespace _15MCE
 
 
                     System.Windows.Forms.WebBrowser w = new System.Windows.Forms.WebBrowser();
-                    w.Url = new Uri(lUrl);
-                    w.Dock = DockStyle.Fill;
-                    w.Name = uid;
-                    w.DocumentCompleted += w_DocumentCompleted;
-                    panel1.Controls.Add(w);
+                    //w.Url = new Uri(lUrl);
+                    //w.Dock = DockStyle.Fill;
+                    //w.Name = uid;
+                    //w.DocumentCompleted += w_DocumentCompleted;
+                    //panel1.Controls.Add(w);
                 }
             }
             catch (Exception ex)
@@ -5628,7 +5604,7 @@ namespace _15MCE
                     }
 
                 }
-                //  isLogin = true;
+                isLogin = true;
                 if (remainingLogins == 0)
                 {
                     panel1.Visible = false;
@@ -5646,77 +5622,77 @@ namespace _15MCE
                     return;
                 }
 
-                foreach (Control c in panel1.Controls)
-                {
-                    XDocument doc = XDocument.Load(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
-                    var Users = doc.Descendants("user");
+                /* foreach (Control c in panel1.Controls)
+                 {
+                     XDocument doc = XDocument.Load(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
+                     var Users = doc.Descendants("user");
 
-                    try
-                    {
-                        bool detailsfilled = true;
-                        System.Windows.Forms.WebBrowser x = (System.Windows.Forms.WebBrowser)c;
-                        string param1 = HttpUtility.ParseQueryString(x.Url.Query).Get("request_token");
+                     try
+                     {
+                         bool detailsfilled = true;
+                         System.Windows.Forms.WebBrowser x = (System.Windows.Forms.WebBrowser)c;
+                         string param1 = HttpUtility.ParseQueryString(x.Url.Query).Get("request_token");
 
-                        XElement user = (from el in doc.Root.Elements("user")
-                                         where (string)el.Attribute("id") == c.Name.ToString()
-                                         select el).First();
+                         XElement user = (from el in doc.Root.Elements("user")
+                                          where (string)el.Attribute("id") == c.Name.ToString()
+                                          select el).First();
 
-                        if (!string.IsNullOrEmpty(param1) && x.Visible)
-                        {
+                         if (!string.IsNullOrEmpty(param1) && x.Visible)
+                         {
 
-                            user.Descendants("requestToken").First().Value = param1;
-                            doc.Save(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
-                            x.Visible = false;
-                        }
-                        else if (x.Visible)
-                        {
+                             user.Descendants("requestToken").First().Value = param1;
+                             doc.Save(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
+                             x.Visible = false;
+                         }
+                         else if (x.Visible)
+                         {
 
-                            foreach (HtmlElement he in x.Document.GetElementsByTagName("input"))
-                            {
-                                if (he.GetAttribute("value") == "")
-                                    detailsfilled = false;
+                             foreach (HtmlElement he in x.Document.GetElementsByTagName("input"))
+                             {
+                                 if (he.GetAttribute("value") == "")
+                                     detailsfilled = false;
 
-                                if (he.GetAttribute("type") == "text" && he.GetAttribute("maxlength") == "6" && he.GetAttribute("value") == "")
-                                {
-                                    he.SetAttribute("value", x.Name);
-                                    he.SetAttribute("innerText", x.Name);
-                                }
+                                 if (he.GetAttribute("type") == "text" && he.GetAttribute("maxlength") == "6" && he.GetAttribute("value") == "")
+                                 {
+                                     he.SetAttribute("value", x.Name);
+                                     he.SetAttribute("innerText", x.Name);
+                                 }
 
-                                if (he.GetAttribute("type") == "password" && he.GetAttribute("maxlength") == "30" && he.GetAttribute("value") == "" && he.GetAttribute("label") == "")
-                                {
-                                    he.SetAttribute("value", userLoginValues[x.Name]);
-                                    he.SetAttribute("innerText", userLoginValues[x.Name]);
-                                }
+                                 if (he.GetAttribute("type") == "password" && he.GetAttribute("maxlength") == "30" && he.GetAttribute("value") == "" && he.GetAttribute("label") == "")
+                                 {
+                                     he.SetAttribute("value", userLoginValues[x.Name]);
+                                     he.SetAttribute("innerText", userLoginValues[x.Name]);
+                                 }
 
-                                if (he.GetAttribute("type") == "password" && he.GetAttribute("label") == "PIN")
-                                {
-                                    string ques = he.GetAttribute("label");
-                                    try
-                                    {
-                                        he.SetAttribute("value", userLoginValues.Last().Value);
-                                        he.SetAttribute("innerText", userLoginValues.Last().Value);
-                                    }
+                                 if (he.GetAttribute("type") == "password" && he.GetAttribute("label") == "PIN")
+                                 {
+                                     string ques = he.GetAttribute("label");
+                                     try
+                                     {
+                                         he.SetAttribute("value", userLoginValues.Last().Value);
+                                         he.SetAttribute("innerText", userLoginValues.Last().Value);
+                                     }
 
-                                    catch
-                                    {
+                                     catch
+                                     {
 
-                                    }
+                                     }
 
-                                }
+                                 }
 
-                            }
+                             }
 
 
-                            if (detailsfilled)
-                            {
-                                x.Document.GetElementsByTagName("button")[0].InvokeMember("click");
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
+                             if (detailsfilled)
+                             {
+                                 x.Document.GetElementsByTagName("button")[0].InvokeMember("click");
+                             }
+                         }
+                     }
+                     catch
+                     {
+                     }
+                 }*/
             }
 
         }
@@ -6033,17 +6009,7 @@ namespace _15MCE
 
         private void txtBackupNSync_Click(object sender, EventArgs e)
         {
-            TokenChannel.Backup();
-            SyncData sd = new SyncData();
-            List<SyncData> lsd = new List<SyncData>();
-            sd.Minute = Convert.ToInt32(txtTam.Text);
-            sd.HighestProfitToday = HighestProfitToday;
-            sd.LowestRiskToday = lowestTotalToday;
-            DataSet dsJ = new DataSet();
-            dsJ.Tables.Add(orders.Copy());
-            sd.orders = dsJ.GetXml();
-            lsd.Add(sd);
-            SerializeObject<List<SyncData>>(lsd, @"C:\Jai Sri Thakur Ji\Sync\Sync.xml");
+            TestRunMarket();
         }
         static List<Candle> analysisData = new List<Candle>();
         private void radButton1_Click_1(object sender, EventArgs e)

@@ -10,6 +10,7 @@ namespace Model
         public string Name { get; set; }
 
         public int Interval { get; set; }
+        public int Interval2 { get; set; }
 
         public int Stoploss { get; set; }
 

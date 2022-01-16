@@ -9,3 +9,13 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonL
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\CommonLayer\bin\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\CommonLayer\bin\Debug\CommonLayer.pdb
+C:\Trading Tool Latest\MyCode\CommonLayer\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\CommonLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Trading Tool Latest\MyCode\CommonLayer\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
+C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb

@@ -4,3 +4,9 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\ModelLa
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\ModelLayer\obj\Debug\ModelLayer.pdb
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\ModelLayer\obj\Debug\ModelLayer.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\ModelLayer\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\ModelLayer\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb

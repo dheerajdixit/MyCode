@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "a1e3851a-797c-425f-be29-3acb27483a9e": {
+      "ProjectGuid": "a1e3851a-797c-425f-be29-3acb27483a9e",
+      "DisplayName": "NSA",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "418d5fa3-6b47-42d5-bd5a-9f92039b1fea": {
+      "ProjectGuid": "418d5fa3-6b47-42d5-bd5a-9f92039b1fea",
+      "DisplayName": "MongoData",
+      "ColorIndex": 1
+    },
+    "f751e274-f659-47e3-9d4d-d568d3179bc7": {
+      "ProjectGuid": "f751e274-f659-47e3-9d4d-d568d3179bc7",
+      "DisplayName": "BusinessLayer",
+      "ColorIndex": 2
+    },
+    "a9312271-8737-451f-abff-e7e614c0a35c": {
+      "ProjectGuid": "a9312271-8737-451f-abff-e7e614c0a35c",
+      "DisplayName": "DataLayer",
+      "ColorIndex": 3
+    },
+    "8623ad45-3b7a-4f45-b1ee-090688641a58": {
+      "ProjectGuid": "8623ad45-3b7a-4f45-b1ee-090688641a58",
+      "DisplayName": "ModelLayer",
+      "ColorIndex": 4
+    },
+    "4620120b-b5e2-40d0-af31-99ada4a728c4": {
+      "ProjectGuid": "4620120b-b5e2-40d0-af31-99ada4a728c4",
+      "DisplayName": "CommonLayer",
+      "ColorIndex": 5
+    }
+  },
+  "NextColorIndex": 6
+}

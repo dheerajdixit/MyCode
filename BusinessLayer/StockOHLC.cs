@@ -290,10 +290,117 @@ namespace BAL
             return dictionary2;
         }
 
+        public Dictionary<Guid, StrategyModel> ApplyDualMomentumStrategyModel(Dictionary<string, List<Candle>> myTestDataLargeTimeFrame, Dictionary<string, List<Candle>> myTestDatSmallTimeFrame, Idea selectedIdea, ProgressDelegate myProgres)
+        {
+            Time t = this.GetTime(selectedIdea);
+            ConcurrentBag<List<StrategyModel>> filter1 = new ConcurrentBag<List<StrategyModel>>();
+
+
+            Parallel.ForEach<KeyValuePair<string, List<Candle>>>(myTestDataLargeTimeFrame, delegate (KeyValuePair<string, List<Candle>> stock)
+            {
+
+                List<Candle> allCandlesHigherTimeFrame = stock.Value;
+                List<Candle> allCandlesLowerTimeFrame = myTestDatSmallTimeFrame[stock.Key];
+
+                if (myProgres != null)
+                {
+                    myProgres($"Collecting first candle for all days for {stock.Key}");
+                }
+                List<StrategyModel> selector = new List<StrategyModel>();
+
+
+                filter1.Add(this.FilterDualTimeFrameMomentumStocks(allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
+                    new StrategyModel
+                    {
+                        Stock = b.Stock,
+                        Volume = b.Volume * b.Close,
+                        Range = this.GetRange(b, selectedIdea.Range),
+                        Date = b.TimeStamp,
+                        Close = b.Close,
+                        High = b.High,
+                        Low = b.Low,
+                        Open = b.Open,
+                        PreviousClose = b.PreviousCandle.Close,
+                        Imp1 = 0,
+                        Trade = b.Trade,
+                        CurrentCandle = b,
+                    }).ToList());
+            });
+            Dictionary<Guid, StrategyModel> result = new Dictionary<Guid, StrategyModel>();
+            foreach (var p in filter1)
+            {
+                foreach (var q in p)
+                    result.Add(Guid.NewGuid(), q);
+
+            }
+
+            return result;
+        }
+
         public void InsertHistory(string collectionName, int period, string json)
         {
             new DataAcess().InsertHistory(collectionName, period, json);
         }
+
+        public IEnumerable<Candle> FilterDualTimeFrameMomentumStocks(List<Candle> higherTimeFrame, List<Candle> lowerTimeFrame, Idea selctedIdea, Time t)
+        {
+            IEnumerable<Candle> enumerable = lowerTimeFrame;
+
+
+            enumerable = from b in enumerable
+                         where
+                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified))
+                         select b;
+
+
+            foreach (var c in enumerable)
+            {
+                DateTime reverstalTimeStmap = c.TimeStamp;
+
+                //Candle lastCandleOnLargeTimeFrame =
+                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal)
+                {
+                    var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
+                    if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
+                    {
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish)
+                        {
+                            c.Trade = Trade.BUY;
+                        }
+                        else
+                        {
+                            c.Trade = Trade.NONE;
+                        }
+                    }
+                }
+                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal)
+                {
+                    c.Trade = Trade.SELL;
+                    var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
+                    if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
+                    {
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish)
+                        {
+                            c.Trade = Trade.SELL;
+                        }
+                        else
+                        {
+                            c.Trade = Trade.NONE;
+                        }
+                    }
+                }
+                else
+                    c.Trade = Trade.NONE;
+
+            }
+
+            var x = enumerable.Where(a => a.Trade != Trade.NONE);
+
+            return x;
+
+
+        }
+
 
         public IEnumerable<Candle> PrepareFirstLevelOfFiltering(List<Candle> allCandles, Idea selctedIdea, Time t)
         {
@@ -316,6 +423,28 @@ namespace BAL
                 //    where ((b.CandleType != "G") || ((b.PreviousCandle.CandleType != "R") || ((b.PreviousCandle.PreviousCandle.CandleType != "G") || ((b.Close <= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.Low >= Math.Max(Math.Max(Math.Max(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) || ((b.AllIndicators.MACD.histogram <= 0.0) || ((b.Close <= b.PreviousCandle.PreviousCandle.Close) || ((b.AllIndicators.SMA20 <= b.AllIndicators.SMA50) || (b.AllIndicators.SMA50 <= b.AllIndicators.SMA200))))))))) ? ((IEnumerable<Candle>) (((b.CandleType == "R") && ((b.PreviousCandle.CandleType == "G") && ((b.PreviousCandle.PreviousCandle.CandleType == "R") && ((b.Close < Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.High > Math.Min(Math.Min(Math.Min(b.AllIndicators.SMA20, b.AllIndicators.SMA50), b.AllIndicators.SMA200), b.AllIndicators.SuperTrend.SuperTrendValue)) && ((b.AllIndicators.MACD.histogram < 0.0) && ((b.Close < b.PreviousCandle.PreviousCandle.Close) && (b.AllIndicators.SMA20 < b.AllIndicators.SMA50)))))))) && (b.AllIndicators.SMA50 < b.AllIndicators.SMA200))) : ((IEnumerable<Candle>) true)
                 //    select b;
             }
+
+            if (selctedIdea.Name == "Dual_Time_Frame_Momentum")
+            {
+                enumerable = from b in enumerable
+                             where
+                             ((b.AllIndicators.Stochastic.OscillatorReversal != OscillatorReversal.NotIdentified))
+                             select b;
+
+
+                foreach (var c in enumerable)
+                {
+
+                    if (c.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BullishReversal)
+                        c.Trade = Trade.BUY;
+                    else if (c.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BearishReversal)
+                        c.Trade = Trade.SELL;
+                    else
+                        c.Trade = Trade.NONE;
+
+                }
+            }
+
             if (selctedIdea.Name == "BollingerBand3")
             {
                 enumerable = from b in enumerable

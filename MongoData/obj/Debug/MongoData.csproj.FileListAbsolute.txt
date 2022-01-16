@@ -33,3 +33,21 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoDa
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csproj.CopyComplete
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoData.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoData.pdb
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoDB.Bson.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoDB.Driver.Core.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoDB.Driver.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoDB.Driver.GridFS.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\MongoDB.Driver.Legacy.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\Newtonsoft.Json.dll
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\CommonLayer.pdb
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\MongoData\bin\Debug\Newtonsoft.Json.xml
+C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.csproj.CopyComplete
+C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.dll
+C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.pdb

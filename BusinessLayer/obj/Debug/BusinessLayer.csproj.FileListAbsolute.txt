@@ -20,3 +20,27 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\Busines
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.csproj.CopyComplete
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\BusinessLayer\obj\Debug\BusinessLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\BusinessLayer.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\BusinessLayer.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\DataLayer.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\MongoData.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Zerodha.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\MongoDB.Driver.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\MongoDB.Bson.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\MongoDB.Driver.Core.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\CommonLayer.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\DataLayer.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Newtonsoft.Json.xml
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\MongoData.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Zerodha.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.CopyComplete
+C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.pdb
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.dll
+C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.xml

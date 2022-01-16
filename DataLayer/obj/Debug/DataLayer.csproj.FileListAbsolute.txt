@@ -18,3 +18,23 @@ C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLay
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csprojAssemblyReference.cache
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csproj.CopyComplete
 C:\Users\dheeraj_kumar_dixit\Downloads\NSALatest-master\NSALatest-master\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\DataLayer.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\DataLayer.pdb
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\CommonLayer.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\ModelLayer.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\MongoData.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\Zerodha.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\MongoDB.Driver.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\MongoDB.Bson.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\MongoDB.Driver.Core.dll
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\CommonLayer.pdb
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\ModelLayer.pdb
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\MongoData.pdb
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\Zerodha.pdb
+C:\Trading Tool Latest\MyCode\DataLayer\bin\Debug\Newtonsoft.Json.xml
+C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.csproj.AssemblyReference.cache
+C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileInputs.cache
+C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CopyComplete
+C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.dll
+C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.pdb

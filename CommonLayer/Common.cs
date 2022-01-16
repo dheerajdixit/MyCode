@@ -9,10 +9,10 @@ namespace CommonFeatures
     
     public class Common
     {
-        public static string stockFileName = @"C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsFormsApplication3\StaticData\Stocks.json";
-        public static string eqFileName = @"C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsFormsApplication3\StaticData\AllEQ.json";
-        public static string settingFileName = @"C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsFormsApplication3\StaticData\Settings.json";
-        public static string strategyFileName = @"C:\Users\dheeraj.dixit\Downloads\NSA-master\NSA-master\WindowsFormsApplication3\StaticData\Strategy.json";
+        public static string stockFileName = @"StaticData\Stocks.json";
+        public static string eqFileName = @"StaticData\AllEQ.json";
+        public static string settingFileName = @"StaticData\Settings.json";
+        public static string strategyFileName = @"StaticData\Strategy.json";
 
         public static List<StockInventory> GetEQStocks()
         {

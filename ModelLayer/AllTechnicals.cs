@@ -19,6 +19,8 @@ namespace Model
         public double SMA200 { get; set; }
 
         public BollingerBand BollingerBand { get; set; }
+
+        public Stochastic Stochastic { get; set; }
     }
 }
 

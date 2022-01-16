@@ -25,6 +25,10 @@ namespace BAL
         {
             if (this.samples.Count == this.samples.Length)
             {
+                if(this.total==float.NaN)
+                {
+                    this.total = 0f;
+                }
                 this.total -= this.samples.Value;
             }
             this.samples.Value = val;
@@ -53,6 +57,20 @@ namespace BAL
                     throw new ApplicationException("Number of samples is 0.");
                 }
                 return (this.total / ((float)this.samples.Count));
+            }
+        }
+        public float Min
+        {
+            get
+            {
+                return this.samples.Min();
+            }
+        }
+        public float Max
+        {
+            get
+            {
+                return this.samples.Max();
             }
         }
 

@@ -9,7 +9,8 @@ namespace Model
         SimpleMovingAverage,
         MACD,
         RSI,
-        BollingerBand
+        BollingerBand,
+        Stochastic
     }
 }
 

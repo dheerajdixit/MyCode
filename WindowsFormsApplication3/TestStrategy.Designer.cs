@@ -135,6 +135,10 @@ namespace _15MCE
             Telerik.WinControls.UI.RadListDataItem radListDataItem96 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem97 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem98 = new Telerik.WinControls.UI.RadListDataItem();
+            Telerik.WinControls.UI.RadListDataItem radListDataItem99 = new Telerik.WinControls.UI.RadListDataItem();
+            Telerik.WinControls.UI.RadListDataItem radListDataItem100 = new Telerik.WinControls.UI.RadListDataItem();
+            Telerik.WinControls.UI.RadListDataItem radListDataItem101 = new Telerik.WinControls.UI.RadListDataItem();
+            Telerik.WinControls.UI.RadListDataItem radListDataItem102 = new Telerik.WinControls.UI.RadListDataItem();
             this.telerikMetroBlueTheme1 = new Telerik.WinControls.Themes.TelerikMetroBlueTheme();
             this.orderDetailBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -274,7 +278,7 @@ namespace _15MCE
             this.radDropDownList1.DropDownAnimationEnabled = false;
             this.radDropDownList1.Location = new System.Drawing.Point(46, 10);
             this.radDropDownList1.Name = "radDropDownList1";
-            this.radDropDownList1.Size = new System.Drawing.Size(125, 24);
+            this.radDropDownList1.Size = new System.Drawing.Size(125, 20);
             this.radDropDownList1.TabIndex = 5;
             this.radDropDownList1.Text = "radDropDownList1";
             // 
@@ -432,7 +436,7 @@ namespace _15MCE
             this.ddlStartDate.Items.Add(radListDataItem31);
             this.ddlStartDate.Location = new System.Drawing.Point(271, 12);
             this.ddlStartDate.Name = "ddlStartDate";
-            this.ddlStartDate.Size = new System.Drawing.Size(55, 24);
+            this.ddlStartDate.Size = new System.Drawing.Size(55, 20);
             this.ddlStartDate.TabIndex = 8;
             // 
             // ddlStartMonth
@@ -464,7 +468,7 @@ namespace _15MCE
             this.ddlStartMonth.Items.Add(radListDataItem43);
             this.ddlStartMonth.Location = new System.Drawing.Point(332, 12);
             this.ddlStartMonth.Name = "ddlStartMonth";
-            this.ddlStartMonth.Size = new System.Drawing.Size(55, 24);
+            this.ddlStartMonth.Size = new System.Drawing.Size(55, 20);
             this.ddlStartMonth.TabIndex = 9;
             // 
             // ddlStartYear
@@ -476,56 +480,60 @@ namespace _15MCE
             radListDataItem47.Text = "2018";
             radListDataItem48.Text = "2019";
             radListDataItem49.Text = "2020";
+            radListDataItem50.Text = "2021";
+            radListDataItem51.Text = "2022";
             this.ddlStartYear.Items.Add(radListDataItem44);
             this.ddlStartYear.Items.Add(radListDataItem45);
             this.ddlStartYear.Items.Add(radListDataItem46);
             this.ddlStartYear.Items.Add(radListDataItem47);
             this.ddlStartYear.Items.Add(radListDataItem48);
             this.ddlStartYear.Items.Add(radListDataItem49);
+            this.ddlStartYear.Items.Add(radListDataItem50);
+            this.ddlStartYear.Items.Add(radListDataItem51);
             this.ddlStartYear.Location = new System.Drawing.Point(393, 12);
             this.ddlStartYear.Name = "ddlStartYear";
-            this.ddlStartYear.Size = new System.Drawing.Size(55, 24);
+            this.ddlStartYear.Size = new System.Drawing.Size(55, 20);
             this.ddlStartYear.TabIndex = 10;
             // 
             // ddlEndYear
             // 
             this.ddlEndYear.DropDownAnimationEnabled = false;
-            radListDataItem50.Text = "2015";
-            radListDataItem51.Text = "2016";
-            radListDataItem52.Text = "2017";
-            radListDataItem53.Text = "2018";
-            radListDataItem54.Text = "2019";
-            radListDataItem55.Text = "2020";
-            this.ddlEndYear.Items.Add(radListDataItem50);
-            this.ddlEndYear.Items.Add(radListDataItem51);
+            radListDataItem52.Text = "2015";
+            radListDataItem53.Text = "2016";
+            radListDataItem54.Text = "2017";
+            radListDataItem55.Text = "2018";
+            radListDataItem56.Text = "2019";
+            radListDataItem57.Text = "2020";
+            radListDataItem58.Text = "2021";
+            radListDataItem59.Text = "2022";
             this.ddlEndYear.Items.Add(radListDataItem52);
             this.ddlEndYear.Items.Add(radListDataItem53);
             this.ddlEndYear.Items.Add(radListDataItem54);
             this.ddlEndYear.Items.Add(radListDataItem55);
+            this.ddlEndYear.Items.Add(radListDataItem56);
+            this.ddlEndYear.Items.Add(radListDataItem57);
+            this.ddlEndYear.Items.Add(radListDataItem58);
+            this.ddlEndYear.Items.Add(radListDataItem59);
             this.ddlEndYear.Location = new System.Drawing.Point(724, 10);
             this.ddlEndYear.Name = "ddlEndYear";
-            this.ddlEndYear.Size = new System.Drawing.Size(55, 24);
+            this.ddlEndYear.Size = new System.Drawing.Size(55, 20);
             this.ddlEndYear.TabIndex = 13;
             // 
             // ddlEndMonth
             // 
             this.ddlEndMonth.DropDownAnimationEnabled = false;
-            radListDataItem56.Text = "1";
-            radListDataItem57.Text = "2";
-            radListDataItem58.Text = "3";
-            radListDataItem59.Text = "4";
-            radListDataItem60.Text = "5";
-            radListDataItem61.Text = "6";
-            radListDataItem62.Text = "7";
-            radListDataItem63.Text = "8";
-            radListDataItem64.Text = "9";
-            radListDataItem65.Text = "10";
-            radListDataItem66.Text = "11";
-            radListDataItem67.Text = "12";
-            this.ddlEndMonth.Items.Add(radListDataItem56);
-            this.ddlEndMonth.Items.Add(radListDataItem57);
-            this.ddlEndMonth.Items.Add(radListDataItem58);
-            this.ddlEndMonth.Items.Add(radListDataItem59);
+            radListDataItem60.Text = "1";
+            radListDataItem61.Text = "2";
+            radListDataItem62.Text = "3";
+            radListDataItem63.Text = "4";
+            radListDataItem64.Text = "5";
+            radListDataItem65.Text = "6";
+            radListDataItem66.Text = "7";
+            radListDataItem67.Text = "8";
+            radListDataItem68.Text = "9";
+            radListDataItem69.Text = "10";
+            radListDataItem70.Text = "11";
+            radListDataItem71.Text = "12";
             this.ddlEndMonth.Items.Add(radListDataItem60);
             this.ddlEndMonth.Items.Add(radListDataItem61);
             this.ddlEndMonth.Items.Add(radListDataItem62);
@@ -534,9 +542,13 @@ namespace _15MCE
             this.ddlEndMonth.Items.Add(radListDataItem65);
             this.ddlEndMonth.Items.Add(radListDataItem66);
             this.ddlEndMonth.Items.Add(radListDataItem67);
+            this.ddlEndMonth.Items.Add(radListDataItem68);
+            this.ddlEndMonth.Items.Add(radListDataItem69);
+            this.ddlEndMonth.Items.Add(radListDataItem70);
+            this.ddlEndMonth.Items.Add(radListDataItem71);
             this.ddlEndMonth.Location = new System.Drawing.Point(663, 10);
             this.ddlEndMonth.Name = "ddlEndMonth";
-            this.ddlEndMonth.Size = new System.Drawing.Size(55, 24);
+            this.ddlEndMonth.Size = new System.Drawing.Size(55, 20);
             this.ddlEndMonth.TabIndex = 12;
             // 
             // radLabel2
@@ -578,41 +590,37 @@ namespace _15MCE
             // ddlEndDate
             // 
             this.ddlEndDate.DropDownAnimationEnabled = false;
-            radListDataItem68.Text = "1";
-            radListDataItem69.Text = "2";
-            radListDataItem70.Text = "3";
-            radListDataItem71.Text = "4";
-            radListDataItem72.Text = "5";
-            radListDataItem73.Text = "6";
-            radListDataItem74.Text = "7";
-            radListDataItem75.Text = "8";
-            radListDataItem76.Text = "9";
-            radListDataItem77.Text = "10";
-            radListDataItem78.Text = "11";
-            radListDataItem79.Text = "12";
-            radListDataItem80.Text = "13";
-            radListDataItem81.Text = "14";
-            radListDataItem82.Text = "15";
-            radListDataItem83.Text = "16";
-            radListDataItem84.Text = "17";
-            radListDataItem85.Text = "18";
-            radListDataItem86.Text = "19";
-            radListDataItem87.Text = "20";
-            radListDataItem88.Text = "21";
-            radListDataItem89.Text = "22";
-            radListDataItem90.Text = "23";
-            radListDataItem91.Text = "24";
-            radListDataItem92.Text = "25";
-            radListDataItem93.Text = "26";
-            radListDataItem94.Text = "27";
-            radListDataItem95.Text = "28";
-            radListDataItem96.Text = "29";
-            radListDataItem97.Text = "30";
-            radListDataItem98.Text = "31";
-            this.ddlEndDate.Items.Add(radListDataItem68);
-            this.ddlEndDate.Items.Add(radListDataItem69);
-            this.ddlEndDate.Items.Add(radListDataItem70);
-            this.ddlEndDate.Items.Add(radListDataItem71);
+            radListDataItem72.Text = "1";
+            radListDataItem73.Text = "2";
+            radListDataItem74.Text = "3";
+            radListDataItem75.Text = "4";
+            radListDataItem76.Text = "5";
+            radListDataItem77.Text = "6";
+            radListDataItem78.Text = "7";
+            radListDataItem79.Text = "8";
+            radListDataItem80.Text = "9";
+            radListDataItem81.Text = "10";
+            radListDataItem82.Text = "11";
+            radListDataItem83.Text = "12";
+            radListDataItem84.Text = "13";
+            radListDataItem85.Text = "14";
+            radListDataItem86.Text = "15";
+            radListDataItem87.Text = "16";
+            radListDataItem88.Text = "17";
+            radListDataItem89.Text = "18";
+            radListDataItem90.Text = "19";
+            radListDataItem91.Text = "20";
+            radListDataItem92.Text = "21";
+            radListDataItem93.Text = "22";
+            radListDataItem94.Text = "23";
+            radListDataItem95.Text = "24";
+            radListDataItem96.Text = "25";
+            radListDataItem97.Text = "26";
+            radListDataItem98.Text = "27";
+            radListDataItem99.Text = "28";
+            radListDataItem100.Text = "29";
+            radListDataItem101.Text = "30";
+            radListDataItem102.Text = "31";
             this.ddlEndDate.Items.Add(radListDataItem72);
             this.ddlEndDate.Items.Add(radListDataItem73);
             this.ddlEndDate.Items.Add(radListDataItem74);
@@ -640,9 +648,13 @@ namespace _15MCE
             this.ddlEndDate.Items.Add(radListDataItem96);
             this.ddlEndDate.Items.Add(radListDataItem97);
             this.ddlEndDate.Items.Add(radListDataItem98);
+            this.ddlEndDate.Items.Add(radListDataItem99);
+            this.ddlEndDate.Items.Add(radListDataItem100);
+            this.ddlEndDate.Items.Add(radListDataItem101);
+            this.ddlEndDate.Items.Add(radListDataItem102);
             this.ddlEndDate.Location = new System.Drawing.Point(602, 9);
             this.ddlEndDate.Name = "ddlEndDate";
-            this.ddlEndDate.Size = new System.Drawing.Size(55, 24);
+            this.ddlEndDate.Size = new System.Drawing.Size(55, 20);
             this.ddlEndDate.TabIndex = 16;
             // 
             // radButton4
@@ -660,14 +672,14 @@ namespace _15MCE
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(46, 414);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(77, 21);
+            this.checkBox1.Size = new System.Drawing.Size(61, 17);
             this.checkBox1.TabIndex = 17;
             this.checkBox1.Text = "Test All";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // TestStrategy
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(954, 480);
             this.Controls.Add(this.checkBox1);

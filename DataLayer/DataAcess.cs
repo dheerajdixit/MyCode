@@ -50,7 +50,7 @@ namespace DAL
                 goto TR_0000;
             }
             h = new TradeHistoryDaily();
-            TR_0000:
+        TR_0000:
             num = Environment.ProcessorCount;
             ParallelOptions parallelOptions = new ParallelOptions();
             parallelOptions.MaxDegreeOfParallelism = num;
@@ -97,8 +97,15 @@ namespace DAL
                 h = new TradeHistory10();
                 goto TR_0000;
             }
-            h = new TradeHistoryDaily();
-            TR_0000:
+            else if (num2 == 100)
+            {
+                h = new TradeHistoryDaily();
+                goto TR_0000;
+            }
+            {
+                h = new TradeHistoryDaily();
+            }
+        TR_0000:
             num = Environment.ProcessorCount;
             ParallelOptions parallelOptions = new ParallelOptions();
             parallelOptions.MaxDegreeOfParallelism = num;
@@ -145,7 +152,7 @@ namespace DAL
                 goto TR_0000;
             }
             history = new TradeHistoryDaily();
-            TR_0000:
+        TR_0000:
             bag.Add(history.GetHistory(InstrumentToken, string.Empty, fromDate, toDate));
             return bag;
         }
@@ -183,7 +190,7 @@ namespace DAL
                 goto TR_0000;
             }
             history = new TradeHistoryDaily();
-            TR_0000:
+        TR_0000:
             history.InsertHistory(collectionName, json);
         }
     }

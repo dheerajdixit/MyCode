@@ -291,6 +291,7 @@ namespace _15MCE
             sma = Convert.ToInt16(mySettings["SMA"]);
             DONT_DELETE = Convert.ToBoolean(mySettings["DoNotRemove"]);
             takeBackupOfFiles = Convert.ToBoolean(mySettings["TakeBackupOfFilesAfterPlacingOrders"]);
+            MaxRisk = Convert.ToDouble(mySettings["Capital"]) * Convert.ToDouble(mySettings["RiskPercent"]) / 100;
         }
         List<Pivots> pList = new List<Pivots>();
         private void radGroupBox1_Click(object sender, EventArgs e)
@@ -532,9 +533,9 @@ namespace _15MCE
                                 High = a.Value.High,
                                 Low = a.Value.Low,
                                 Direction = "BM",
-                                stopLoss = a.Value.Close - ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                stopLoss = a.Value.Low - 0.1,
                                 TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
                                 dClose = 0,
                                 Close = a.Value.Close
                             });
@@ -552,18 +553,19 @@ namespace _15MCE
                                 High = a.Value.High,
                                 Low = a.Value.Low,
                                 Direction = "SM",
-                                stopLoss = a.Value.Close + ((MaxTurnOver * 3 / 100) / (MaxTurnOver / a.Value.Close)),
+                                stopLoss = a.Value.High + 0.1,
                                 TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxTurnOver / a.Value.Close),
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
                                 dClose = 0,
-                                Close = a.Value.Close
+                                Close = a.Value.Close,
+
 
                             });
 
                         }
 
 
-                       
+
                     }
                     catch (Exception ex)
                     {
@@ -573,7 +575,7 @@ namespace _15MCE
 
                 foreach (var s in sGap)
                 {
-                    NSA.Order o = new NSA.Order() { EntryPrice = s.Close, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Direction == "SM" ? s.Low - 0.1 : s.High + 0.1, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
                     if (o != null)
                     {
@@ -2392,87 +2394,156 @@ namespace _15MCE
 
 
             bool orderplaced = false;
-           
 
-                    //return false;
-                    lock (orderPlacement)
+
+            //return false;
+            lock (orderPlacement)
+            {
+
+                string direction = o.TransactionType;
+                double close = o.EntryPrice;
+                double high = o.High;
+                double low = o.Low;
+                string scrip = o.Scrip;
+                int quantity = o.Quantity;
+                double stopLoss = o.Stoploss;
+                string desc = o.Strategy;
+
+                double dayDiff = 0;
+
+
+                DataRow drOrderLeg1 = orders.NewRow();
+                DataRow drOrderLeg2 = orders.NewRow();
+                DataRow drOrderLeg3 = orders.NewRow();
+
+                int lotSize = quantity;
+                double stoplossOrder = direction == "BM" ? stopLoss - (stopLoss * 0.11 / 100) : stopLoss + (stopLoss * 0.11 / 100);
+
+
+                decimal stopLossValue = Convert.ToDecimal(direction == "BM" ? Math.Round(close - stoplossOrder, 1) : Math.Round(stoplossOrder - close, 1));
+                decimal squareOffValue1 = stopLossValue;
+                decimal squareOffValue2 = stopLossValue * 2;
+                decimal squareOffValue3 = stopLossValue * 10;
+
+                double stopLossCoverOrder = Convert.ToDouble(direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1));
+                double diffBS = 0;
+
+
+                drOrderLeg1.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue1, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 1", close, (double)0.0, "Leg 1", (double)0.0, lotSize, "" };
+                orderDetails.Add(drOrderLeg1);
+
+
+
+                //drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
+                //orderDetails.Add(drOrderLeg2);
+
+
+                //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
+                //orderDetails.Add(drOrderLeg3);
+
+
+                orderplaced = true;
+                IncrementDecrement(o.Strategy, -1);
+                /*
+                if (txtSwitchMode.Text != string.Empty)
+                {
+                    //return orderplaced;
+                    if (!backLiveTest)
                     {
-
-                        string direction = o.TransactionType;
-                        double close = o.EntryPrice;
-                        double high = o.High;
-                        double low = o.Low;
-                        string scrip = o.Scrip;
-                        int quantity = o.Quantity;
-                        double stopLoss = o.Stoploss;
-                        string desc = o.Strategy;
-
-                        double dayDiff = 0;
-
-
-                        DataRow drOrderLeg1 = orders.NewRow();
-                        DataRow drOrderLeg2 = orders.NewRow();
-                        DataRow drOrderLeg3 = orders.NewRow();
-
-                        int lotSize = quantity;
-                        double stoplossOrder = direction == "BM" ? stopLoss - (stopLoss * 0.11 / 100) : stopLoss + (stopLoss * 0.11 / 100);
-
-
-                        decimal stopLossValue = Convert.ToDecimal(direction == "BM" ? Math.Round(close - stoplossOrder, 1) : Math.Round(stoplossOrder - close, 1));
-                        decimal squareOffValue1 = stopLossValue;
-                        decimal squareOffValue2 = stopLossValue * 2;
-                        decimal squareOffValue3 = stopLossValue * 10;
-
-                        double stopLossCoverOrder = Convert.ToDouble(direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1));
-                        double diffBS = 0;
-
-
-                        drOrderLeg1.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue1, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 1", close, (double)0.0, "Leg 1", (double)0.0, lotSize, "" };
-                        orderDetails.Add(drOrderLeg1);
-
-
-
-                        //drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
-                        //orderDetails.Add(drOrderLeg2);
-
-
-                        //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
-                        //orderDetails.Add(drOrderLeg3);
-
-
-                        orderplaced = true;
-                        IncrementDecrement(o.Strategy, -1);
-                        /*
-                        if (txtSwitchMode.Text != string.Empty)
+                        foreach (Kite kiteUser in kUsers)
                         {
-                            //return orderplaced;
-                            if (!backLiveTest)
+                            try
                             {
-                                foreach (Kite kiteUser in kUsers)
+                                OrderPlacingMode = Constants.VARIETY_BO;
+                                Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
+           Exchange: Constants.EXCHANGE_NSE,
+           TradingSymbol: scrip,
+           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+           Quantity: lotSize,
+           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+           OrderType: Constants.ORDER_TYPE_LIMIT,
+           Product: Constants.PRODUCT_MIS,
+           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+           //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+           StoplossValue: stopLossValue,
+           SquareOffValue: squareOffValue1,
+           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+           //        SquareOffValue: squareOffValue,
+           Validity: Constants.VALIDITY_DAY,
+           Variety: Constants.VARIETY_BO//,,
+
+
+           );
+                                response = kiteUser.PlaceOrder(
+          Exchange: Constants.EXCHANGE_NSE,
+          TradingSymbol: scrip,
+          TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+          Quantity: lotSize,
+          //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+          OrderType: Constants.ORDER_TYPE_LIMIT,
+          Product: Constants.PRODUCT_MIS,
+          //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+          //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+          StoplossValue: stopLossValue,
+          SquareOffValue: squareOffValue2,
+          Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+          //        SquareOffValue: squareOffValue,
+          Validity: Constants.VALIDITY_DAY,
+          Variety: Constants.VARIETY_BO//,,
+
+
+          );
+                                response = kiteUser.PlaceOrder(
+           Exchange: Constants.EXCHANGE_NSE,
+           TradingSymbol: scrip,
+           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+           Quantity: lotSize,
+           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+           OrderType: Constants.ORDER_TYPE_LIMIT,
+           Product: Constants.PRODUCT_MIS,
+           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+           //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+           StoplossValue: stopLossValue,
+           SquareOffValue: squareOffValue3,
+           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+           //        SquareOffValue: squareOffValue,
+           Validity: Constants.VALIDITY_DAY,
+           Variety: Constants.VARIETY_BO//,,
+
+
+           );
+                            }
+                            catch (Exception ex)
+                            {
+                                //  MessageBox.Show(ex.Message);
+                                if (true)//MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                                 {
                                     try
                                     {
-                                        OrderPlacingMode = Constants.VARIETY_BO;
+                                        OrderPlacingMode = Constants.VARIETY_CO;
                                         Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-                   Exchange: Constants.EXCHANGE_NSE,
-                   TradingSymbol: scrip,
-                   TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                   Quantity: lotSize,
-                   //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                   OrderType: Constants.ORDER_TYPE_LIMIT,
-                   Product: Constants.PRODUCT_MIS,
-                   //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                   //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-                   StoplossValue: stopLossValue,
-                   SquareOffValue: squareOffValue1,
-                   Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+Exchange: Constants.EXCHANGE_NSE,
+TradingSymbol: scrip,
+TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+Quantity: lotSize,
+//Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+OrderType: Constants.ORDER_TYPE_LIMIT,
+Product: Constants.PRODUCT_MIS,
+//StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+//StoplossValue: stopLossValue,
+//SquareOffValue: squareOffValue1,
+Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-                   //        SquareOffValue: squareOffValue,
-                   Validity: Constants.VALIDITY_DAY,
-                   Variety: Constants.VARIETY_BO//,,
+//        SquareOffValue: squareOffValue,
+Validity: Constants.VALIDITY_DAY,
+Variety: Constants.VARIETY_CO//,,
 
 
-                   );
+);
                                         response = kiteUser.PlaceOrder(
                   Exchange: Constants.EXCHANGE_NSE,
                   TradingSymbol: scrip,
@@ -2482,14 +2553,14 @@ namespace _15MCE
                   OrderType: Constants.ORDER_TYPE_LIMIT,
                   Product: Constants.PRODUCT_MIS,
                   //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                  //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-                  StoplossValue: stopLossValue,
-                  SquareOffValue: squareOffValue2,
+                  TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                                                                      //StoplossValue: stopLossValue,
+                                                                      //SquareOffValue: squareOffValue2,
                   Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
                   //        SquareOffValue: squareOffValue,
                   Validity: Constants.VALIDITY_DAY,
-                  Variety: Constants.VARIETY_BO//,,
+                  Variety: Constants.VARIETY_CO//,,
 
 
                   );
@@ -2502,171 +2573,102 @@ namespace _15MCE
                    OrderType: Constants.ORDER_TYPE_LIMIT,
                    Product: Constants.PRODUCT_MIS,
                    //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                   //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-                   StoplossValue: stopLossValue,
-                   SquareOffValue: squareOffValue3,
+                   TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                                                                       //StoplossValue: stopLossValue,
+                                                                       //SquareOffValue: squareOffValue3,
                    Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
                    //        SquareOffValue: squareOffValue,
                    Validity: Constants.VALIDITY_DAY,
-                   Variety: Constants.VARIETY_BO//,,
+                   Variety: Constants.VARIETY_CO//,,
 
 
                    );
                                     }
-                                    catch (Exception ex)
+                                    catch (Exception exCo)
                                     {
-                                        //  MessageBox.Show(ex.Message);
-                                        if (true)//MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                                        try
                                         {
-                                            try
-                                            {
-                                                OrderPlacingMode = Constants.VARIETY_CO;
-                                                Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-        Exchange: Constants.EXCHANGE_NSE,
-        TradingSymbol: scrip,
-        TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-        Quantity: lotSize,
-        //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-        OrderType: Constants.ORDER_TYPE_LIMIT,
-        Product: Constants.PRODUCT_MIS,
-        //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-        TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
-        //StoplossValue: stopLossValue,
-        //SquareOffValue: squareOffValue1,
-        Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+                                            OrderPlacingMode = Constants.VARIETY_REGULAR;
+                                            Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
+    Exchange: Constants.EXCHANGE_NSE,
+    TradingSymbol: scrip,
+    TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+    Quantity: lotSize,
+    //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+    OrderType: Constants.ORDER_TYPE_LIMIT,
+    Product: Constants.PRODUCT_MIS,
+    //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+    //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+    //StoplossValue: stopLossValue,
+    //SquareOffValue: squareOffValue1,
+    Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-        //        SquareOffValue: squareOffValue,
-        Validity: Constants.VALIDITY_DAY,
-        Variety: Constants.VARIETY_CO//,,
+    //        SquareOffValue: squareOffValue,
+    Validity: Constants.VALIDITY_DAY,
+    Variety: Constants.VARIETY_REGULAR//,,
 
+    );
+                                            response = kiteUser.PlaceOrder(
+                      Exchange: Constants.EXCHANGE_NSE,
+                      TradingSymbol: scrip,
+                      TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                      Quantity: lotSize,
+                      //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                      OrderType: Constants.ORDER_TYPE_LIMIT,
+                      Product: Constants.PRODUCT_MIS,
+                      //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                      //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                      //StoplossValue: stopLossValue,
+                      //SquareOffValue: squareOffValue2,
+                      Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-        );
-                                                response = kiteUser.PlaceOrder(
-                          Exchange: Constants.EXCHANGE_NSE,
-                          TradingSymbol: scrip,
-                          TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                          Quantity: lotSize,
-                          //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                          OrderType: Constants.ORDER_TYPE_LIMIT,
-                          Product: Constants.PRODUCT_MIS,
-                          //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                          TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                                                                              //StoplossValue: stopLossValue,
-                                                                              //SquareOffValue: squareOffValue2,
-                          Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-                          //        SquareOffValue: squareOffValue,
-                          Validity: Constants.VALIDITY_DAY,
-                          Variety: Constants.VARIETY_CO//,,
+                      //        SquareOffValue: squareOffValue,
+                      Validity: Constants.VALIDITY_DAY,
+                      Variety: Constants.VARIETY_REGULAR//,,
 
 
-                          );
-                                                response = kiteUser.PlaceOrder(
-                           Exchange: Constants.EXCHANGE_NSE,
-                           TradingSymbol: scrip,
-                           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                           Quantity: lotSize,
-                           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                           OrderType: Constants.ORDER_TYPE_LIMIT,
-                           Product: Constants.PRODUCT_MIS,
-                           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                           TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                                                                               //StoplossValue: stopLossValue,
-                                                                               //SquareOffValue: squareOffValue3,
-                           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+                      );
+                                            response = kiteUser.PlaceOrder(
+                       Exchange: Constants.EXCHANGE_NSE,
+                       TradingSymbol: scrip,
+                       TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                       Quantity: lotSize,
+                       //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                       OrderType: Constants.ORDER_TYPE_LIMIT,
+                       Product: Constants.PRODUCT_MIS,
+                       //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                       //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                       //StoplossValue: stopLossValue,
+                       //SquareOffValue: squareOffValue3,
+                       Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-                           //        SquareOffValue: squareOffValue,
-                           Validity: Constants.VALIDITY_DAY,
-                           Variety: Constants.VARIETY_CO//,,
-
-
-                           );
-                                            }
-                                            catch (Exception exCo)
-                                            {
-                                                try
-                                                {
-                                                    OrderPlacingMode = Constants.VARIETY_REGULAR;
-                                                    Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-            Exchange: Constants.EXCHANGE_NSE,
-            TradingSymbol: scrip,
-            TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-            Quantity: lotSize,
-            //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-            OrderType: Constants.ORDER_TYPE_LIMIT,
-            Product: Constants.PRODUCT_MIS,
-            //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-            //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
-            //StoplossValue: stopLossValue,
-            //SquareOffValue: squareOffValue1,
-            Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-            //        SquareOffValue: squareOffValue,
-            Validity: Constants.VALIDITY_DAY,
-            Variety: Constants.VARIETY_REGULAR//,,
-
-            );
-                                                    response = kiteUser.PlaceOrder(
-                              Exchange: Constants.EXCHANGE_NSE,
-                              TradingSymbol: scrip,
-                              TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                              Quantity: lotSize,
-                              //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                              OrderType: Constants.ORDER_TYPE_LIMIT,
-                              Product: Constants.PRODUCT_MIS,
-                              //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                              //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                              //StoplossValue: stopLossValue,
-                              //SquareOffValue: squareOffValue2,
-                              Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-                              //        SquareOffValue: squareOffValue,
-                              Validity: Constants.VALIDITY_DAY,
-                              Variety: Constants.VARIETY_REGULAR//,,
+                       //        SquareOffValue: squareOffValue,
+                       Validity: Constants.VALIDITY_DAY,
+                       Variety: Constants.VARIETY_REGULAR//,,
 
 
-                              );
-                                                    response = kiteUser.PlaceOrder(
-                               Exchange: Constants.EXCHANGE_NSE,
-                               TradingSymbol: scrip,
-                               TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                               Quantity: lotSize,
-                               //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                               OrderType: Constants.ORDER_TYPE_LIMIT,
-                               Product: Constants.PRODUCT_MIS,
-                               //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                               //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                               //StoplossValue: stopLossValue,
-                               //SquareOffValue: squareOffValue3,
-                               Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-                               //        SquareOffValue: squareOffValue,
-                               Validity: Constants.VALIDITY_DAY,
-                               Variety: Constants.VARIETY_REGULAR//,,
-
-
-                               );
-                                                }
-                                                catch (Exception exMIS)
-                                                {
-                                                    MessageBox.Show(exMIS.Message);
-                                                }
-                                            }
+                       );
                                         }
-
-
+                                        catch (Exception exMIS)
+                                        {
+                                            MessageBox.Show(exMIS.Message);
+                                        }
                                     }
                                 }
+
+
                             }
                         }
-                        */
                     }
+                }
+                */
+            }
 
 
 
-              
-           
+
+
             return orderplaced;
         }
 
@@ -4723,7 +4725,7 @@ namespace _15MCE
 
             txtTam.Text = TokenChannel.GetMinuteNumber(CurrentTradingDate).ToString();
             DONT_DELETE = false;
-            goLiveTimer.Interval = 300000;
+            goLiveTimer.Interval = 900000;
 
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;

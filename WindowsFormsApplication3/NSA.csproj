@@ -351,6 +351,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ALARM.wav" />
     <Content Include="StaticData\Chart.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -46,11 +46,11 @@ namespace Model
         {
             get
             {
-               if(ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.OscillatorStatus== OscillatorStatus.Oversold && this.fast >this.slow)
+               if( this.fast >this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast<= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow )
                 {
                     return OscillatorReversal.BullishReversal;
                 }
-               else if   (ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.OscillatorStatus == OscillatorStatus.Overbought && this.fast < this.slow)
+               else if   ( this.fast < this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast >= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow)
                     {
                         return OscillatorReversal.BearishReversal;
                     }
@@ -61,6 +61,7 @@ namespace Model
             }
         }
 
+        
         public OscillatorStatus OscillatorStatus
         {
             get

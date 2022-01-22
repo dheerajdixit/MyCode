@@ -1,1540 +1,4949 @@
 ﻿[
-    { "StockName": "20MICRONS" },
-    { "StockName": "21STCENMGM" },
-    { "StockName": "3IINFOTECH" },
-    { "StockName": "3MINDIA" },
-    { "StockName": "3PLAND" },
-    { "StockName": "5PAISA" },
-    { "StockName": "63MOONS" },
-    { "StockName": "8KMILES" },
-    { "StockName": "A2ZINFRA" },
-    { "StockName": "AARTIDRUGS" },
-    { "StockName": "AARTIIND" },
-    { "StockName": "AARVEEDEN" },
-    { "StockName": "AAVAS" },
-    { "StockName": "ABAN" },
-    { "StockName": "ABB" },
-    { "StockName": "ABBOTINDIA" },
-    { "StockName": "ABCAPITAL" },
-    { "StockName": "ABFRL" },
-    { "StockName": "ABSLNN50ET" },
-    { "StockName": "ACC" },
-    { "StockName": "ACCELYA" },
-    { "StockName": "ACE" },
-    { "StockName": "ADANIENT" },
-    { "StockName": "ADANIGAS" },
-    { "StockName": "ADANIGREEN" },
-    { "StockName": "ADANIPORTS" },
-    { "StockName": "ADANIPOWER" },
-    { "StockName": "ADANITRANS" },
-    { "StockName": "ADFFOODS" },
-    { "StockName": "ADHUNIK" },
-    { "StockName": "ADHUNIKIND" },
-    { "StockName": "ADLABS" },
-    { "StockName": "ADORWELD" },
-    { "StockName": "ADROITINFO" },
-    { "StockName": "ADSL" },
-    { "StockName": "ADVANIHOTR" },
-    { "StockName": "ADVENZYMES" },
-    { "StockName": "AEGISCHEM" },
-    { "StockName": "AGARIND" },
-    { "StockName": "AGCNET" },
-    { "StockName": "AGLSL" },
-    { "StockName": "AGRITECH" },
-    { "StockName": "AHLEAST" },
-    { "StockName": "AHLUCONT" },
-    { "StockName": "AHLWEST" },
-    { "StockName": "AIAENG" },
-    { "StockName": "AIONJSW" },
-    { "StockName": "AIRAN" },
-    { "StockName": "AJANTPHARM" },
-    { "StockName": "AJMERA" },
-    { "StockName": "AKSHARCHEM" },
-    { "StockName": "AKSHOPTFBR" },
-    { "StockName": "AKZOINDIA" },
-    { "StockName": "ALANKIT" },
-    { "StockName": "ALBERTDAVD" },
-    { "StockName": "ALBK" },
-    { "StockName": "ALEMBICLTD" },
-    { "StockName": "ALICON" },
-    { "StockName": "ALKALI" },
-    { "StockName": "ALKEM" },
-    { "StockName": "ALKYLAMINE" },
-    { "StockName": "ALLCARGO" },
-    { "StockName": "ALLSEC" },
-    { "StockName": "ALMONDZ" },
-    { "StockName": "ALOKTEXT" },
-    { "StockName": "ALPA" },
-    { "StockName": "ALPHAGEO" },
-    { "StockName": "AMARAJABAT" },
-    { "StockName": "AMBER" },
-    { "StockName": "AMBIKCO" },
-    { "StockName": "AMBUJACEM" },
-    { "StockName": "AMDIND" },
-    { "StockName": "AMJLAND" },
-    { "StockName": "AMRUTANJAN" },
-    { "StockName": "ANANTRAJ" },
-    { "StockName": "ANDHRABANK" },
-    { "StockName": "ANDHRACEMT" },
-    { "StockName": "ANDHRSUGAR" },
-    { "StockName": "ANIKINDS" },
-    { "StockName": "ANSALAPI" },
-    { "StockName": "ANSALHSG" },
-    { "StockName": "ANUP" },
-    { "StockName": "APARINDS" },
-    { "StockName": "APCL" },
-    { "StockName": "APCOTEXIND" },
-    { "StockName": "APEX" },
-    { "StockName": "APLAPOLLO" },
-    { "StockName": "APLLTD" },
-    { "StockName": "APOLLO" },
-    { "StockName": "APOLLOHOSP" },
-    { "StockName": "APOLLOTYRE" },
-    { "StockName": "APOLSINHOT" },
-    { "StockName": "APTECHT" },
-    { "StockName": "ARCHIDPLY" },
-    { "StockName": "ARCHIES" },
-    { "StockName": "ARCOTECH" },
-    { "StockName": "ARIES" },
-    { "StockName": "ARIHANT" },
-    { "StockName": "ARIHANTSUP" },
-    { "StockName": "ARMANFIN" },
-    { "StockName": "AROGRANITE" },
-    { "StockName": "ARROWGREEN" },
-    { "StockName": "ARROWTEX" },
-    { "StockName": "ARSHIYA" },
-    { "StockName": "ARSSINFRA" },
-    { "StockName": "ARVIND" },
-    { "StockName": "ARVINDFASN" },
-    { "StockName": "ARVSMART" },
-    { "StockName": "ASAHIINDIA" },
-    { "StockName": "ASAHISONG" },
-    { "StockName": "ASAL" },
-    { "StockName": "ASHAPURMIN" },
-    { "StockName": "ASHIANA" },
-    { "StockName": "ASHIMASYN" },
-    { "StockName": "ASHOKA" },
-    { "StockName": "ASHOKLEY" },
-    { "StockName": "ASIANHOTNR" },
-    { "StockName": "ASIANPAINT" },
-    { "StockName": "ASIANTILES" },
-    { "StockName": "ASPINWALL" },
-    { "StockName": "ASTEC" },
-    { "StockName": "ASTERDM" },
-    { "StockName": "ASTRAL" },
-    { "StockName": "ASTRAMICRO" },
-    { "StockName": "ASTRAZEN" },
-    { "StockName": "ASTRON" },
-    { "StockName": "ATFL" },
-    { "StockName": "ATLANTA" },
-    { "StockName": "ATUL" },
-    { "StockName": "ATULAUTO" },
-    { "StockName": "AUBANK" },
-    { "StockName": "AURIONPRO" },
-    { "StockName": "AUROPHARMA" },
-    { "StockName": "AUSOMENT" },
-    { "StockName": "AUTOAXLES" },
-    { "StockName": "AUTOIND" },
-    { "StockName": "AVADHSUGAR" },
-    { "StockName": "AVANTIFEED" },
-    { "StockName": "AVTNPL" },
-    { "StockName": "AXISBANK" },
-    { "StockName": "AXISCADES" },
-    { "StockName": "AXISGOLD" },
-    { "StockName": "AXISNIFTY" },
-    { "StockName": "AYMSYNTEX" },
-    { "StockName": "BAGFILMS" },
-    { "StockName": "BAJAJ-AUTO" },
-    { "StockName": "BAJAJCON" },
-    { "StockName": "BAJAJELEC" },
-    { "StockName": "BAJAJFINSV" },
-    { "StockName": "BAJAJHIND" },
-    { "StockName": "BAJAJHLDNG" },
-    { "StockName": "BAJFINANCE" },
-    { "StockName": "BALAJITELE" },
-    { "StockName": "BALAMINES" },
-    { "StockName": "BALKRISHNA" },
-    { "StockName": "BALKRISIND" },
-    { "StockName": "BALLARPUR" },
-    { "StockName": "BALMLAWRIE" },
-    { "StockName": "BALPHARMA" },
-    { "StockName": "BALRAMCHIN" },
-    { "StockName": "BANARBEADS" },
-    { "StockName": "BANARISUG" },
-    { "StockName": "BANCOINDIA" },
-    { "StockName": "BANDHANBNK" },
-    { "StockName": "BANG" },
-    { "StockName": "BANKBARODA" },
-    { "StockName": "BANKBEES" },
-    { "StockName": "BANKINDIA" },
-    { "StockName": "BANSWRAS" },
-    { "StockName": "BARTRONICS" },
-    { "StockName": "BASF" },
-    { "StockName": "BASML" },
-    { "StockName": "BATAINDIA" },
-    { "StockName": "BAYERCROP" },
-    { "StockName": "BBL" },
-    { "StockName": "BBTC" },
-    { "StockName": "BCG" },
-    { "StockName": "BDL" },
-    { "StockName": "BEARDSELL" },
-    { "StockName": "BEDMUTHA" },
-    { "StockName": "BEL" },
-    { "StockName": "BEML" },
-    { "StockName": "BEPL" },
-    { "StockName": "BERGEPAINT" },
-    { "StockName": "BFINVEST" },
-    { "StockName": "BFUTILITIE" },
-    { "StockName": "BGRENERGY" },
-    { "StockName": "BHAGERIA" },
-    { "StockName": "BHAGYANGR" },
-    { "StockName": "BHAGYAPROP" },
-    { "StockName": "BHANDARI" },
-    { "StockName": "BHARATFIN" },
-    { "StockName": "BHARATFORG" },
-    { "StockName": "BHARATGEAR" },
-    { "StockName": "BHARATRAS" },
-    { "StockName": "BHARATWIRE" },
-    { "StockName": "BHARTIARTL" },
-    { "StockName": "BHEL" },
-    { "StockName": "BIGBLOC" },
-    { "StockName": "BILENERGY" },
-    { "StockName": "BINDALAGRO" },
-    { "StockName": "BIOCON" },
-    { "StockName": "BIRLACABLE" },
-    { "StockName": "BIRLACORPN" },
-    { "StockName": "BIRLAMONEY" },
-    { "StockName": "BKMINDST" },
-    { "StockName": "BLISSGVS" },
-    { "StockName": "BLKASHYAP" },
-    { "StockName": "BLS" },
-    { "StockName": "BLUECOAST" },
-    { "StockName": "BLUEDART" },
-    { "StockName": "BLUESTARCO" },
-    { "StockName": "BODALCHEM" },
-    { "StockName": "BOMDYEING" },
-    { "StockName": "BOROSIL" },
-    { "StockName": "BOSCHLTD" },
-    { "StockName": "BPCL" },
-    { "StockName": "BPL" },
-    { "StockName": "BRIGADE" },
-    { "StockName": "BRITANNIA" },
-    { "StockName": "BRNL" },
-    { "StockName": "BROOKS" },
-    { "StockName": "BSE" },
-    { "StockName": "BSELINFRA" },
-    { "StockName": "BSL" },
-    { "StockName": "BSLGOLDETF" },
-    { "StockName": "BSLNIFTY" },
-    { "StockName": "BSOFT" },
-    { "StockName": "BURNPUR" },
-    { "StockName": "BUTTERFLY" },
-    { "StockName": "BYKE" },
-    { "StockName": "CADILAHC" },
-    { "StockName": "CALSOFT" },
-    { "StockName": "CAMLINFINE" },
-    { "StockName": "CANBK" },
-    { "StockName": "CANFINHOME" },
-    { "StockName": "CANTABIL" },
-    { "StockName": "CAPACITE" },
-    { "StockName": "CAPLIPOINT" },
-    { "StockName": "CAPTRUST" },
-    { "StockName": "CARBORUNIV" },
-    { "StockName": "CAREERP" },
-    { "StockName": "CARERATING" },
-    { "StockName": "CASTROLIND" },
-    { "StockName": "CCL" },
-    { "StockName": "CDSL" },
-    { "StockName": "CEATLTD" },
-    { "StockName": "CEBBCO" },
-    { "StockName": "CELEBRITY" },
-    { "StockName": "CELESTIAL" },
-    { "StockName": "CENTENKA" },
-    { "StockName": "CENTEXT" },
-    { "StockName": "CENTRALBK" },
-    { "StockName": "CENTRUM" },
-    { "StockName": "CENTUM" },
-    { "StockName": "CENTURYPLY" },
-    { "StockName": "CENTURYTEX" },
-    { "StockName": "CERA" },
-    { "StockName": "CEREBRAINT" },
-    { "StockName": "CESC" },
-    { "StockName": "CESCVENT" },
-    { "StockName": "CGCL" },
-    { "StockName": "CGPOWER" },
-    { "StockName": "CHALET" },
-    { "StockName": "CHAMBLFERT" },
-    { "StockName": "CHEMFAB" },
-    { "StockName": "CHENNPETRO" },
-    { "StockName": "CHOLAFIN" },
-    { "StockName": "CHOLAHLDNG" },
-    { "StockName": "CHROMATIC" },
-    { "StockName": "CIGNITITEC" },
-    { "StockName": "CIMMCO" },
-    { "StockName": "CINELINE" },
-    { "StockName": "CINEVISTA" },
-    { "StockName": "CIPLA" },
-    { "StockName": "CKFSL" },
-    { "StockName": "CLEDUCATE" },
-    { "StockName": "CLNINDIA" },
-    { "StockName": "CMICABLES" },
-    { "StockName": "CNOVAPETRO" },
-    { "StockName": "COALINDIA" },
-    { "StockName": "COCHINSHIP" },
-    { "StockName": "COFFEEDAY" },
-    { "StockName": "COLPAL" },
-    { "StockName": "COMPINFO" },
-    { "StockName": "COMPUSOFT" },
-    { "StockName": "CONCOR" },
-    { "StockName": "CONFIPET" },
-    { "StockName": "CONSOFINVT" },
-    { "StockName": "CONTROLPR" },
-    { "StockName": "CORALFINAC" },
-    { "StockName": "CORDSCABLE" },
-    { "StockName": "COROMANDEL" },
-    { "StockName": "CORPBANK" },
-    { "StockName": "COSMOFILMS" },
-    { "StockName": "COX&KINGS" },
-    { "StockName": "CPSEETF" },
-    { "StockName": "CREDITACC" },
-    { "StockName": "CREST" },
-    { "StockName": "CRISIL" },
-    { "StockName": "CRMFGETF" },
-    { "StockName": "CROMPTON" },
-    { "StockName": "CTE" },
-    { "StockName": "CUB" },
-    { "StockName": "CUBEXTUB" },
-    { "StockName": "CUMMINSIND" },
-    { "StockName": "CUPID" },
-    { "StockName": "CYBERTECH" },
-    { "StockName": "CYIENT" },
-    { "StockName": "DAAWAT" },
-    { "StockName": "DABUR" },
-    { "StockName": "DALBHARAT" },
-    { "StockName": "DALMIASUG" },
-    { "StockName": "DAMODARIND" },
-    { "StockName": "DATAMATICS" },
-    { "StockName": "DBCORP" },
-    { "StockName": "DBL" },
-    { "StockName": "DBREALTY" },
-    { "StockName": "DCAL" },
-    { "StockName": "DCBBANK" },
-    { "StockName": "DCM" },
-    { "StockName": "DCMSHRIRAM" },
-    { "StockName": "DCW" },
-    { "StockName": "DECCANCE" },
-    { "StockName": "DEEPAKFERT" },
-    { "StockName": "DEEPAKNTR" },
-    { "StockName": "DEEPIND" },
-    { "StockName": "DELTACORP" },
-    { "StockName": "DELTAMAGNT" },
-    { "StockName": "DEN" },
-    { "StockName": "DENORA" },
-    { "StockName": "DFMFOODS" },
-    { "StockName": "DHAMPURSUG" },
-    { "StockName": "DHANBANK" },
-    { "StockName": "DHANUKA" },
-    { "StockName": "DHARSUGAR" },
-    { "StockName": "DHFL" },
-    { "StockName": "DHUNINV" },
-    { "StockName": "DIAMONDYD" },
-    { "StockName": "DICIND" },
-    { "StockName": "DIGJAMLTD" },
-    { "StockName": "DISHTV" },
-    { "StockName": "DIVISLAB" },
-    { "StockName": "DIXON" },
-    { "StockName": "DLF" },
-    { "StockName": "DLINKINDIA" },
-    { "StockName": "DMART" },
-    { "StockName": "DNAMEDIA" },
-    { "StockName": "DOLLAR" },
-    { "StockName": "DOLPHINOFF" },
-    { "StockName": "DONEAR" },
-    { "StockName": "DPSCLTD" },
-    { "StockName": "DQE" },
-    { "StockName": "DREDGECORP" },
-    { "StockName": "DRREDDY" },
-    { "StockName": "DSSL" },
-    { "StockName": "DTIL" },
-    { "StockName": "DUCON" },
-    { "StockName": "DVL" },
-    { "StockName": "DWARKESH" },
-    { "StockName": "DYNAMATECH" },
-    { "StockName": "DYNPRO" },
-    { "StockName": "EASUNREYRL" },
-    { "StockName": "EBANK" },
-    { "StockName": "ECLERX" },
-    { "StockName": "EDELWEISS" },
-    { "StockName": "EICHERMOT" },
-    { "StockName": "EIDPARRY" },
-    { "StockName": "EIHAHOTELS" },
-    { "StockName": "EIHOTEL" },
-    { "StockName": "EIMCOELECO" },
-    { "StockName": "EKC" },
-    { "StockName": "ELAND" },
-    { "StockName": "ELECON" },
-    { "StockName": "ELECTCAST" },
-    { "StockName": "ELECTHERM" },
-    { "StockName": "ELGIEQUIP" },
-    { "StockName": "ELGIRUBCO" },
-    { "StockName": "EMAMILTD" },
-    { "StockName": "EMAMIPAP" },
-    { "StockName": "EMAMIREAL" },
-    { "StockName": "EMCO" },
-    { "StockName": "EMKAY" },
-    { "StockName": "EMMBI" },
-    { "StockName": "ENDURANCE" },
-    { "StockName": "ENERGYDEV" },
-    { "StockName": "ENGINERSIN" },
-    { "StockName": "ENIL" },
-    { "StockName": "EON" },
-    { "StockName": "EQUITAS" },
-    { "StockName": "ERIS" },
-    { "StockName": "EROSMEDIA" },
-    { "StockName": "ESABINDIA" },
-    { "StockName": "ESCORTS" },
-    { "StockName": "ESSARSHPNG" },
-    { "StockName": "ESSELPACK" },
-    { "StockName": "ESTER" },
-    { "StockName": "EUROTEXIND" },
-    { "StockName": "EVEREADY" },
-    { "StockName": "EVERESTIND" },
-    { "StockName": "EXCEL" },
-    { "StockName": "EXCELCROP" },
-    { "StockName": "EXCELINDUS" },
-    { "StockName": "EXIDEIND" },
-    { "StockName": "EXPLEOSOL" },
-    { "StockName": "FACT" },
-    { "StockName": "FAIRCHEM" },
-    { "StockName": "FCL" },
-    { "StockName": "FCONSUMER" },
-    { "StockName": "FCSSOFT" },
-    { "StockName": "FDC" },
-    { "StockName": "FEDERALBNK" },
-    { "StockName": "FEL" },
-    { "StockName": "FELDVR" },
-    { "StockName": "FIEMIND" },
-    { "StockName": "FILATEX" },
-    { "StockName": "FINCABLES" },
-    { "StockName": "FINEORG" },
-    { "StockName": "FINPIPE" },
-    { "StockName": "FLEXITUFF" },
-    { "StockName": "FLFL" },
-    { "StockName": "FMGOETZE" },
-    { "StockName": "FMNL" },
-    { "StockName": "FORTIS" },
-    { "StockName": "FOSECOIND" },
-    { "StockName": "FRETAIL" },
-    { "StockName": "FSC" },
-    { "StockName": "FSL" },
-    { "StockName": "GABRIEL" },
-    { "StockName": "GAEL" },
-    { "StockName": "GAIL" },
-    { "StockName": "GAL" },
-    { "StockName": "GALAXYSURF" },
-    { "StockName": "GALLANTT" },
-    { "StockName": "GALLISPAT" },
-    { "StockName": "GAMMNINFRA" },
-    { "StockName": "GANDHITUBE" },
-    { "StockName": "GANECOS" },
-    { "StockName": "GANESHHOUC" },
-    { "StockName": "GANGESSECU" },
-    { "StockName": "GARDENSILK" },
-    { "StockName": "GARFIBRES" },
-    { "StockName": "GATI" },
-    { "StockName": "GAYAHWS" },
-    { "StockName": "GAYAPROJ" },
-    { "StockName": "GDL" },
-    { "StockName": "GEECEE" },
-    { "StockName": "GENESYS" },
-    { "StockName": "GENUSPAPER" },
-    { "StockName": "GENUSPOWER" },
-    { "StockName": "GEOJITFSL" },
-    { "StockName": "GEPIL" },
-    { "StockName": "GESHIP" },
-    { "StockName": "GET&D" },
-    { "StockName": "GHCL" },
-    { "StockName": "GICHSGFIN" },
-    { "StockName": "GICRE" },
-    { "StockName": "GILLANDERS" },
-    { "StockName": "GILLETTE" },
-    { "StockName": "GINNIFILA" },
-    { "StockName": "GIPCL" },
-    { "StockName": "GKWLIMITED" },
-    { "StockName": "GLAXO" },
-    { "StockName": "GLENMARK" },
-    { "StockName": "GLOBALVECT" },
-    { "StockName": "GLOBOFFS" },
-    { "StockName": "GLOBUSSPR" },
-    { "StockName": "GMBREW" },
-    { "StockName": "GMDCLTD" },
-    { "StockName": "GMMPFAUDLR" },
-    { "StockName": "GMRINFRA" },
-    { "StockName": "GNA" },
-    { "StockName": "GNFC" },
-    { "StockName": "GOACARBON" },
-    { "StockName": "GOCLCORP" },
-    { "StockName": "GODFRYPHLP" },
-    { "StockName": "GODREJAGRO" },
-    { "StockName": "GODREJCP" },
-    { "StockName": "GODREJIND" },
-    { "StockName": "GODREJPROP" },
-    { "StockName": "GOKEX" },
-    { "StockName": "GOLDBEES" },
-    { "StockName": "GOLDENTOBC" },
-    { "StockName": "GOLDIAM" },
-    { "StockName": "GOLDSHARE" },
-    { "StockName": "GOLDTECH" },
-    { "StockName": "GOODLUCK" },
-    { "StockName": "GPIL" },
-    { "StockName": "GPPL" },
-    { "StockName": "GPTINFRA" },
-    { "StockName": "GRANULES" },
-    { "StockName": "GRAPHITE" },
-    { "StockName": "GRASIM" },
-    { "StockName": "GRAVITA" },
-    { "StockName": "GREAVESCOT" },
-    { "StockName": "GREENLAM" },
-    { "StockName": "GREENPLY" },
-    { "StockName": "GREENPOWER" },
-    { "StockName": "GRINDWELL" },
-    { "StockName": "GROBTEA" },
-    { "StockName": "GRPLTD" },
-    { "StockName": "GRSE" },
-    { "StockName": "GRUH" },
-    { "StockName": "GSCLCEMENT" },
-    { "StockName": "GSFC" },
-    { "StockName": "GSKCONS" },
-    { "StockName": "GSPL" },
-    { "StockName": "GSS" },
-    { "StockName": "GTL" },
-    { "StockName": "GTNIND" },
-    { "StockName": "GTNTEX" },
-    { "StockName": "GTPL" },
-    { "StockName": "GUFICBIO" },
-    { "StockName": "GUJALKALI" },
-    { "StockName": "GUJAPOLLO" },
-    { "StockName": "GUJFLUORO" },
-    { "StockName": "GUJGASLTD" },
-    { "StockName": "GULFOILLUB" },
-    { "StockName": "GULFPETRO" },
-    { "StockName": "GULPOLY" },
-    { "StockName": "GVKPIL" },
-    { "StockName": "HAL" },
-    { "StockName": "HARITASEAT" },
-    { "StockName": "HARRMALAYA" },
-    { "StockName": "HATHWAY" },
-    { "StockName": "HATSUN" },
-    { "StockName": "HAVELLS" },
-    { "StockName": "HBLPOWER" },
-    { "StockName": "HBSL" },
-    { "StockName": "HCC" },
-    { "StockName": "HCG" },
-    { "StockName": "HCL-INSYS" },
-    { "StockName": "HCLTECH" },
-    { "StockName": "HDFC" },
-    { "StockName": "HDFCAMC" },
-    { "StockName": "HDFCBANK" },
-    { "StockName": "HDFCLIFE" },
-    { "StockName": "HDFCMFGETF" },
-    { "StockName": "HDFCNIFETF" },
-    { "StockName": "HDFCSENETF" },
-    { "StockName": "HDIL" },
-    { "StockName": "HEG" },
-    { "StockName": "HEIDELBERG" },
-    { "StockName": "HERCULES" },
-    { "StockName": "HERITGFOOD" },
-    { "StockName": "HEROMOTOCO" },
-    { "StockName": "HESTERBIO" },
-    { "StockName": "HEXAWARE" },
-    { "StockName": "HFCL" },
-    { "StockName": "HGINFRA" },
-    { "StockName": "HGS" },
-    { "StockName": "HIGHGROUND" },
-    { "StockName": "HIKAL" },
-    { "StockName": "HIL" },
-    { "StockName": "HILTON" },
-    { "StockName": "HIMATSEIDE" },
-    { "StockName": "HINDALCO" },
-    { "StockName": "HINDCOMPOS" },
-    { "StockName": "HINDCOPPER" },
-    { "StockName": "HINDMOTORS" },
-    { "StockName": "HINDNATGLS" },
-    { "StockName": "HINDOILEXP" },
-    { "StockName": "HINDPETRO" },
-    { "StockName": "HINDSYNTEX" },
-    { "StockName": "HINDUJAVEN" },
-    { "StockName": "HINDUNILVR" },
-    { "StockName": "HINDZINC" },
-    { "StockName": "HIRECT" },
-    { "StockName": "HISARMETAL" },
-    { "StockName": "HITECH" },
-    { "StockName": "HITECHCORP" },
-    { "StockName": "HITECHGEAR" },
-    { "StockName": "HMVL" },
-    { "StockName": "HNGSNGBEES" },
-    { "StockName": "HONAUT" },
-    { "StockName": "HONDAPOWER" },
-    { "StockName": "HOTELEELA" },
-    { "StockName": "HOVS" },
-    { "StockName": "HPL" },
-    { "StockName": "HSCL" },
-    { "StockName": "HSIL" },
-    { "StockName": "HTMEDIA" },
-    { "StockName": "HUBTOWN" },
-    { "StockName": "HUDCO" },
-    { "StockName": "IBMFNIFTY" },
-    { "StockName": "IBREALEST" },
-    { "StockName": "IBULHSGFIN" },
-    { "StockName": "IBULISL" },
-    { "StockName": "IBVENTURES" },
-    { "StockName": "ICICI500" },
-    { "StockName": "ICICIB22" },
-    { "StockName": "ICICIBANK" },
-    { "StockName": "ICICIGI" },
-    { "StockName": "ICICIGOLD" },
-    { "StockName": "ICICILIQ" },
-    { "StockName": "ICICILOVOL" },
-    { "StockName": "ICICIMCAP" },
-    { "StockName": "ICICINF100" },
-    { "StockName": "ICICINIFTY" },
-    { "StockName": "ICICINV20" },
-    { "StockName": "ICICINXT50" },
-    { "StockName": "ICICIPRULI" },
-    { "StockName": "ICICISENSX" },
-    { "StockName": "ICIL" },
-    { "StockName": "ICRA" },
-    { "StockName": "IDBI" },
-    { "StockName": "IDBIGOLD" },
-    { "StockName": "IDEA" },
-    { "StockName": "IDFC" },
-    { "StockName": "IDFCFIRSTB" },
-    { "StockName": "IEX" },
-    { "StockName": "IFBAGRO" },
-    { "StockName": "IFBIND" },
-    { "StockName": "IFCI" },
-    { "StockName": "IFGLEXPOR" },
-    { "StockName": "IGARASHI" },
-    { "StockName": "IGL" },
-    { "StockName": "IGPL" },
-    { "StockName": "IIFL" },
-    { "StockName": "IITL" },
-    { "StockName": "IMFA" },
-    { "StockName": "IMPAL" },
-    { "StockName": "INDBANK" },
-    { "StockName": "INDHOTEL" },
-    { "StockName": "INDIACEM" },
-    { "StockName": "INDIAGLYCO" },
-    { "StockName": "INDIANB" },
-    { "StockName": "INDIANCARD" },
-    { "StockName": "INDIANHUME" },
-    { "StockName": "INDIGO" },
-    { "StockName": "INDLMETER" },
-    { "StockName": "INDNIPPON" },
-    { "StockName": "INDOCO" },
-    { "StockName": "INDORAMA" },
-    { "StockName": "INDOSTAR" },
-    { "StockName": "INDOTECH" },
-    { "StockName": "INDOTHAI" },
-    { "StockName": "INDOWIND" },
-    { "StockName": "INDRAMEDCO" },
-    { "StockName": "INDSWFTLAB" },
-    { "StockName": "INDSWFTLTD" },
-    { "StockName": "INDTERRAIN" },
-    { "StockName": "INDUSINDBK" },
-    { "StockName": "INEOSSTYRO" },
-    { "StockName": "INFIBEAM" },
-    { "StockName": "INFRABEES" },
-    { "StockName": "INFRATEL" },
-    { "StockName": "INFY" },
-    { "StockName": "INGERRAND" },
-    { "StockName": "INOXLEISUR" },
-    { "StockName": "INOXWIND" },
-    { "StockName": "INSECTICID" },
-    { "StockName": "INSPIRISYS" },
-    { "StockName": "INTELLECT" },
-    { "StockName": "INTENTECH" },
-    { "StockName": "INVENTURE" },
-    { "StockName": "IOB" },
-    { "StockName": "IOC" },
-    { "StockName": "IOLCP" },
-    { "StockName": "IPAPPM" },
-    { "StockName": "IPCALAB" },
-    { "StockName": "IRB" },
-    { "StockName": "IRCON" },
-    { "StockName": "ISEC" },
-    { "StockName": "ISFT" },
-    { "StockName": "ISMTLTD" },
-    { "StockName": "ITC" },
-    { "StockName": "ITDC" },
-    { "StockName": "ITDCEM" },
-    { "StockName": "ITI" },
-    { "StockName": "IVC" },
-    { "StockName": "IVP" },
-    { "StockName": "IVZINGOLD" },
-    { "StockName": "IVZINNIFTY" },
-    { "StockName": "IZMO" },
-    { "StockName": "J&KBANK" },
-    { "StockName": "JAGRAN" },
-    { "StockName": "JAGSNPHARM" },
-    { "StockName": "JAIBALAJI" },
-    { "StockName": "JAICORPLTD" },
-    { "StockName": "JAMNAAUTO" },
-    { "StockName": "JAYAGROGN" },
-    { "StockName": "JAYBARMARU" },
-    { "StockName": "JAYNECOIND" },
-    { "StockName": "JAYSREETEA" },
-    { "StockName": "JBCHEPHARM" },
-    { "StockName": "JBFIND" },
-    { "StockName": "JBMA" },
-    { "StockName": "JCHAC" },
-    //{ "StockName": "JETAIRWAYS" },
-    { "StockName": "JHS" },
-    { "StockName": "JINDALPHOT" },
-    { "StockName": "JINDALPOLY" },
-    { "StockName": "JINDALSAW" },
-    { "StockName": "JINDALSTEL" },
-    { "StockName": "JINDRILL" },
-    { "StockName": "JINDWORLD" },
-    { "StockName": "JISLDVREQS" },
-    { "StockName": "JISLJALEQS" },
-    { "StockName": "JKCEMENT" },
-    { "StockName": "JKIL" },
-    { "StockName": "JKLAKSHMI" },
-    { "StockName": "JKPAPER" },
-    { "StockName": "JKTYRE" },
-    { "StockName": "JMA" },
-    { "StockName": "JMCPROJECT" },
-    { "StockName": "JMFINANCIL" },
-    { "StockName": "JMTAUTOLTD" },
-    { "StockName": "JOCIL" },
-    { "StockName": "JPASSOCIAT" },
-    { "StockName": "JPINFRATEC" },
-    { "StockName": "JPOLYINVST" },
-    { "StockName": "JPPOWER" },
-    { "StockName": "JSL" },
-    { "StockName": "JSLHISAR" },
-    { "StockName": "JSWENERGY" },
-    { "StockName": "JSWHL" },
-    { "StockName": "JSWSTEEL" },
-    { "StockName": "JTEKTINDIA" },
-    { "StockName": "JUBILANT" },
-    { "StockName": "JUBLFOOD" },
-    { "StockName": "JUBLINDS" },
-    { "StockName": "JUNIORBEES" },
-    { "StockName": "JUSTDIAL" },
-    { "StockName": "JYOTHYLAB" },
-    { "StockName": "KABRAEXTRU" },
-    { "StockName": "KAJARIACER" },
-    { "StockName": "KAKATCEM" },
-    { "StockName": "KALPATPOWR" },
-    { "StockName": "KAMATHOTEL" },
-    { "StockName": "KAMDHENU" },
-    { "StockName": "KANANIIND" },
-    { "StockName": "KANORICHEM" },
-    { "StockName": "KANSAINER" },
-    { "StockName": "KARDA" },
-    { "StockName": "KARMAENG" },
-    { "StockName": "KARURVYSYA" },
-    { "StockName": "KAUSHALYA" },
-    { "StockName": "KAVVERITEL" },
-    { "StockName": "KAYA" },
-    { "StockName": "KCP" },
-    { "StockName": "KCPSUGIND" },
-    { "StockName": "KDDL" },
-    { "StockName": "KEC" },
-    { "StockName": "KECL" },
-    { "StockName": "KEI" },
-    { "StockName": "KELLTONTEC" },
-    { "StockName": "KESORAMIND" },
-    { "StockName": "KEYFINSERV" },
-    { "StockName": "KHADIM" },
-    { "StockName": "KHAITANLTD" },
-    { "StockName": "KICL" },
-    { "StockName": "KILITCH" },
-    { "StockName": "KINGFA" },
-    { "StockName": "KIOCL" },
-    { "StockName": "KIRIINDUS" },
-    { "StockName": "KIRLOSBROS" },
-    { "StockName": "KIRLOSENG" },
-    { "StockName": "KIRLOSIND" },
-    { "StockName": "KITEX" },
-    { "StockName": "KKCL" },
-    { "StockName": "KMSUGAR" },
-    { "StockName": "KNRCON" },
-    { "StockName": "KOHINOOR" },
-    { "StockName": "KOKUYOCMLN" },
-    { "StockName": "KOLTEPATIL" },
-    { "StockName": "KOPRAN" },
-    { "StockName": "KOTAKBANK" },
-    { "StockName": "KOTAKBKETF" },
-    { "StockName": "KOTAKGOLD" },
-    { "StockName": "KOTAKNIFTY" },
-    { "StockName": "KOTAKNV20" },
-    { "StockName": "KOTAKPSUBK" },
-    { "StockName": "KOTARISUG" },
-    { "StockName": "KOTHARIPET" },
-    { "StockName": "KOTHARIPRO" },
-    { "StockName": "KPITTECH" },
-    { "StockName": "KPRMILL" },
-    { "StockName": "KRBL" },
-    { "StockName": "KREBSBIO" },
-    { "StockName": "KRIDHANINF" },
-    { "StockName": "KSB" },
-    { "StockName": "KSCL" },
-    { "StockName": "KSERASERA" },
-    { "StockName": "KSK" },
-    { "StockName": "KSL" },
-    { "StockName": "KTIL" },
-    { "StockName": "KTKBANK" },
-    { "StockName": "KWALITY" },
-    { "StockName": "L&TFH" },
-    { "StockName": "LAKSHVILAS" },
-    { "StockName": "LALPATHLAB" },
-    { "StockName": "LAMBODHARA" },
-    { "StockName": "LAOPALA" },
-    { "StockName": "LASA" },
-    { "StockName": "LAURUSLABS" },
-    { "StockName": "LAXMIMACH" },
-    { "StockName": "LEMONTREE" },
-    { "StockName": "LFIC" },
-    { "StockName": "LGBBROSLTD" },
-    { "StockName": "LGBFORGE" },
-    { "StockName": "LIBERTSHOE" },
-    { "StockName": "LICHSGFIN" },
-    { "StockName": "LICNETFGSC" },
-    { "StockName": "LICNETFN50" },
-    { "StockName": "LICNETFSEN" },
-    { "StockName": "LICNFNHGP" },
-    { "StockName": "LINCOLN" },
-    { "StockName": "LINCPEN" },
-    { "StockName": "LINDEINDIA" },
-    { "StockName": "LIQUIDBEES" },
-    { "StockName": "LIQUIDETF" },
-    { "StockName": "LOKESHMACH" },
-    { "StockName": "LOTUSEYE" },
-    { "StockName": "LOVABLE" },
-    { "StockName": "LPDC" },
-    { "StockName": "LSIL" },
-    { "StockName": "LT" },
-    { "StockName": "LTI" },
-    { "StockName": "LTTS" },
-    { "StockName": "LUMAXIND" },
-    { "StockName": "LUMAXTECH" },
-    { "StockName": "LUPIN" },
-    { "StockName": "LUXIND" },
-    { "StockName": "LYKALABS" },
-    { "StockName": "LYPSAGEMS" },
-    { "StockName": "M&M" },
-    { "StockName": "M&MFIN" },
-    { "StockName": "M100" },
-    { "StockName": "M50" },
-    { "StockName": "MAANALU" },
-    { "StockName": "MADHAV" },
-    { "StockName": "MADHUCON" },
-    { "StockName": "MADRASFERT" },
-    { "StockName": "MAGADSUGAR" },
-    { "StockName": "MAGMA" },
-    { "StockName": "MAHABANK" },
-    { "StockName": "MAHESHWARI" },
-    { "StockName": "MAHINDCIE" },
-    { "StockName": "MAHLIFE" },
-    { "StockName": "MAHLOG" },
-    { "StockName": "MAHSCOOTER" },
-    { "StockName": "MAHSEAMLES" },
-    { "StockName": "MAITHANALL" },
-    { "StockName": "MAJESCO" },
-    { "StockName": "MALUPAPER" },
-    { "StockName": "MAN50ETF" },
-    { "StockName": "MANAKALUCO" },
-    { "StockName": "MANAKCOAT" },
-    { "StockName": "MANAKSIA" },
-    { "StockName": "MANAKSTEEL" },
-    { "StockName": "MANALIPETC" },
-    { "StockName": "MANAPPURAM" },
-    { "StockName": "MANGALAM" },
-    { "StockName": "MANGCHEFER" },
-    { "StockName": "MANGLMCEM" },
-    { "StockName": "MANINDS" },
-    { "StockName": "MANINFRA" },
-    { "StockName": "MANPASAND" },
-    { "StockName": "MANUGRAPH" },
-    { "StockName": "MARALOVER" },
-    { "StockName": "MARATHON" },
-    { "StockName": "MARICO" },
-    { "StockName": "MARKSANS" },
-    { "StockName": "MARUTI" },
-    { "StockName": "MASFIN" },
-    { "StockName": "MASTEK" },
-    { "StockName": "MATRIMONY" },
-    { "StockName": "MAWANASUG" },
-    { "StockName": "MAXINDIA" },
-    { "StockName": "MAXVIL" },
-    { "StockName": "MAYURUNIQ" },
-    { "StockName": "MAZDA" },
-    { "StockName": "MBLINFRA" },
-    { "StockName": "MCDHOLDING" },
-    { "StockName": "MCDOWELL-N" },
-    { "StockName": "MCLEODRUSS" },
-    { "StockName": "MCX" },
-    { "StockName": "MEGH" },
-    { "StockName": "MENONBE" },
-    { "StockName": "MEP" },
-    { "StockName": "MERCATOR" },
-    { "StockName": "METALFORGE" },
-    { "StockName": "METROPOLIS" },
-    { "StockName": "MFSL" },
-    { "StockName": "MGL" },
-    { "StockName": "MHRIL" },
-    { "StockName": "MIC" },
-    { "StockName": "MIDHANI" },
-    { "StockName": "MIL" },
-    { "StockName": "MINDACORP" },
-    { "StockName": "MINDAIND" },
-    { "StockName": "MINDTECK" },
-    { "StockName": "MINDTREE" },
-    { "StockName": "MIRCELECTR" },
-    { "StockName": "MIRZAINT" },
-    { "StockName": "MMFL" },
-    { "StockName": "MMTC" },
-    { "StockName": "MOHITIND" },
-    { "StockName": "MOHOTAIND" },
-    { "StockName": "MOIL" },
-    { "StockName": "MOLDTECH" },
-    { "StockName": "MOLDTKPAC" },
-    { "StockName": "MONSANTO" },
-    { "StockName": "MONTECARLO" },
-    { "StockName": "MORARJEE" },
-    { "StockName": "MOREPENLAB" },
-    { "StockName": "MOTHERSUMI" },
-    { "StockName": "MOTILALOFS" },
-    { "StockName": "MPHASIS" },
-    { "StockName": "MPSLTD" },
-    { "StockName": "MRF" },
-    { "StockName": "MRO-TEK" },
-    { "StockName": "MRPL" },
-    { "StockName": "MSPL" },
-    { "StockName": "MSTCLTD" },
-    { "StockName": "MTEDUCARE" },
-    { "StockName": "MTNL" },
-    { "StockName": "MUKANDENGG" },
-    { "StockName": "MUKANDLTD" },
-    { "StockName": "MUKTAARTS" },
-    { "StockName": "MUNJALAU" },
-    { "StockName": "MUNJALSHOW" },
-    { "StockName": "MURUDCERA" },
-    { "StockName": "MUTHOOTCAP" },
-    { "StockName": "MUTHOOTFIN" },
-    { "StockName": "MVL" },
-    { "StockName": "N100" },
-    { "StockName": "NACLIND" },
-    { "StockName": "NAGAFERT" },
-    { "StockName": "NAGAROIL" },
-    { "StockName": "NAGREEKCAP" },
-    { "StockName": "NAGREEKEXP" },
-    { "StockName": "NAHARCAP" },
-    { "StockName": "NAHARINDUS" },
-    { "StockName": "NAHARPOLY" },
-    { "StockName": "NAHARSPING" },
-    { "StockName": "NATCOPHARM" },
-    { "StockName": "NATHBIOGEN" },
-    { "StockName": "NATIONALUM" },
-    { "StockName": "NATNLSTEEL" },
-    { "StockName": "NAUKRI" },
-    { "StockName": "NAVINFLUOR" },
-    { "StockName": "NAVKARCORP" },
-    { "StockName": "NAVNETEDUL" },
-    { "StockName": "NBCC" },
-    { "StockName": "NBIFIN" },
-    { "StockName": "NBVENTURES" },
-    { "StockName": "NCC" },
-    { "StockName": "NCLIND" },
-    { "StockName": "NDGL" },
-    { "StockName": "NDL" },
-    { "StockName": "NDTV" },
-    { "StockName": "NECCLTD" },
-    { "StockName": "NECLIFE" },
-    { "StockName": "NELCAST" },
-    { "StockName": "NELCO" },
-    { "StockName": "NEOGEN" },
-    { "StockName": "NESCO" },
-    { "StockName": "NESTLEIND" },
-    { "StockName": "NETF" },
-    { "StockName": "NETWORK18" },
-    { "StockName": "NEULANDLAB" },
-    { "StockName": "NEWGEN" },
-    { "StockName": "NEXTMEDIA" },
-    { "StockName": "NFL" },
-    { "StockName": "NH" },
-    { "StockName": "NHPC" },
-    { "StockName": "NIACL" },
-    { "StockName": "NIBL" },
-    { "StockName": "NIFTYBEES" },
-    { "StockName": "NIITLTD" },
-    { "StockName": "NIITTECH" },
-    { "StockName": "NILAINFRA" },
-    { "StockName": "NILASPACES" },
-    { "StockName": "NILKAMAL" },
-    { "StockName": "NIPPOBATRY" },
-    { "StockName": "NITCO" },
-    { "StockName": "NITESHEST" },
-    { "StockName": "NITINFIRE" },
-    { "StockName": "NITINSPIN" },
-    { "StockName": "NKIND" },
-    { "StockName": "NLCINDIA" },
-    { "StockName": "NMDC" },
-    { "StockName": "NOCIL" },
-    { "StockName": "NOIDATOLL" },
-    { "StockName": "NRAIL" },
-    { "StockName": "NRBBEARING" },
-    { "StockName": "NSIL" },
-    { "StockName": "NTPC" },
-    { "StockName": "NUCLEUS" },
-    { "StockName": "OBEROIRLTY" },
-    { "StockName": "OCCL" },
-    { "StockName": "OFSS" },
-    { "StockName": "OIL" },
-    { "StockName": "OILCOUNTUB" },
-    { "StockName": "OLECTRA" },
-    { "StockName": "OMAXAUTO" },
-    { "StockName": "OMAXE" },
-    { "StockName": "OMKARCHEM" },
-    { "StockName": "OMMETALS" },
-    { "StockName": "ONELIFECAP" },
-    { "StockName": "ONEPOINT" },
-    { "StockName": "ONGC" },
-    { "StockName": "ONMOBILE" },
-    { "StockName": "ONWARDTEC" },
-    { "StockName": "OPTIEMUS" },
-    { "StockName": "OPTOCIRCUI" },
-    { "StockName": "ORBTEXP" },
-    { "StockName": "ORICONENT" },
-    { "StockName": "ORIENTABRA" },
-    { "StockName": "ORIENTALTL" },
-    { "StockName": "ORIENTBANK" },
-    { "StockName": "ORIENTBELL" },
-    { "StockName": "ORIENTCEM" },
-    { "StockName": "ORIENTELEC" },
-    { "StockName": "ORIENTHOT" },
-    { "StockName": "ORIENTLTD" },
-    { "StockName": "ORIENTPPR" },
-    { "StockName": "ORIENTREF" },
-    { "StockName": "ORISSAMINE" },
-    { "StockName": "ORTEL" },
-    { "StockName": "OSWALAGRO" },
-    { "StockName": "PAEL" },
-    { "StockName": "PAGEIND" },
-    { "StockName": "PAISALO" },
-    { "StockName": "PALASHSECU" },
-    { "StockName": "PALREDTEC" },
-    { "StockName": "PANACEABIO" },
-    { "StockName": "PANAMAPET" },
-    { "StockName": "PAPERPROD" },
-    { "StockName": "PARACABLES" },
-    { "StockName": "PARAGMILK" },
-    { "StockName": "PARSVNATH" },
-    { "StockName": "PATELENG" },
-    { "StockName": "PATINTLOG" },
-    { "StockName": "PATSPINLTD" },
-    { "StockName": "PCJEWELLER" },
-    { "StockName": "PDMJEPAPER" },
-    { "StockName": "PDPL" },
-    { "StockName": "PDSMFL" },
-    { "StockName": "PEL" },
-    { "StockName": "PENIND" },
-    { "StockName": "PENINLAND" },
-    { "StockName": "PERSISTENT" },
-    { "StockName": "PETRONET" },
-    { "StockName": "PFC" },
-    { "StockName": "PFIZER" },
-    { "StockName": "PFOCUS" },
-    { "StockName": "PFS" },
-    { "StockName": "PGEL" },
-    { "StockName": "PGHH" },
-    { "StockName": "PGHL" },
-    { "StockName": "PGIL" },
-    { "StockName": "PHILIPCARB" },
-    { "StockName": "PHOENIXLTD" },
-    { "StockName": "PIDILITIND" },
-    { "StockName": "PIIND" },
-    { "StockName": "PILANIINVS" },
-    { "StockName": "PILITA" },
-    { "StockName": "PIONDIST" },
-    { "StockName": "PIONEEREMB" },
-    { "StockName": "PITTIENG" },
-    { "StockName": "PLASTIBLEN" },
-    { "StockName": "PNB" },
-    { "StockName": "PNBGILTS" },
-    { "StockName": "PNBHOUSING" },
-    { "StockName": "PNC" },
-    { "StockName": "PNCINFRA" },
-    { "StockName": "PODDARHOUS" },
-    { "StockName": "PODDARMENT" },
-    { "StockName": "POKARNA" },
-    { "StockName": "POLYCAB" },
-    { "StockName": "POLYMED" },
-    { "StockName": "POLYPLEX" },
-    { "StockName": "PONNIERODE" },
-    { "StockName": "POWERGRID" },
-    { "StockName": "POWERMECH" },
-    { "StockName": "PPAP" },
-    { "StockName": "PRABHAT" },
-    { "StockName": "PRADIP" },
-    { "StockName": "PRAENG" },
-    { "StockName": "PRAJIND" },
-    { "StockName": "PRAKASH" },
-    { "StockName": "PRAKASHCON" },
-    { "StockName": "PRAKASHSTL" },
-    { "StockName": "PRAXIS" },
-    { "StockName": "PRECAM" },
-    { "StockName": "PRECOT" },
-    { "StockName": "PRECWIRE" },
-    { "StockName": "PREMEXPLN" },
-    { "StockName": "PREMIERPOL" },
-    { "StockName": "PRESSMN" },
-    { "StockName": "PRESTIGE" },
-    { "StockName": "PRICOLLTD" },
-    { "StockName": "PRIMESECU" },
-    { "StockName": "PROSEED" },
-    { "StockName": "PROVOGE" },
-    { "StockName": "PRSMJOHNSN" },
-    { "StockName": "PSB" },
-    { "StockName": "PSL" },
-    { "StockName": "PSPPROJECT" },
-    { "StockName": "PSUBNKBEES" },
-    { "StockName": "PTC" },
-    { "StockName": "PTL" },
-    { "StockName": "PUNJABCHEM" },
-    { "StockName": "PUNJLLOYD" },
-    { "StockName": "PURVA" },
-    { "StockName": "PVR" },
-    { "StockName": "QGOLDHALF" },
-    { "StockName": "QNIFTY" },
-    { "StockName": "QUESS" },
-    { "StockName": "QUICKHEAL" },
-    { "StockName": "RADAAN" },
-    { "StockName": "RADICO" },
-    { "StockName": "RADIOCITY" },
-    { "StockName": "RAIN" },
-    { "StockName": "RAJESHEXPO" },
-    { "StockName": "RAJSREESUG" },
-    { "StockName": "RALLIS" },
-    { "StockName": "RAMANEWS" },
-    { "StockName": "RAMASTEEL" },
-    { "StockName": "RAMCOCEM" },
-    { "StockName": "RAMCOIND" },
-    { "StockName": "RAMCOSYS" },
-    { "StockName": "RAMKY" },
-    { "StockName": "RANASUG" },
-    { "StockName": "RANEENGINE" },
-    { "StockName": "RANEHOLDIN" },
-    { "StockName": "RATNAMANI" },
-    { "StockName": "RAYMOND" },
-    { "StockName": "RBL" },
-    { "StockName": "RBLBANK" },
-    { "StockName": "RCF" },
-    { "StockName": "RCOM" },
-    { "StockName": "RECLTD" },
-    { "StockName": "REDINGTON" },
-    { "StockName": "RELAXO" },
-    { "StockName": "RELCAPITAL" },
-    { "StockName": "RELCNX100" },
-    { "StockName": "RELCONS" },
-    { "StockName": "RELDIVOPP" },
-    { "StockName": "RELIANCE" },
-    { "StockName": "RELIGARE" },
-    { "StockName": "RELINFRA" },
-    { "StockName": "RELNV20" },
-    { "StockName": "REMSONSIND" },
-    { "StockName": "RENUKA" },
-    { "StockName": "REPCOHOME" },
-    { "StockName": "REPRO" },
-    { "StockName": "RESPONIND" },
-    { "StockName": "RETFMID150" },
-    { "StockName": "REVATHI" },
-    { "StockName": "RGL" },
-    { "StockName": "RHFL" },
-    { "StockName": "RICOAUTO" },
-    { "StockName": "RIIL" },
-    { "StockName": "RITES" },
-    { "StockName": "RKDL" },
-    { "StockName": "RKFORGE" },
-    { "StockName": "RMCL" },
-    { "StockName": "RML" },
-    { "StockName": "RNAM" },
-    { "StockName": "RNAVAL" },
-    { "StockName": "ROHLTD" },
-    { "StockName": "ROLTA" },
-    { "StockName": "ROSSELLIND" },
-    { "StockName": "RPGLIFE" },
-    { "StockName": "RPOWER" },
-    { "StockName": "RPPINFRA" },
-    { "StockName": "RRSLGETF" },
-    { "StockName": "RSSOFTWARE" },
-    { "StockName": "RSWM" },
-    { "StockName": "RSYSTEMS" },
-    { "StockName": "RTNINFRA" },
-    { "StockName": "RTNPOWER" },
-    { "StockName": "RUBYMILLS" },
-    { "StockName": "RUCHIRA" },
-    { "StockName": "RUCHISOYA" },
-    { "StockName": "RUPA" },
-    { "StockName": "RUSHIL" },
-    { "StockName": "RVNL" },
-    { "StockName": "SABTN" },
-    { "StockName": "SADBHAV" },
-    { "StockName": "SADBHIN" },
-    { "StockName": "SAGCEM" },
-    { "StockName": "SAIL" },
-    { "StockName": "SAKHTISUG" },
-    { "StockName": "SAKSOFT" },
-    { "StockName": "SAKUMA" },
-    { "StockName": "SALASAR" },
-    { "StockName": "SALONA" },
-    { "StockName": "SALSTEEL" },
-    { "StockName": "SALZERELEC" },
-    { "StockName": "SAMBHAAV" },
-    { "StockName": "SANCO" },
-    { "StockName": "SANDESH" },
-    { "StockName": "SANDHAR" },
-    { "StockName": "SANGAMIND" },
-    { "StockName": "SANGHIIND" },
-    { "StockName": "SANGHVIMOV" },
-    { "StockName": "SANOFI" },
-    { "StockName": "SANWARIA" },
-    { "StockName": "SARDAEN" },
-    { "StockName": "SAREGAMA" },
-    { "StockName": "SARLAPOLY" },
-    { "StockName": "SASKEN" },
-    { "StockName": "SASTASUNDR" },
-    { "StockName": "SATIN" },
-    { "StockName": "SBIETFQLTY" },
-    { "StockName": "SBILIFE" },
-    { "StockName": "SBIN" },
-    { "StockName": "SCAPDVR" },
-    { "StockName": "SCHAEFFLER" },
-    { "StockName": "SCHAND" },
-    { "StockName": "SCHNEIDER" },
-    { "StockName": "SCI" },
-    { "StockName": "SEAMECLTD" },
-    { "StockName": "SELAN" },
-    { "StockName": "SELMCL" },
-    { "StockName": "SEPOWER" },
-    { "StockName": "SEQUENT" },
-    { "StockName": "SESHAPAPER" },
-    { "StockName": "SETCO" },
-    { "StockName": "SETF10GILT" },
-    { "StockName": "SETFGOLD" },
-    { "StockName": "SETFNIF50" },
-    { "StockName": "SETFNIFBK" },
-    { "StockName": "SETFNN50" },
-    { "StockName": "SFL" },
-    { "StockName": "SHAHALLOYS" },
-    { "StockName": "SHAKTIPUMP" },
-    { "StockName": "SHALBY" },
-    { "StockName": "SHALPAINTS" },
-    { "StockName": "SHANKARA" },
-    { "StockName": "SHANTIGEAR" },
-    { "StockName": "SHARDACROP" },
-    { "StockName": "SHARDAMOTR" },
-    { "StockName": "SHARIABEES" },
-    { "StockName": "SHEMAROO" },
-    { "StockName": "SHILPAMED" },
-    { "StockName": "SHIRPUR-G" },
-    { "StockName": "SHIVAMAUTO" },
-    { "StockName": "SHIVAMILLS" },
-    { "StockName": "SHIVATEX" },
-    { "StockName": "SHK" },
-    { "StockName": "SHOPERSTOP" },
-    { "StockName": "SHREECEM" },
-    { "StockName": "SHREEPUSHK" },
-    { "StockName": "SHREERAMA" },
-    { "StockName": "SHREYANIND" },
-    { "StockName": "SHREYAS" },
-    { "StockName": "SHRIRAMCIT" },
-    { "StockName": "SHRIRAMEPC" },
-    { "StockName": "SHYAMCENT" },
-    { "StockName": "SICAGEN" },
-    { "StockName": "SICAL" },
-    { "StockName": "SIEMENS" },
-    { "StockName": "SIGIND" },
-    { "StockName": "SILINV" },
-    { "StockName": "SIMBHALS" },
-    { "StockName": "SIMPLEXINF" },
-    { "StockName": "SINTEX" },
-    { "StockName": "SIS" },
-    { "StockName": "SITINET" },
-    { "StockName": "SIYSIL" },
-    { "StockName": "SJVN" },
-    { "StockName": "SKFINDIA" },
-    { "StockName": "SKIL" },
-    { "StockName": "SKIPPER" },
-    { "StockName": "SKMEGGPROD" },
-    { "StockName": "SMLISUZU" },
-    { "StockName": "SMSLIFE" },
-    { "StockName": "SMSPHARMA" },
-    { "StockName": "SNOWMAN" },
-    { "StockName": "SOBHA" },
-    { "StockName": "SOLARA" },
-    { "StockName": "SOLARINDS" },
-    { "StockName": "SOMANYCERA" },
-    { "StockName": "SOMATEX" },
-    { "StockName": "SOMICONVEY" },
-    { "StockName": "SONATSOFTW" },
-    { "StockName": "SORILINFRA" },
-    { "StockName": "SOTL" },
-    { "StockName": "SOUTHBANK" },
-    { "StockName": "SPAL" },
-    { "StockName": "SPARC" },
-    { "StockName": "SPCENET" },
-    { "StockName": "SPECIALITY" },
-    { "StockName": "SPENCERS" },
-    { "StockName": "SPIC" },
-    { "StockName": "SPLIL" },
-    { "StockName": "SPMLINFRA" },
-    { "StockName": "SPTL" },
-    { "StockName": "SREEL" },
-    { "StockName": "SREINFRA" },
-    { "StockName": "SRF" },
-    { "StockName": "SRHHYPOLTD" },
-    { "StockName": "SRIPIPES" },
-    { "StockName": "SRTRANSFIN" },
-    { "StockName": "SSWL" },
-    { "StockName": "STAMPEDE" },
-    { "StockName": "STAR" },
-    { "StockName": "STARCEMENT" },
-    { "StockName": "STARPAPER" },
-    { "StockName": "STCINDIA" },
-    { "StockName": "STEELCITY" },
-    { "StockName": "STEELXIND" },
-    { "StockName": "STEL" },
-    { "StockName": "STERTOOLS" },
-    { "StockName": "STRTECH" },
-    { "StockName": "SUBEX" },
-    { "StockName": "SUBROS" },
-    { "StockName": "SUDARSCHEM" },
-    { "StockName": "SUMEETINDS" },
-    { "StockName": "SUMMITSEC" },
-    { "StockName": "SUNCLAYLTD" },
-    { "StockName": "SUNDARAM" },
-    { "StockName": "SUNDARMFIN" },
-    { "StockName": "SUNDARMHLD" },
-    { "StockName": "SUNDRMBRAK" },
-    { "StockName": "SUNDRMFAST" },
-    { "StockName": "SUNFLAG" },
-    { "StockName": "SUNPHARMA" },
-    { "StockName": "SUNTECK" },
-    { "StockName": "SUNTV" },
-    { "StockName": "SUPERHOUSE" },
-    { "StockName": "SUPERSPIN" },
-    { "StockName": "SUPPETRO" },
-    { "StockName": "SUPRAJIT" },
-    { "StockName": "SUPREMEIND" },
-    { "StockName": "SUPREMEINF" },
-    { "StockName": "SURANASOL" },
-    { "StockName": "SURANAT&P" },
-    { "StockName": "SURYALAXMI" },
-    { "StockName": "SURYAROSNI" },
-    { "StockName": "SUTLEJTEX" },
-    { "StockName": "SUVEN" },
-    { "StockName": "SUZLON" },
-    { "StockName": "SWANENERGY" },
-    { "StockName": "SWARAJENG" },
-    { "StockName": "SWELECTES" },
-    { "StockName": "SYMPHONY" },
-    { "StockName": "SYNDIBANK" },
-    { "StockName": "SYNGENE" },
-    { "StockName": "TAINWALCHM" },
-    { "StockName": "TAJGVK" },
-    { "StockName": "TAKE" },
-    { "StockName": "TALBROAUTO" },
-    { "StockName": "TALWALKARS" },
-    { "StockName": "TALWGYM" },
-    { "StockName": "TANLA" },
-    { "StockName": "TARAPUR" },
-    { "StockName": "TARMAT" },
-    { "StockName": "TASTYBITE" },
-    { "StockName": "TATACHEM" },
-    { "StockName": "TATACOFFEE" },
-    { "StockName": "TATACOMM" },
-    { "StockName": "TATAELXSI" },
-    { "StockName": "TATAGLOBAL" },
-    { "StockName": "TATAINVEST" },
-    { "StockName": "TATAMETALI" },
-    { "StockName": "TATAMOTORS" },
-    { "StockName": "TATAMTRDVR" },
-    { "StockName": "TATAPOWER" },
-    { "StockName": "TATASPONGE" },
-    { "StockName": "TATASTEEL" },
-    { "StockName": "TATASTLBSL" },
-    { "StockName": "TBZ" },
-    { "StockName": "TCI" },
-    { "StockName": "TCIEXP" },
-    { "StockName": "TCIFINANCE" },
-    { "StockName": "TCNSBRANDS" },
-    { "StockName": "TCPLPACK" },
-    { "StockName": "TCS" },
-    { "StockName": "TDPOWERSYS" },
-    { "StockName": "TEAMLEASE" },
-    { "StockName": "TECHIN" },
-    { "StockName": "TECHM" },
-    { "StockName": "TECHNOE" },
-    { "StockName": "TECHNOFAB" },
-    { "StockName": "TEJASNET" },
-    { "StockName": "TERASOFT" },
-    { "StockName": "TEXINFRA" },
-    { "StockName": "TEXMOPIPES" },
-    { "StockName": "TEXRAIL" },
-    { "StockName": "TFCILTD" },
-    { "StockName": "TFL" },
-    { "StockName": "TGBHOTELS" },
-    { "StockName": "THANGAMAYL" },
-    { "StockName": "THEINVEST" },
-    { "StockName": "THEMISMED" },
-    { "StockName": "THERMAX" },
-    { "StockName": "THOMASCOOK" },
-    { "StockName": "THYROCARE" },
-    { "StockName": "TI" },
-    { "StockName": "TIDEWATER" },
-    { "StockName": "TIIL" },
-    { "StockName": "TIINDIA" },
-    { "StockName": "TIJARIA" },
-    { "StockName": "TIL" },
-    { "StockName": "TIMESGTY" },
-    { "StockName": "TIMETECHNO" },
-    { "StockName": "TIMKEN" },
-    { "StockName": "TINPLATE" },
-    { "StockName": "TIPSINDLTD" },
-    { "StockName": "TIRUMALCHM" },
-    { "StockName": "TITAN" },
-    { "StockName": "TMRVL" },
-    { "StockName": "TNPETRO" },
-    { "StockName": "TNPL" },
-    { "StockName": "TOKYOPLAST" },
-    { "StockName": "TORNTPHARM" },
-    { "StockName": "TORNTPOWER" },
-    { "StockName": "TPLPLASTEH" },
-    { "StockName": "TREEHOUSE" },
-    { "StockName": "TREJHARA" },
-    { "StockName": "TRENT" },
-    { "StockName": "TRF" },
-    { "StockName": "TRIDENT" },
-    { "StockName": "TRIGYN" },
-    { "StockName": "TRIL" },
-    { "StockName": "TRITURBINE" },
-    { "StockName": "TRIVENI" },
-    { "StockName": "TTKHLTCARE" },
-    { "StockName": "TTKPRESTIG" },
-    { "StockName": "TTL" },
-    { "StockName": "TV18BRDCST" },
-    { "StockName": "TVSELECT" },
-    { "StockName": "TVSMOTOR" },
-    { "StockName": "TVSSRICHAK" },
-    { "StockName": "TVTODAY" },
-    { "StockName": "TVVISION" },
-    { "StockName": "TWL" },
-    { "StockName": "UBL" },
-    { "StockName": "UCALFUEL" },
-    { "StockName": "UCOBANK" },
-    { "StockName": "UFLEX" },
-    { "StockName": "UFO" },
-    { "StockName": "UGARSUGAR" },
-    { "StockName": "UJAAS" },
-    { "StockName": "UJJIVAN" },
-    { "StockName": "ULTRACEMCO" },
-    { "StockName": "UMANGDAIRY" },
-    { "StockName": "UMESLTD" },
-    { "StockName": "UNICHEMLAB" },
-    { "StockName": "UNIENTER" },
-    { "StockName": "UNIONBANK" },
-    { "StockName": "UNITECH" },
-    { "StockName": "UNITEDBNK" },
-    { "StockName": "UNITEDTEA" },
-    { "StockName": "UNIVCABLES" },
-    { "StockName": "UPL" },
-    { "StockName": "URJA" },
-    { "StockName": "USHAMART" },
-    { "StockName": "UTINEXT50" },
-    { "StockName": "UTINIFTETF" },
-    { "StockName": "UTISENSETF" },
-    { "StockName": "UTISXN50" },
-    { "StockName": "UTTAMSTL" },
-    { "StockName": "UTTAMSUGAR" },
-    { "StockName": "V2RETAIL" },
-    { "StockName": "VADILALIND" },
-    { "StockName": "VAIBHAVGBL" },
-    { "StockName": "VAKRANGEE" },
-    { "StockName": "VARDHACRLC" },
-    { "StockName": "VARROC" },
-    { "StockName": "VASCONEQ" },
-    { "StockName": "VASWANI" },
-    { "StockName": "VBL" },
-    { "StockName": "VEDL" },
-    { "StockName": "VENKEYS" },
-    { "StockName": "VENUSREM" },
-    { "StockName": "VESUVIUS" },
-    { "StockName": "VETO" },
-    { "StockName": "VGUARD" },
-    { "StockName": "VHL" },
-    { "StockName": "VIDHIING" },
-    { "StockName": "VIJIFIN" },
-    { "StockName": "VIKASECO" },
-    { "StockName": "VIKASMCORP" },
-    { "StockName": "VIMTALABS" },
-    { "StockName": "VINATIORGA" },
-    { "StockName": "VINDHYATEL" },
-    { "StockName": "VINYLINDIA" },
-    { "StockName": "VIPCLOTHNG" },
-    { "StockName": "VIPIND" },
-    { "StockName": "VIPULLTD" },
-    { "StockName": "VISAKAIND" },
-    { "StockName": "VISASTEEL" },
-    { "StockName": "VISESHINFO" },
-    { "StockName": "VISHNU" },
-    { "StockName": "VIVIDHA" },
-    { "StockName": "VIVIMEDLAB" },
-    { "StockName": "VLSFINANCE" },
-    { "StockName": "VMART" },
-    { "StockName": "VOLTAMP" },
-    { "StockName": "VOLTAS" },
-    { "StockName": "VRLLOG" },
-    { "StockName": "VSSL" },
-    { "StockName": "VSTIND" },
-    { "StockName": "VSTTILLERS" },
-    { "StockName": "VTL" },
-    { "StockName": "WABAG" },
-    { "StockName": "WABCOINDIA" },
-    { "StockName": "WALCHANNAG" },
-    { "StockName": "WEBELSOLAR" },
-    { "StockName": "WEIZFOREX" },
-    { "StockName": "WEIZMANIND" },
-    { "StockName": "WELCORP" },
-    { "StockName": "WELENT" },
-    { "StockName": "WELINV" },
-    { "StockName": "WELSPUNIND" },
-    { "StockName": "WENDT" },
-    { "StockName": "WHEELS" },
-    { "StockName": "WHIRLPOOL" },
-    { "StockName": "WILLAMAGOR" },
-    { "StockName": "WINDMACHIN" },
-    { "StockName": "WINSOME" },
-    { "StockName": "WIPRO" },
-    { "StockName": "WOCKPHARMA" },
-    { "StockName": "WONDERLA" },
-    { "StockName": "WSTCSTPAPR" },
-    { "StockName": "XCHANGING" },
-    { "StockName": "XELPMOC" },
-    { "StockName": "XPROINDIA" },
-    { "StockName": "YESBANK" },
-    { "StockName": "ZEEL" },
-    { "StockName": "ZEELEARN" },
-    { "StockName": "ZEEMEDIA" },
-    { "StockName": "ZENITHEXPO" },
-    { "StockName": "ZENSARTECH" },
-    { "StockName": "ZENTEC" },
-    { "StockName": "ZODIACLOTH" },
-    { "StockName": "ZODJRDMKJ" },
-    { "StockName": "ZUARI" },
-    { "StockName": "ZUARIGLOB" },
-    { "StockName": "ZYDUSWELL" }
+  {
+    "StockName": "20MICRONS"
+  },
+  {
+    "StockName": "21STCENMGM"
+  },
+  {
+    "StockName": "3IINFOLTD"
+  },
+  {
+    "StockName": "3MINDIA"
+  },
+  {
+    "StockName": "5PAISA"
+  },
+  {
+    "StockName": "A2ZINFRA"
+  },
+  {
+    "StockName": "AAKASH"
+  },
+  {
+    "StockName": "AAREYDRUGS"
+  },
+  {
+    "StockName": "AARON"
+  },
+  {
+    "StockName": "AARTIDRUGS"
+  },
+  {
+    "StockName": "AARTIIND"
+  },
+  {
+    "StockName": "AARTISURF"
+  },
+  {
+    "StockName": "AARVEEDEN"
+  },
+  {
+    "StockName": "AARVI"
+  },
+  {
+    "StockName": "AAVAS"
+  },
+  {
+    "StockName": "ABAN"
+  },
+  {
+    "StockName": "ABB"
+  },
+  {
+    "StockName": "ABBOTINDIA"
+  },
+  {
+    "StockName": "ABCAPITAL"
+  },
+  {
+    "StockName": "ABFRL"
+  },
+  {
+    "StockName": "ABMINTLLTD"
+  },
+  {
+    "StockName": "ABSLAMC"
+  },
+  {
+    "StockName": "ABSLBANETF"
+  },
+  {
+    "StockName": "ABSLNN50ET"
+  },
+  {
+    "StockName": "ACC"
+  },
+  {
+    "StockName": "ACCELYA"
+  },
+  {
+    "StockName": "ACCURACY"
+  },
+  {
+    "StockName": "ACE"
+  },
+  {
+    "StockName": "ACRYSIL"
+  },
+  {
+    "StockName": "ADANIENT"
+  },
+  {
+    "StockName": "ADANIGREEN"
+  },
+  {
+    "StockName": "ADANIPORTS"
+  },
+  {
+    "StockName": "ADANIPOWER"
+  },
+  {
+    "StockName": "ADFFOODS"
+  },
+  {
+    "StockName": "ADORWELD"
+  },
+  {
+    "StockName": "ADSL"
+  },
+  {
+    "StockName": "ADVANIHOTR"
+  },
+  {
+    "StockName": "ADVENZYMES"
+  },
+  {
+    "StockName": "AEGISCHEM"
+  },
+  {
+    "StockName": "AFFLE"
+  },
+  {
+    "StockName": "AGARIND"
+  },
+  {
+    "StockName": "AGRITECH"
+  },
+  {
+    "StockName": "AGROPHOS"
+  },
+  {
+    "StockName": "AHLADA"
+  },
+  {
+    "StockName": "AHLEAST"
+  },
+  {
+    "StockName": "AHLUCONT"
+  },
+  {
+    "StockName": "AIAENG"
+  },
+  {
+    "StockName": "AIRAN"
+  },
+  {
+    "StockName": "AIROLAM"
+  },
+  {
+    "StockName": "AJANTPHARM"
+  },
+  {
+    "StockName": "AJMERA"
+  },
+  {
+    "StockName": "AJOONI"
+  },
+  {
+    "StockName": "AKG"
+  },
+  {
+    "StockName": "AKSHARCHEM"
+  },
+  {
+    "StockName": "AKSHOPTFBR"
+  },
+  {
+    "StockName": "AKZOINDIA"
+  },
+  {
+    "StockName": "ALANKIT"
+  },
+  {
+    "StockName": "ALBERTDAVD"
+  },
+  {
+    "StockName": "ALEMBICLTD"
+  },
+  {
+    "StockName": "ALICON"
+  },
+  {
+    "StockName": "ALKALI"
+  },
+  {
+    "StockName": "ALKEM"
+  },
+  {
+    "StockName": "ALKYLAMINE"
+  },
+  {
+    "StockName": "ALLCARGO"
+  },
+  {
+    "StockName": "ALLSEC"
+  },
+  {
+    "StockName": "ALMONDZ"
+  },
+  {
+    "StockName": "ALOKINDS"
+  },
+  {
+    "StockName": "ALPA"
+  },
+  {
+    "StockName": "ALPHAGEO"
+  },
+  {
+    "StockName": "AMARAJABAT"
+  },
+  {
+    "StockName": "AMBER"
+  },
+  {
+    "StockName": "AMBICAAGAR"
+  },
+  {
+    "StockName": "AMBIKCO"
+  },
+  {
+    "StockName": "AMBUJACEM"
+  },
+  {
+    "StockName": "AMDIND"
+  },
+  {
+    "StockName": "AMIORG"
+  },
+  {
+    "StockName": "AMJLAND"
+  },
+  {
+    "StockName": "AMRUTANJAN"
+  },
+  {
+    "StockName": "ANANDRATHI"
+  },
+  {
+    "StockName": "ANANTRAJ"
+  },
+  {
+    "StockName": "ANDHRACEMT"
+  },
+  {
+    "StockName": "ANDHRAPAP"
+  },
+  {
+    "StockName": "ANDHRSUGAR"
+  },
+  {
+    "StockName": "ANDREWYU"
+  },
+  {
+    "StockName": "ANGELONE"
+  },
+  {
+    "StockName": "ANIKINDS"
+  },
+  {
+    "StockName": "ANMOL"
+  },
+  {
+    "StockName": "ANSALAPI"
+  },
+  {
+    "StockName": "ANUP"
+  },
+  {
+    "StockName": "ANURAS"
+  },
+  {
+    "StockName": "APARINDS"
+  },
+  {
+    "StockName": "APCL"
+  },
+  {
+    "StockName": "APCOTEXIND"
+  },
+  {
+    "StockName": "APEX"
+  },
+  {
+    "StockName": "APLAPOLLO"
+  },
+  {
+    "StockName": "APLLTD"
+  },
+  {
+    "StockName": "APOLLOHOSP"
+  },
+  {
+    "StockName": "APOLLOPIPE"
+  },
+  {
+    "StockName": "APOLLOTYRE"
+  },
+  {
+    "StockName": "APOLSINHOT"
+  },
+  {
+    "StockName": "APTECHT"
+  },
+  {
+    "StockName": "APTUS"
+  },
+  {
+    "StockName": "ARCHIDPLY"
+  },
+  {
+    "StockName": "ARCHIES"
+  },
+  {
+    "StockName": "ARIES"
+  },
+  {
+    "StockName": "ARIHANT"
+  },
+  {
+    "StockName": "ARIHANTCAP"
+  },
+  {
+    "StockName": "ARIHANTSUP"
+  },
+  {
+    "StockName": "ARMANFIN"
+  },
+  {
+    "StockName": "AROGRANITE"
+  },
+  {
+    "StockName": "ARROWGREEN"
+  },
+  {
+    "StockName": "ARSHIYA"
+  },
+  {
+    "StockName": "ARTEMISMED"
+  },
+  {
+    "StockName": "ARVEE"
+  },
+  {
+    "StockName": "ARVIND"
+  },
+  {
+    "StockName": "ARVINDFASN"
+  },
+  {
+    "StockName": "ARVSMART"
+  },
+  {
+    "StockName": "ASAHIINDIA"
+  },
+  {
+    "StockName": "ASAHISONG"
+  },
+  {
+    "StockName": "ASALCBR"
+  },
+  {
+    "StockName": "ASHAPURMIN"
+  },
+  {
+    "StockName": "ASHIANA"
+  },
+  {
+    "StockName": "ASHIMASYN"
+  },
+  {
+    "StockName": "ASHOKA"
+  },
+  {
+    "StockName": "ASHOKLEY"
+  },
+  {
+    "StockName": "ASIANENE"
+  },
+  {
+    "StockName": "ASIANHOTNR"
+  },
+  {
+    "StockName": "ASIANPAINT"
+  },
+  {
+    "StockName": "ASIANTILES"
+  },
+  {
+    "StockName": "ASPINWALL"
+  },
+  {
+    "StockName": "ASTEC"
+  },
+  {
+    "StockName": "ASTERDM"
+  },
+  {
+    "StockName": "ASTRAL"
+  },
+  {
+    "StockName": "ASTRAMICRO"
+  },
+  {
+    "StockName": "ASTRAZEN"
+  },
+  {
+    "StockName": "ASTRON"
+  },
+  {
+    "StockName": "ATFL"
+  },
+  {
+    "StockName": "ATLANTA"
+  },
+  {
+    "StockName": "ATUL"
+  },
+  {
+    "StockName": "ATULAUTO"
+  },
+  {
+    "StockName": "AUBANK"
+  },
+  {
+    "StockName": "AURIONPRO"
+  },
+  {
+    "StockName": "AUROPHARMA"
+  },
+  {
+    "StockName": "AURUM"
+  },
+  {
+    "StockName": "AUSOMENT"
+  },
+  {
+    "StockName": "AUTOAXLES"
+  },
+  {
+    "StockName": "AUTOIND"
+  },
+  {
+    "StockName": "AVADHSUGAR"
+  },
+  {
+    "StockName": "AVANTIFEED"
+  },
+  {
+    "StockName": "AVTNPL"
+  },
+  {
+    "StockName": "AWHCL"
+  },
+  {
+    "StockName": "AXISBANK"
+  },
+  {
+    "StockName": "AXISBNKETF"
+  },
+  {
+    "StockName": "AXISBPSETF"
+  },
+  {
+    "StockName": "AXISCETF"
+  },
+  {
+    "StockName": "AXISGOLD"
+  },
+  {
+    "StockName": "AXISHCETF"
+  },
+  {
+    "StockName": "AXISNIFTY"
+  },
+  {
+    "StockName": "AXISTECETF"
+  },
+  {
+    "StockName": "AYMSYNTEX"
+  },
+  {
+    "StockName": "BAFNAPH"
+  },
+  {
+    "StockName": "BAJAJ-AUTO"
+  },
+  {
+    "StockName": "BAJAJCON"
+  },
+  {
+    "StockName": "BAJAJELEC"
+  },
+  {
+    "StockName": "BAJAJFINSV"
+  },
+  {
+    "StockName": "BAJAJHCARE"
+  },
+  {
+    "StockName": "BAJAJHIND"
+  },
+  {
+    "StockName": "BAJAJHLDNG"
+  },
+  {
+    "StockName": "BAJFINANCE"
+  },
+  {
+    "StockName": "BALAJITELE"
+  },
+  {
+    "StockName": "BALAMINES"
+  },
+  {
+    "StockName": "BALAXI"
+  },
+  {
+    "StockName": "BALKRISIND"
+  },
+  {
+    "StockName": "BALMLAWRIE"
+  },
+  {
+    "StockName": "BALPHARMA"
+  },
+  {
+    "StockName": "BALRAMCHIN"
+  },
+  {
+    "StockName": "BANARBEADS"
+  },
+  {
+    "StockName": "BANARISUG"
+  },
+  {
+    "StockName": "BANCOINDIA"
+  },
+  {
+    "StockName": "BANDHANBNK"
+  },
+  {
+    "StockName": "BANG"
+  },
+  {
+    "StockName": "BANKBARODA"
+  },
+  {
+    "StockName": "BANKBEES"
+  },
+  {
+    "StockName": "BANKINDIA"
+  },
+  {
+    "StockName": "BANSWRAS"
+  },
+  {
+    "StockName": "BARBEQUE"
+  },
+  {
+    "StockName": "BASF"
+  },
+  {
+    "StockName": "BASML"
+  },
+  {
+    "StockName": "BATAINDIA"
+  },
+  {
+    "StockName": "BAYERCROP"
+  },
+  {
+    "StockName": "BBETF0432"
+  },
+  {
+    "StockName": "BBL"
+  },
+  {
+    "StockName": "BBOX"
+  },
+  {
+    "StockName": "BBTC"
+  },
+  {
+    "StockName": "BCONCEPTS"
+  },
+  {
+    "StockName": "BDL"
+  },
+  {
+    "StockName": "BEARDSELL"
+  },
+  {
+    "StockName": "BECTORFOOD"
+  },
+  {
+    "StockName": "BEDMUTHA"
+  },
+  {
+    "StockName": "BEL"
+  },
+  {
+    "StockName": "BEML"
+  },
+  {
+    "StockName": "BEPL"
+  },
+  {
+    "StockName": "BERGEPAINT"
+  },
+  {
+    "StockName": "BESTAGRO"
+  },
+  {
+    "StockName": "BFINVEST"
+  },
+  {
+    "StockName": "BFUTILITIE"
+  },
+  {
+    "StockName": "BGRENERGY"
+  },
+  {
+    "StockName": "BHAGCHEM"
+  },
+  {
+    "StockName": "BHAGERIA"
+  },
+  {
+    "StockName": "BHAGYANGR"
+  },
+  {
+    "StockName": "BHAGYAPROP"
+  },
+  {
+    "StockName": "BHARATFORG"
+  },
+  {
+    "StockName": "BHARATGEAR"
+  },
+  {
+    "StockName": "BHARATRAS"
+  },
+  {
+    "StockName": "BHARATWIRE"
+  },
+  {
+    "StockName": "BHARTIARTL"
+  },
+  {
+    "StockName": "BHEL"
+  },
+  {
+    "StockName": "BIGBLOC"
+  },
+  {
+    "StockName": "BIL"
+  },
+  {
+    "StockName": "BINDALAGRO"
+  },
+  {
+    "StockName": "BIOCON"
+  },
+  {
+    "StockName": "BIOFILCHEM"
+  },
+  {
+    "StockName": "BIRLACABLE"
+  },
+  {
+    "StockName": "BIRLACORPN"
+  },
+  {
+    "StockName": "BIRLAMONEY"
+  },
+  {
+    "StockName": "BIRLATYRE"
+  },
+  {
+    "StockName": "BLISSGVS"
+  },
+  {
+    "StockName": "BLKASHYAP"
+  },
+  {
+    "StockName": "BLS"
+  },
+  {
+    "StockName": "BLUEDART"
+  },
+  {
+    "StockName": "BLUESTARCO"
+  },
+  {
+    "StockName": "BODALCHEM"
+  },
+  {
+    "StockName": "BOMDYEING"
+  },
+  {
+    "StockName": "BORORENEW"
+  },
+  {
+    "StockName": "BOSCHLTD"
+  },
+  {
+    "StockName": "BPCL"
+  },
+  {
+    "StockName": "BPL"
+  },
+  {
+    "StockName": "BRIGADE"
+  },
+  {
+    "StockName": "BRITANNIA"
+  },
+  {
+    "StockName": "BRNL"
+  },
+  {
+    "StockName": "BROOKS"
+  },
+  {
+    "StockName": "BSE"
+  },
+  {
+    "StockName": "BSHSL"
+  },
+  {
+    "StockName": "BSL"
+  },
+  {
+    "StockName": "BSLGOLDETF"
+  },
+  {
+    "StockName": "BSLNIFTY"
+  },
+  {
+    "StockName": "BSLSENETFG"
+  },
+  {
+    "StockName": "BSOFT"
+  },
+  {
+    "StockName": "BURGERKING"
+  },
+  {
+    "StockName": "BUTTERFLY"
+  },
+  {
+    "StockName": "BYKE"
+  },
+  {
+    "StockName": "CADILAHC"
+  },
+  {
+    "StockName": "CALSOFT"
+  },
+  {
+    "StockName": "CAMLINFINE"
+  },
+  {
+    "StockName": "CAMS"
+  },
+  {
+    "StockName": "CANBK"
+  },
+  {
+    "StockName": "CANFINHOME"
+  },
+  {
+    "StockName": "CANTABIL"
+  },
+  {
+    "StockName": "CAPACITE"
+  },
+  {
+    "StockName": "CAPLIPOINT"
+  },
+  {
+    "StockName": "CAPTRUST"
+  },
+  {
+    "StockName": "CARBORUNIV"
+  },
+  {
+    "StockName": "CAREERP"
+  },
+  {
+    "StockName": "CARERATING"
+  },
+  {
+    "StockName": "CARTRADE"
+  },
+  {
+    "StockName": "CASTROLIND"
+  },
+  {
+    "StockName": "CCL"
+  },
+  {
+    "StockName": "CDSL"
+  },
+  {
+    "StockName": "CEATLTD"
+  },
+  {
+    "StockName": "CEBBCO"
+  },
+  {
+    "StockName": "CENTENKA"
+  },
+  {
+    "StockName": "CENTEXT"
+  },
+  {
+    "StockName": "CENTRALBK"
+  },
+  {
+    "StockName": "CENTRUM"
+  },
+  {
+    "StockName": "CENTUM"
+  },
+  {
+    "StockName": "CENTURYPLY"
+  },
+  {
+    "StockName": "CENTURYTEX"
+  },
+  {
+    "StockName": "CERA"
+  },
+  {
+    "StockName": "CEREBRAINT"
+  },
+  {
+    "StockName": "CESC"
+  },
+  {
+    "StockName": "CGCL"
+  },
+  {
+    "StockName": "CGPOWER"
+  },
+  {
+    "StockName": "CHALET"
+  },
+  {
+    "StockName": "CHAMBLFERT"
+  },
+  {
+    "StockName": "CHEMBOND"
+  },
+  {
+    "StockName": "CHEMCON"
+  },
+  {
+    "StockName": "CHEMFAB"
+  },
+  {
+    "StockName": "CHEMPLASTS"
+  },
+  {
+    "StockName": "CHENNPETRO"
+  },
+  {
+    "StockName": "CHOLAFIN"
+  },
+  {
+    "StockName": "CHOLAHLDNG"
+  },
+  {
+    "StockName": "CIGNITITEC"
+  },
+  {
+    "StockName": "CINELINE"
+  },
+  {
+    "StockName": "CINEVISTA"
+  },
+  {
+    "StockName": "CIPLA"
+  },
+  {
+    "StockName": "CLEAN"
+  },
+  {
+    "StockName": "CLEDUCATE"
+  },
+  {
+    "StockName": "CLNINDIA"
+  },
+  {
+    "StockName": "CLSEL"
+  },
+  {
+    "StockName": "CMSINFO"
+  },
+  {
+    "StockName": "COALINDIA"
+  },
+  {
+    "StockName": "COASTCORP"
+  },
+  {
+    "StockName": "COCHINSHIP"
+  },
+  {
+    "StockName": "COFFEEDAY"
+  },
+  {
+    "StockName": "COFORGE"
+  },
+  {
+    "StockName": "COLPAL"
+  },
+  {
+    "StockName": "COMPINFO"
+  },
+  {
+    "StockName": "CONCOR"
+  },
+  {
+    "StockName": "CONFIPET"
+  },
+  {
+    "StockName": "CONSOFINVT"
+  },
+  {
+    "StockName": "CONTROLPR"
+  },
+  {
+    "StockName": "CORALFINAC"
+  },
+  {
+    "StockName": "CORDSCABLE"
+  },
+  {
+    "StockName": "COROMANDEL"
+  },
+  {
+    "StockName": "COSMOFILMS"
+  },
+  {
+    "StockName": "CPSEETF"
+  },
+  {
+    "StockName": "CRAFTSMAN"
+  },
+  {
+    "StockName": "CREATIVE"
+  },
+  {
+    "StockName": "CREATIVEYE"
+  },
+  {
+    "StockName": "CREDITACC"
+  },
+  {
+    "StockName": "CRISIL"
+  },
+  {
+    "StockName": "CROMPTON"
+  },
+  {
+    "StockName": "CSBBANK"
+  },
+  {
+    "StockName": "CTE"
+  },
+  {
+    "StockName": "CUB"
+  },
+  {
+    "StockName": "CUBEXTUB"
+  },
+  {
+    "StockName": "CUMMINSIND"
+  },
+  {
+    "StockName": "CUPID"
+  },
+  {
+    "StockName": "CYBERTECH"
+  },
+  {
+    "StockName": "CYIENT"
+  },
+  {
+    "StockName": "DAAWAT"
+  },
+  {
+    "StockName": "DABUR"
+  },
+  {
+    "StockName": "DALBHARAT"
+  },
+  {
+    "StockName": "DALMIASUG"
+  },
+  {
+    "StockName": "DAMODARIND"
+  },
+  {
+    "StockName": "DANGEE"
+  },
+  {
+    "StockName": "DATAMATICS"
+  },
+  {
+    "StockName": "DATAPATTNS"
+  },
+  {
+    "StockName": "DBCORP"
+  },
+  {
+    "StockName": "DBL"
+  },
+  {
+    "StockName": "DCAL"
+  },
+  {
+    "StockName": "DCBBANK"
+  },
+  {
+    "StockName": "DCM"
+  },
+  {
+    "StockName": "DCMNVL"
+  },
+  {
+    "StockName": "DCMSHRIRAM"
+  },
+  {
+    "StockName": "DCMSRIND"
+  },
+  {
+    "StockName": "DCW"
+  },
+  {
+    "StockName": "DECCANCE"
+  },
+  {
+    "StockName": "DEEPAKFERT"
+  },
+  {
+    "StockName": "DEEPAKNTR"
+  },
+  {
+    "StockName": "DEEPENR"
+  },
+  {
+    "StockName": "DEEPINDS"
+  },
+  {
+    "StockName": "DELPHIFX"
+  },
+  {
+    "StockName": "DELTACORP"
+  },
+  {
+    "StockName": "DELTAMAGNT"
+  },
+  {
+    "StockName": "DEN"
+  },
+  {
+    "StockName": "DEVYANI"
+  },
+  {
+    "StockName": "DFMFOODS"
+  },
+  {
+    "StockName": "DHAMPURSUG"
+  },
+  {
+    "StockName": "DHANBANK"
+  },
+  {
+    "StockName": "DHANI"
+  },
+  {
+    "StockName": "DHANUKA"
+  },
+  {
+    "StockName": "DHARAMSI"
+  },
+  {
+    "StockName": "DHRUV"
+  },
+  {
+    "StockName": "DHUNINV"
+  },
+  {
+    "StockName": "DIAMONDYD"
+  },
+  {
+    "StockName": "DICIND"
+  },
+  {
+    "StockName": "DIGISPICE"
+  },
+  {
+    "StockName": "DIGJAMLMTD"
+  },
+  {
+    "StockName": "DISHTV"
+  },
+  {
+    "StockName": "DIVISLAB"
+  },
+  {
+    "StockName": "DIXON"
+  },
+  {
+    "StockName": "DLF"
+  },
+  {
+    "StockName": "DLINKINDIA"
+  },
+  {
+    "StockName": "DMART"
+  },
+  {
+    "StockName": "DODLA"
+  },
+  {
+    "StockName": "DOLATALGO"
+  },
+  {
+    "StockName": "DOLLAR"
+  },
+  {
+    "StockName": "DONEAR"
+  },
+  {
+    "StockName": "DPABHUSHAN"
+  },
+  {
+    "StockName": "DPSCLTD"
+  },
+  {
+    "StockName": "DPWIRES"
+  },
+  {
+    "StockName": "DREDGECORP"
+  },
+  {
+    "StockName": "DRREDDY"
+  },
+  {
+    "StockName": "DSPN50ETF"
+  },
+  {
+    "StockName": "DSPNEWETF"
+  },
+  {
+    "StockName": "DSPQ50ETF"
+  },
+  {
+    "StockName": "DSSL"
+  },
+  {
+    "StockName": "DTIL"
+  },
+  {
+    "StockName": "DVL"
+  },
+  {
+    "StockName": "DWARKESH"
+  },
+  {
+    "StockName": "DYNAMATECH"
+  },
+  {
+    "StockName": "DYNPRO"
+  },
+  {
+    "StockName": "EASEMYTRIP"
+  },
+  {
+    "StockName": "EBANK"
+  },
+  {
+    "StockName": "EBBETF0423"
+  },
+  {
+    "StockName": "EBBETF0425"
+  },
+  {
+    "StockName": "EBBETF0430"
+  },
+  {
+    "StockName": "EBBETF0431"
+  },
+  {
+    "StockName": "ECLERX"
+  },
+  {
+    "StockName": "EDELWEISS"
+  },
+  {
+    "StockName": "EICHERMOT"
+  },
+  {
+    "StockName": "EIDPARRY"
+  },
+  {
+    "StockName": "EIFFL"
+  },
+  {
+    "StockName": "EIHAHOTELS"
+  },
+  {
+    "StockName": "EIHOTEL"
+  },
+  {
+    "StockName": "EIMCOELECO"
+  },
+  {
+    "StockName": "EKC"
+  },
+  {
+    "StockName": "ELECON"
+  },
+  {
+    "StockName": "ELECTCAST"
+  },
+  {
+    "StockName": "ELECTHERM"
+  },
+  {
+    "StockName": "ELGIEQUIP"
+  },
+  {
+    "StockName": "ELGIRUBCO"
+  },
+  {
+    "StockName": "EMAMILTD"
+  },
+  {
+    "StockName": "EMAMIPAP"
+  },
+  {
+    "StockName": "EMKAY"
+  },
+  {
+    "StockName": "EMMBI"
+  },
+  {
+    "StockName": "ENDURANCE"
+  },
+  {
+    "StockName": "ENGINERSIN"
+  },
+  {
+    "StockName": "ENIL"
+  },
+  {
+    "StockName": "EPL"
+  },
+  {
+    "StockName": "EQUIPPP"
+  },
+  {
+    "StockName": "EQUITAS"
+  },
+  {
+    "StockName": "EQUITASBNK"
+  },
+  {
+    "StockName": "ERIS"
+  },
+  {
+    "StockName": "EROSMEDIA"
+  },
+  {
+    "StockName": "ESABINDIA"
+  },
+  {
+    "StockName": "ESCORTS"
+  },
+  {
+    "StockName": "ESTER"
+  },
+  {
+    "StockName": "EVEREADY"
+  },
+  {
+    "StockName": "EVERESTIND"
+  },
+  {
+    "StockName": "EXCELINDUS"
+  },
+  {
+    "StockName": "EXIDEIND"
+  },
+  {
+    "StockName": "EXPLEOSOL"
+  },
+  {
+    "StockName": "EXXARO"
+  },
+  {
+    "StockName": "FACT"
+  },
+  {
+    "StockName": "FAIRCHEMOR"
+  },
+  {
+    "StockName": "FCL"
+  },
+  {
+    "StockName": "FCONSUMER"
+  },
+  {
+    "StockName": "FDC"
+  },
+  {
+    "StockName": "FEDERALBNK"
+  },
+  {
+    "StockName": "FEL"
+  },
+  {
+    "StockName": "FELDVR"
+  },
+  {
+    "StockName": "FIEMIND"
+  },
+  {
+    "StockName": "FILATEX"
+  },
+  {
+    "StockName": "FINCABLES"
+  },
+  {
+    "StockName": "FINEORG"
+  },
+  {
+    "StockName": "FINOPB"
+  },
+  {
+    "StockName": "FINPIPE"
+  },
+  {
+    "StockName": "FLEXITUFF"
+  },
+  {
+    "StockName": "FLFL"
+  },
+  {
+    "StockName": "FLUOROCHEM"
+  },
+  {
+    "StockName": "FMGOETZE"
+  },
+  {
+    "StockName": "FMNL"
+  },
+  {
+    "StockName": "FOCUS"
+  },
+  {
+    "StockName": "FOODSIN"
+  },
+  {
+    "StockName": "FORCEMOT"
+  },
+  {
+    "StockName": "FORTIS"
+  },
+  {
+    "StockName": "FOSECOIND"
+  },
+  {
+    "StockName": "FRETAIL"
+  },
+  {
+    "StockName": "FSC"
+  },
+  {
+    "StockName": "FSL"
+  },
+  {
+    "StockName": "GABRIEL"
+  },
+  {
+    "StockName": "GAEL"
+  },
+  {
+    "StockName": "GAIL"
+  },
+  {
+    "StockName": "GALAXYSURF"
+  },
+  {
+    "StockName": "GALLANTT"
+  },
+  {
+    "StockName": "GALLISPAT"
+  },
+  {
+    "StockName": "GANDHITUBE"
+  },
+  {
+    "StockName": "GANECOS"
+  },
+  {
+    "StockName": "GANESHBE"
+  },
+  {
+    "StockName": "GANESHHOUC"
+  },
+  {
+    "StockName": "GANGAFORGE"
+  },
+  {
+    "StockName": "GANGESSECU"
+  },
+  {
+    "StockName": "GARFIBRES"
+  },
+  {
+    "StockName": "GATI"
+  },
+  {
+    "StockName": "GAYAPROJ"
+  },
+  {
+    "StockName": "GEECEE"
+  },
+  {
+    "StockName": "GEEKAYWIRE"
+  },
+  {
+    "StockName": "GENCON"
+  },
+  {
+    "StockName": "GENESYS"
+  },
+  {
+    "StockName": "GENUSPAPER"
+  },
+  {
+    "StockName": "GENUSPOWER"
+  },
+  {
+    "StockName": "GEOJITFSL"
+  },
+  {
+    "StockName": "GEPIL"
+  },
+  {
+    "StockName": "GESHIP"
+  },
+  {
+    "StockName": "GET&D"
+  },
+  {
+    "StockName": "GFLLIMITED"
+  },
+  {
+    "StockName": "GHCL"
+  },
+  {
+    "StockName": "GICHSGFIN"
+  },
+  {
+    "StockName": "GICRE"
+  },
+  {
+    "StockName": "GILLANDERS"
+  },
+  {
+    "StockName": "GILLETTE"
+  },
+  {
+    "StockName": "GINNIFILA"
+  },
+  {
+    "StockName": "GIPCL"
+  },
+  {
+    "StockName": "GKWLIMITED"
+  },
+  {
+    "StockName": "GLAND"
+  },
+  {
+    "StockName": "GLAXO"
+  },
+  {
+    "StockName": "GLENMARK"
+  },
+  {
+    "StockName": "GLOBAL"
+  },
+  {
+    "StockName": "GLOBE"
+  },
+  {
+    "StockName": "GLOBUSSPR"
+  },
+  {
+    "StockName": "GLS"
+  },
+  {
+    "StockName": "GMBREW"
+  },
+  {
+    "StockName": "GMDCLTD"
+  },
+  {
+    "StockName": "GMMPFAUDLR"
+  },
+  {
+    "StockName": "GMRINFRA"
+  },
+  {
+    "StockName": "GNA"
+  },
+  {
+    "StockName": "GNFC"
+  },
+  {
+    "StockName": "GOACARBON"
+  },
+  {
+    "StockName": "GOCLCORP"
+  },
+  {
+    "StockName": "GOCOLORS"
+  },
+  {
+    "StockName": "GODFRYPHLP"
+  },
+  {
+    "StockName": "GODHA"
+  },
+  {
+    "StockName": "GODREJAGRO"
+  },
+  {
+    "StockName": "GODREJCP"
+  },
+  {
+    "StockName": "GODREJIND"
+  },
+  {
+    "StockName": "GODREJPROP"
+  },
+  {
+    "StockName": "GOKEX"
+  },
+  {
+    "StockName": "GOKUL"
+  },
+  {
+    "StockName": "GOLDBEES"
+  },
+  {
+    "StockName": "GOLDENTOBC"
+  },
+  {
+    "StockName": "GOLDIAM"
+  },
+  {
+    "StockName": "GOLDSHARE"
+  },
+  {
+    "StockName": "GOODYEAR"
+  },
+  {
+    "StockName": "GPIL"
+  },
+  {
+    "StockName": "GPPL"
+  },
+  {
+    "StockName": "GPTINFRA"
+  },
+  {
+    "StockName": "GRANULES"
+  },
+  {
+    "StockName": "GRAPHITE"
+  },
+  {
+    "StockName": "GRASIM"
+  },
+  {
+    "StockName": "GRAUWEIL"
+  },
+  {
+    "StockName": "GRAVITA"
+  },
+  {
+    "StockName": "GREAVESCOT"
+  },
+  {
+    "StockName": "GREENLAM"
+  },
+  {
+    "StockName": "GREENPANEL"
+  },
+  {
+    "StockName": "GREENPLY"
+  },
+  {
+    "StockName": "GRINDWELL"
+  },
+  {
+    "StockName": "GRINFRA"
+  },
+  {
+    "StockName": "GROBTEA"
+  },
+  {
+    "StockName": "GRPLTD"
+  },
+  {
+    "StockName": "GRSE"
+  },
+  {
+    "StockName": "GSCLCEMENT"
+  },
+  {
+    "StockName": "GSFC"
+  },
+  {
+    "StockName": "GSPL"
+  },
+  {
+    "StockName": "GTL"
+  },
+  {
+    "StockName": "GTPL"
+  },
+  {
+    "StockName": "GUFICBIO"
+  },
+  {
+    "StockName": "GUJALKALI"
+  },
+  {
+    "StockName": "GUJAPOLLO"
+  },
+  {
+    "StockName": "GUJGASLTD"
+  },
+  {
+    "StockName": "GULFOILLUB"
+  },
+  {
+    "StockName": "GULFPETRO"
+  },
+  {
+    "StockName": "HAL"
+  },
+  {
+    "StockName": "HARRMALAYA"
+  },
+  {
+    "StockName": "HATHWAY"
+  },
+  {
+    "StockName": "HATSUN"
+  },
+  {
+    "StockName": "HAVELLS"
+  },
+  {
+    "StockName": "HBANKETF"
+  },
+  {
+    "StockName": "HBLPOWER"
+  },
+  {
+    "StockName": "HBSL"
+  },
+  {
+    "StockName": "HCC"
+  },
+  {
+    "StockName": "HCG"
+  },
+  {
+    "StockName": "HCL-INSYS"
+  },
+  {
+    "StockName": "HCLTECH"
+  },
+  {
+    "StockName": "HDFC"
+  },
+  {
+    "StockName": "HDFCAMC"
+  },
+  {
+    "StockName": "HDFCBANK"
+  },
+  {
+    "StockName": "HDFCLIFE"
+  },
+  {
+    "StockName": "HDFCMFGETF"
+  },
+  {
+    "StockName": "HDFCNIFETF"
+  },
+  {
+    "StockName": "HDFCSENETF"
+  },
+  {
+    "StockName": "HEALTHY"
+  },
+  {
+    "StockName": "HECPROJECT"
+  },
+  {
+    "StockName": "HEG"
+  },
+  {
+    "StockName": "HEIDELBERG"
+  },
+  {
+    "StockName": "HEMIPROP"
+  },
+  {
+    "StockName": "HERANBA"
+  },
+  {
+    "StockName": "HERCULES"
+  },
+  {
+    "StockName": "HERITGFOOD"
+  },
+  {
+    "StockName": "HEROMOTOCO"
+  },
+  {
+    "StockName": "HESTERBIO"
+  },
+  {
+    "StockName": "HEXATRADEX"
+  },
+  {
+    "StockName": "HFCL"
+  },
+  {
+    "StockName": "HGINFRA"
+  },
+  {
+    "StockName": "HGS"
+  },
+  {
+    "StockName": "HIKAL"
+  },
+  {
+    "StockName": "HIL"
+  },
+  {
+    "StockName": "HILTON"
+  },
+  {
+    "StockName": "HIMATSEIDE"
+  },
+  {
+    "StockName": "HINDALCO"
+  },
+  {
+    "StockName": "HINDCOMPOS"
+  },
+  {
+    "StockName": "HINDCON"
+  },
+  {
+    "StockName": "HINDCOPPER"
+  },
+  {
+    "StockName": "HINDMOTORS"
+  },
+  {
+    "StockName": "HINDNATGLS"
+  },
+  {
+    "StockName": "HINDOILEXP"
+  },
+  {
+    "StockName": "HINDPETRO"
+  },
+  {
+    "StockName": "HINDUNILVR"
+  },
+  {
+    "StockName": "HINDZINC"
+  },
+  {
+    "StockName": "HISARMETAL"
+  },
+  {
+    "StockName": "HITECH"
+  },
+  {
+    "StockName": "HITECHCORP"
+  },
+  {
+    "StockName": "HITECHGEAR"
+  },
+  {
+    "StockName": "HLEGLAS"
+  },
+  {
+    "StockName": "HMVL"
+  },
+  {
+    "StockName": "HNDFDS"
+  },
+  {
+    "StockName": "HNGSNGBEES"
+  },
+  {
+    "StockName": "HOMEFIRST"
+  },
+  {
+    "StockName": "HONAUT"
+  },
+  {
+    "StockName": "HONDAPOWER"
+  },
+  {
+    "StockName": "HOVS"
+  },
+  {
+    "StockName": "HPAL"
+  },
+  {
+    "StockName": "HPL"
+  },
+  {
+    "StockName": "HSCL"
+  },
+  {
+    "StockName": "HSIL"
+  },
+  {
+    "StockName": "HTMEDIA"
+  },
+  {
+    "StockName": "HUDCO"
+  },
+  {
+    "StockName": "HUHTAMAKI"
+  },
+  {
+    "StockName": "IBMFNIFTY"
+  },
+  {
+    "StockName": "IBREALEST"
+  },
+  {
+    "StockName": "IBULHSGFIN"
+  },
+  {
+    "StockName": "ICEMAKE"
+  },
+  {
+    "StockName": "ICICI500"
+  },
+  {
+    "StockName": "ICICIALPLV"
+  },
+  {
+    "StockName": "ICICIAUTO"
+  },
+  {
+    "StockName": "ICICIB22"
+  },
+  {
+    "StockName": "ICICIBANK"
+  },
+  {
+    "StockName": "ICICIBANKN"
+  },
+  {
+    "StockName": "ICICIBANKP"
+  },
+  {
+    "StockName": "ICICICONSU"
+  },
+  {
+    "StockName": "ICICIFMCG"
+  },
+  {
+    "StockName": "ICICIGI"
+  },
+  {
+    "StockName": "ICICIGOLD"
+  },
+  {
+    "StockName": "ICICILIQ"
+  },
+  {
+    "StockName": "ICICILOVOL"
+  },
+  {
+    "StockName": "ICICIM150"
+  },
+  {
+    "StockName": "ICICIMCAP"
+  },
+  {
+    "StockName": "ICICINF100"
+  },
+  {
+    "StockName": "ICICINIFTY"
+  },
+  {
+    "StockName": "ICICINV20"
+  },
+  {
+    "StockName": "ICICINXT50"
+  },
+  {
+    "StockName": "ICICIPHARM"
+  },
+  {
+    "StockName": "ICICIPRULI"
+  },
+  {
+    "StockName": "ICICISENSX"
+  },
+  {
+    "StockName": "ICICITECH"
+  },
+  {
+    "StockName": "ICIL"
+  },
+  {
+    "StockName": "ICRA"
+  },
+  {
+    "StockName": "IDBI"
+  },
+  {
+    "StockName": "IDBIGOLD"
+  },
+  {
+    "StockName": "IDEA"
+  },
+  {
+    "StockName": "IDFC"
+  },
+  {
+    "StockName": "IDFCFIRSTB"
+  },
+  {
+    "StockName": "IDFNIFTYET"
+  },
+  {
+    "StockName": "IEX"
+  },
+  {
+    "StockName": "IFBAGRO"
+  },
+  {
+    "StockName": "IFBIND"
+  },
+  {
+    "StockName": "IFCI"
+  },
+  {
+    "StockName": "IFGLEXPOR"
+  },
+  {
+    "StockName": "IGARASHI"
+  },
+  {
+    "StockName": "IGL"
+  },
+  {
+    "StockName": "IGPL"
+  },
+  {
+    "StockName": "IIFL"
+  },
+  {
+    "StockName": "IIFLSEC"
+  },
+  {
+    "StockName": "IIFLWAM"
+  },
+  {
+    "StockName": "IITL"
+  },
+  {
+    "StockName": "IMAGICAA"
+  },
+  {
+    "StockName": "IMFA"
+  },
+  {
+    "StockName": "IMPAL"
+  },
+  {
+    "StockName": "INDBANK"
+  },
+  {
+    "StockName": "INDHOTEL"
+  },
+  {
+    "StockName": "INDIACEM"
+  },
+  {
+    "StockName": "INDIAGLYCO"
+  },
+  {
+    "StockName": "INDIAMART"
+  },
+  {
+    "StockName": "INDIANB"
+  },
+  {
+    "StockName": "INDIANHUME"
+  },
+  {
+    "StockName": "INDIGO"
+  },
+  {
+    "StockName": "INDIGOPNTS"
+  },
+  {
+    "StockName": "INDNIPPON"
+  },
+  {
+    "StockName": "INDOCO"
+  },
+  {
+    "StockName": "INDORAMA"
+  },
+  {
+    "StockName": "INDOSTAR"
+  },
+  {
+    "StockName": "INDOTECH"
+  },
+  {
+    "StockName": "INDRAMEDCO"
+  },
+  {
+    "StockName": "INDSWFTLAB"
+  },
+  {
+    "StockName": "INDTERRAIN"
+  },
+  {
+    "StockName": "INDUSINDBK"
+  },
+  {
+    "StockName": "INDUSTOWER"
+  },
+  {
+    "StockName": "INEOSSTYRO"
+  },
+  {
+    "StockName": "INFIBEAM"
+  },
+  {
+    "StockName": "INFOBEAN"
+  },
+  {
+    "StockName": "INFRABEES"
+  },
+  {
+    "StockName": "INFY"
+  },
+  {
+    "StockName": "INGERRAND"
+  },
+  {
+    "StockName": "INOXLEISUR"
+  },
+  {
+    "StockName": "INOXWIND"
+  },
+  {
+    "StockName": "INSECTICID"
+  },
+  {
+    "StockName": "INTELLECT"
+  },
+  {
+    "StockName": "INTENTECH"
+  },
+  {
+    "StockName": "INTLCONV"
+  },
+  {
+    "StockName": "INVENTURE"
+  },
+  {
+    "StockName": "IOB"
+  },
+  {
+    "StockName": "IOC"
+  },
+  {
+    "StockName": "IOLCP"
+  },
+  {
+    "StockName": "IPCALAB"
+  },
+  {
+    "StockName": "IPL"
+  },
+  {
+    "StockName": "IRB"
+  },
+  {
+    "StockName": "IRCON"
+  },
+  {
+    "StockName": "IRCTC"
+  },
+  {
+    "StockName": "IRFC"
+  },
+  {
+    "StockName": "IRIS"
+  },
+  {
+    "StockName": "IRISDOREME"
+  },
+  {
+    "StockName": "ISEC"
+  },
+  {
+    "StockName": "ISFT"
+  },
+  {
+    "StockName": "ISGEC"
+  },
+  {
+    "StockName": "ITC"
+  },
+  {
+    "StockName": "ITDC"
+  },
+  {
+    "StockName": "ITDCEM"
+  },
+  {
+    "StockName": "ITI"
+  },
+  {
+    "StockName": "IVP"
+  },
+  {
+    "StockName": "IVZINGOLD"
+  },
+  {
+    "StockName": "IVZINNIFTY"
+  },
+  {
+    "StockName": "IZMO"
+  },
+  {
+    "StockName": "J&KBANK"
+  },
+  {
+    "StockName": "JAGRAN"
+  },
+  {
+    "StockName": "JAGSNPHARM"
+  },
+  {
+    "StockName": "JAIBALAJI"
+  },
+  {
+    "StockName": "JAICORPLTD"
+  },
+  {
+    "StockName": "JAIPURKURT"
+  },
+  {
+    "StockName": "JAMNAAUTO"
+  },
+  {
+    "StockName": "JASH"
+  },
+  {
+    "StockName": "JAYAGROGN"
+  },
+  {
+    "StockName": "JAYBARMARU"
+  },
+  {
+    "StockName": "JAYSREETEA"
+  },
+  {
+    "StockName": "JBCHEPHARM"
+  },
+  {
+    "StockName": "JBMA"
+  },
+  {
+    "StockName": "JCHAC"
+  },
+  {
+    "StockName": "JETFREIGHT"
+  },
+  {
+    "StockName": "JHS"
+  },
+  {
+    "StockName": "JINDALPHOT"
+  },
+  {
+    "StockName": "JINDALPOLY"
+  },
+  {
+    "StockName": "JINDALSAW"
+  },
+  {
+    "StockName": "JINDALSTEL"
+  },
+  {
+    "StockName": "JINDRILL"
+  },
+  {
+    "StockName": "JINDWORLD"
+  },
+  {
+    "StockName": "JISLDVREQS"
+  },
+  {
+    "StockName": "JISLJALEQS"
+  },
+  {
+    "StockName": "JKCEMENT"
+  },
+  {
+    "StockName": "JKIL"
+  },
+  {
+    "StockName": "JKLAKSHMI"
+  },
+  {
+    "StockName": "JKPAPER"
+  },
+  {
+    "StockName": "JKTYRE"
+  },
+  {
+    "StockName": "JMA"
+  },
+  {
+    "StockName": "JMCPROJECT"
+  },
+  {
+    "StockName": "JMFINANCIL"
+  },
+  {
+    "StockName": "JOCIL"
+  },
+  {
+    "StockName": "JPASSOCIAT"
+  },
+  {
+    "StockName": "JPINFRATEC"
+  },
+  {
+    "StockName": "JPOLYINVST"
+  },
+  {
+    "StockName": "JPPOWER"
+  },
+  {
+    "StockName": "JSL"
+  },
+  {
+    "StockName": "JSLHISAR"
+  },
+  {
+    "StockName": "JSWHL"
+  },
+  {
+    "StockName": "JSWISPL"
+  },
+  {
+    "StockName": "JSWSTEEL"
+  },
+  {
+    "StockName": "JTEKTINDIA"
+  },
+  {
+    "StockName": "JTLINFRA"
+  },
+  {
+    "StockName": "JUBLFOOD"
+  },
+  {
+    "StockName": "JUBLINDS"
+  },
+  {
+    "StockName": "JUBLINGREA"
+  },
+  {
+    "StockName": "JUBLPHARMA"
+  },
+  {
+    "StockName": "JUNIORBEES"
+  },
+  {
+    "StockName": "JUSTDIAL"
+  },
+  {
+    "StockName": "JYOTHYLAB"
+  },
+  {
+    "StockName": "KABRAEXTRU"
+  },
+  {
+    "StockName": "KAJARIACER"
+  },
+  {
+    "StockName": "KAKATCEM"
+  },
+  {
+    "StockName": "KALPATPOWR"
+  },
+  {
+    "StockName": "KALYANKJIL"
+  },
+  {
+    "StockName": "KAMATHOTEL"
+  },
+  {
+    "StockName": "KAMDHENU"
+  },
+  {
+    "StockName": "KANORICHEM"
+  },
+  {
+    "StockName": "KANPRPLA"
+  },
+  {
+    "StockName": "KANSAINER"
+  },
+  {
+    "StockName": "KARURVYSYA"
+  },
+  {
+    "StockName": "KAUSHALYA"
+  },
+  {
+    "StockName": "KAVVERITEL"
+  },
+  {
+    "StockName": "KAYA"
+  },
+  {
+    "StockName": "KBCGLOBAL"
+  },
+  {
+    "StockName": "KCP"
+  },
+  {
+    "StockName": "KCPSUGIND"
+  },
+  {
+    "StockName": "KDDL"
+  },
+  {
+    "StockName": "KEC"
+  },
+  {
+    "StockName": "KECL"
+  },
+  {
+    "StockName": "KEERTI"
+  },
+  {
+    "StockName": "KEI"
+  },
+  {
+    "StockName": "KELLTONTEC"
+  },
+  {
+    "StockName": "KENNAMET"
+  },
+  {
+    "StockName": "KESORAMIND"
+  },
+  {
+    "StockName": "KEYFINSERV"
+  },
+  {
+    "StockName": "KHADIM"
+  },
+  {
+    "StockName": "KHAICHEM"
+  },
+  {
+    "StockName": "KHAITANLTD"
+  },
+  {
+    "StockName": "KHANDSE"
+  },
+  {
+    "StockName": "KICL"
+  },
+  {
+    "StockName": "KIMS"
+  },
+  {
+    "StockName": "KINGFA"
+  },
+  {
+    "StockName": "KIOCL"
+  },
+  {
+    "StockName": "KIRIINDUS"
+  },
+  {
+    "StockName": "KIRLFER"
+  },
+  {
+    "StockName": "KIRLOSBROS"
+  },
+  {
+    "StockName": "KIRLOSENG"
+  },
+  {
+    "StockName": "KIRLOSIND"
+  },
+  {
+    "StockName": "KITEX"
+  },
+  {
+    "StockName": "KKCL"
+  },
+  {
+    "StockName": "KMSUGAR"
+  },
+  {
+    "StockName": "KNRCON"
+  },
+  {
+    "StockName": "KOKUYOCMLN"
+  },
+  {
+    "StockName": "KOLTEPATIL"
+  },
+  {
+    "StockName": "KOPRAN"
+  },
+  {
+    "StockName": "KOTAKALPHA"
+  },
+  {
+    "StockName": "KOTAKBANK"
+  },
+  {
+    "StockName": "KOTAKBKETF"
+  },
+  {
+    "StockName": "KOTAKGOLD"
+  },
+  {
+    "StockName": "KOTAKIT"
+  },
+  {
+    "StockName": "KOTAKNIFTY"
+  },
+  {
+    "StockName": "KOTAKNV20"
+  },
+  {
+    "StockName": "KOTAKPSUBK"
+  },
+  {
+    "StockName": "KOTARISUG"
+  },
+  {
+    "StockName": "KOTHARIPET"
+  },
+  {
+    "StockName": "KOTHARIPRO"
+  },
+  {
+    "StockName": "KOVAI"
+  },
+  {
+    "StockName": "KPIGLOBAL"
+  },
+  {
+    "StockName": "KPITTECH"
+  },
+  {
+    "StockName": "KPRMILL"
+  },
+  {
+    "StockName": "KRBL"
+  },
+  {
+    "StockName": "KREBSBIO"
+  },
+  {
+    "StockName": "KRISHANA"
+  },
+  {
+    "StockName": "KRITI"
+  },
+  {
+    "StockName": "KRSNAA"
+  },
+  {
+    "StockName": "KSB"
+  },
+  {
+    "StockName": "KSCL"
+  },
+  {
+    "StockName": "KSL"
+  },
+  {
+    "StockName": "KTKBANK"
+  },
+  {
+    "StockName": "KUANTUM"
+  },
+  {
+    "StockName": "L&TFH"
+  },
+  {
+    "StockName": "LAGNAM"
+  },
+  {
+    "StockName": "LALPATHLAB"
+  },
+  {
+    "StockName": "LAMBODHARA"
+  },
+  {
+    "StockName": "LAOPALA"
+  },
+  {
+    "StockName": "LASA"
+  },
+  {
+    "StockName": "LATENTVIEW"
+  },
+  {
+    "StockName": "LAURUSLABS"
+  },
+  {
+    "StockName": "LAXMICOT"
+  },
+  {
+    "StockName": "LAXMIMACH"
+  },
+  {
+    "StockName": "LEMONTREE"
+  },
+  {
+    "StockName": "LFIC"
+  },
+  {
+    "StockName": "LGBBROSLTD"
+  },
+  {
+    "StockName": "LIBAS"
+  },
+  {
+    "StockName": "LIBERTSHOE"
+  },
+  {
+    "StockName": "LICHSGFIN"
+  },
+  {
+    "StockName": "LICNETFGSC"
+  },
+  {
+    "StockName": "LICNETFN50"
+  },
+  {
+    "StockName": "LICNETFSEN"
+  },
+  {
+    "StockName": "LICNFNHGP"
+  },
+  {
+    "StockName": "LIKHITHA"
+  },
+  {
+    "StockName": "LINC"
+  },
+  {
+    "StockName": "LINCOLN"
+  },
+  {
+    "StockName": "LINDEINDIA"
+  },
+  {
+    "StockName": "LIQUIDBEES"
+  },
+  {
+    "StockName": "LIQUIDETF"
+  },
+  {
+    "StockName": "LODHA"
+  },
+  {
+    "StockName": "LOKESHMACH"
+  },
+  {
+    "StockName": "LOTUSEYE"
+  },
+  {
+    "StockName": "LT"
+  },
+  {
+    "StockName": "LTI"
+  },
+  {
+    "StockName": "LTTS"
+  },
+  {
+    "StockName": "LUMAXIND"
+  },
+  {
+    "StockName": "LUMAXTECH"
+  },
+  {
+    "StockName": "LUPIN"
+  },
+  {
+    "StockName": "LUXIND"
+  },
+  {
+    "StockName": "LXCHEM"
+  },
+  {
+    "StockName": "M&M"
+  },
+  {
+    "StockName": "M&MFIN"
+  },
+  {
+    "StockName": "MAANALU"
+  },
+  {
+    "StockName": "MACPOWER"
+  },
+  {
+    "StockName": "MADHAV"
+  },
+  {
+    "StockName": "MADRASFERT"
+  },
+  {
+    "StockName": "MAESGETF"
+  },
+  {
+    "StockName": "MAFANG"
+  },
+  {
+    "StockName": "MAFSETF"
+  },
+  {
+    "StockName": "MAGADSUGAR"
+  },
+  {
+    "StockName": "MAGNUM"
+  },
+  {
+    "StockName": "MAHABANK"
+  },
+  {
+    "StockName": "MAHASTEEL"
+  },
+  {
+    "StockName": "MAHEPC"
+  },
+  {
+    "StockName": "MAHESHWARI"
+  },
+  {
+    "StockName": "MAHINDCIE"
+  },
+  {
+    "StockName": "MAHKTECH"
+  },
+  {
+    "StockName": "MAHLIFE"
+  },
+  {
+    "StockName": "MAHLOG"
+  },
+  {
+    "StockName": "MAHSCOOTER"
+  },
+  {
+    "StockName": "MAHSEAMLES"
+  },
+  {
+    "StockName": "MAITHANALL"
+  },
+  {
+    "StockName": "MALUPAPER"
+  },
+  {
+    "StockName": "MAN50ETF"
+  },
+  {
+    "StockName": "MANAKSIA"
+  },
+  {
+    "StockName": "MANAKSTEEL"
+  },
+  {
+    "StockName": "MANALIPETC"
+  },
+  {
+    "StockName": "MANAPPURAM"
+  },
+  {
+    "StockName": "MANGALAM"
+  },
+  {
+    "StockName": "MANGCHEFER"
+  },
+  {
+    "StockName": "MANGLMCEM"
+  },
+  {
+    "StockName": "MANINDS"
+  },
+  {
+    "StockName": "MANINFRA"
+  },
+  {
+    "StockName": "MANORG"
+  },
+  {
+    "StockName": "MANUGRAPH"
+  },
+  {
+    "StockName": "MANXT50"
+  },
+  {
+    "StockName": "MAPMYINDIA"
+  },
+  {
+    "StockName": "MARALOVER"
+  },
+  {
+    "StockName": "MARATHON"
+  },
+  {
+    "StockName": "MARICO"
+  },
+  {
+    "StockName": "MARKSANS"
+  },
+  {
+    "StockName": "MARSHALL"
+  },
+  {
+    "StockName": "MARUTI"
+  },
+  {
+    "StockName": "MASFIN"
+  },
+  {
+    "StockName": "MASPTOP50"
+  },
+  {
+    "StockName": "MASTEK"
+  },
+  {
+    "StockName": "MATRIMONY"
+  },
+  {
+    "StockName": "MAWANASUG"
+  },
+  {
+    "StockName": "MAXHEALTH"
+  },
+  {
+    "StockName": "MAXIND"
+  },
+  {
+    "StockName": "MAXVIL"
+  },
+  {
+    "StockName": "MAYURUNIQ"
+  },
+  {
+    "StockName": "MAZDA"
+  },
+  {
+    "StockName": "MAZDOCK"
+  },
+  {
+    "StockName": "MBAPL"
+  },
+  {
+    "StockName": "MBLINFRA"
+  },
+  {
+    "StockName": "MCDOWELL-N"
+  },
+  {
+    "StockName": "MCL"
+  },
+  {
+    "StockName": "MCLEODRUSS"
+  },
+  {
+    "StockName": "MCX"
+  },
+  {
+    "StockName": "MEDICAMEQ"
+  },
+  {
+    "StockName": "MEDPLUS"
+  },
+  {
+    "StockName": "MENONBE"
+  },
+  {
+    "StockName": "MEP"
+  },
+  {
+    "StockName": "METROBRAND"
+  },
+  {
+    "StockName": "METROPOLIS"
+  },
+  {
+    "StockName": "MFL"
+  },
+  {
+    "StockName": "MFSL"
+  },
+  {
+    "StockName": "MGEL"
+  },
+  {
+    "StockName": "MGL"
+  },
+  {
+    "StockName": "MHRIL"
+  },
+  {
+    "StockName": "MIDHANI"
+  },
+  {
+    "StockName": "MINDACORP"
+  },
+  {
+    "StockName": "MINDAIND"
+  },
+  {
+    "StockName": "MINDTREE"
+  },
+  {
+    "StockName": "MIRCELECTR"
+  },
+  {
+    "StockName": "MIRZAINT"
+  },
+  {
+    "StockName": "MMFL"
+  },
+  {
+    "StockName": "MMP"
+  },
+  {
+    "StockName": "MMTC"
+  },
+  {
+    "StockName": "MODISNME"
+  },
+  {
+    "StockName": "MOGSEC"
+  },
+  {
+    "StockName": "MOHITIND"
+  },
+  {
+    "StockName": "MOIL"
+  },
+  {
+    "StockName": "MOKSH"
+  },
+  {
+    "StockName": "MOL"
+  },
+  {
+    "StockName": "MOLDTECH"
+  },
+  {
+    "StockName": "MOLDTKPAC"
+  },
+  {
+    "StockName": "MOM100"
+  },
+  {
+    "StockName": "MOM50"
+  },
+  {
+    "StockName": "MON100"
+  },
+  {
+    "StockName": "MONARCH"
+  },
+  {
+    "StockName": "MONQ50"
+  },
+  {
+    "StockName": "MONTECARLO"
+  },
+  {
+    "StockName": "MOREPENLAB"
+  },
+  {
+    "StockName": "MOTHERSUMI"
+  },
+  {
+    "StockName": "MOTILALOFS"
+  },
+  {
+    "StockName": "MPHASIS"
+  },
+  {
+    "StockName": "MPSLTD"
+  },
+  {
+    "StockName": "MRF"
+  },
+  {
+    "StockName": "MRO-TEK"
+  },
+  {
+    "StockName": "MRPL"
+  },
+  {
+    "StockName": "MSPL"
+  },
+  {
+    "StockName": "MSTCLTD"
+  },
+  {
+    "StockName": "MTARTECH"
+  },
+  {
+    "StockName": "MTEDUCARE"
+  },
+  {
+    "StockName": "MTNL"
+  },
+  {
+    "StockName": "MUKANDLTD"
+  },
+  {
+    "StockName": "MUKTAARTS"
+  },
+  {
+    "StockName": "MUNJALAU"
+  },
+  {
+    "StockName": "MUNJALSHOW"
+  },
+  {
+    "StockName": "MURUDCERA"
+  },
+  {
+    "StockName": "MUTHOOTCAP"
+  },
+  {
+    "StockName": "MUTHOOTFIN"
+  },
+  {
+    "StockName": "NACLIND"
+  },
+  {
+    "StockName": "NAGAFERT"
+  },
+  {
+    "StockName": "NAGREEKCAP"
+  },
+  {
+    "StockName": "NAGREEKEXP"
+  },
+  {
+    "StockName": "NAHARCAP"
+  },
+  {
+    "StockName": "NAHARINDUS"
+  },
+  {
+    "StockName": "NAHARPOLY"
+  },
+  {
+    "StockName": "NAM-INDIA"
+  },
+  {
+    "StockName": "NATCOPHARM"
+  },
+  {
+    "StockName": "NATHBIOGEN"
+  },
+  {
+    "StockName": "NATIONALUM"
+  },
+  {
+    "StockName": "NAUKRI"
+  },
+  {
+    "StockName": "NAVINFLUOR"
+  },
+  {
+    "StockName": "NAVKARCORP"
+  },
+  {
+    "StockName": "NAVNETEDUL"
+  },
+  {
+    "StockName": "NAZARA"
+  },
+  {
+    "StockName": "NBCC"
+  },
+  {
+    "StockName": "NBIFIN"
+  },
+  {
+    "StockName": "NBVENTURES"
+  },
+  {
+    "StockName": "NCC"
+  },
+  {
+    "StockName": "NCLIND"
+  },
+  {
+    "StockName": "NCPSESDL24"
+  },
+  {
+    "StockName": "NDGL"
+  },
+  {
+    "StockName": "NDL"
+  },
+  {
+    "StockName": "NDRAUTO"
+  },
+  {
+    "StockName": "NDTV"
+  },
+  {
+    "StockName": "NECCLTD"
+  },
+  {
+    "StockName": "NECLIFE"
+  },
+  {
+    "StockName": "NELCAST"
+  },
+  {
+    "StockName": "NEOGEN"
+  },
+  {
+    "StockName": "NESCO"
+  },
+  {
+    "StockName": "NESTLEIND"
+  },
+  {
+    "StockName": "NETF"
+  },
+  {
+    "StockName": "NETFCONSUM"
+  },
+  {
+    "StockName": "NETFDIVOPP"
+  },
+  {
+    "StockName": "NETFGILT5Y"
+  },
+  {
+    "StockName": "NETFIT"
+  },
+  {
+    "StockName": "NETFLTGILT"
+  },
+  {
+    "StockName": "NETFMID150"
+  },
+  {
+    "StockName": "NETFNIF100"
+  },
+  {
+    "StockName": "NETFNV20"
+  },
+  {
+    "StockName": "NETFPHARMA"
+  },
+  {
+    "StockName": "NETFSDL26"
+  },
+  {
+    "StockName": "NETWORK18"
+  },
+  {
+    "StockName": "NEULANDLAB"
+  },
+  {
+    "StockName": "NEWGEN"
+  },
+  {
+    "StockName": "NFL"
+  },
+  {
+    "StockName": "NH"
+  },
+  {
+    "StockName": "NHPC"
+  },
+  {
+    "StockName": "NIACL"
+  },
+  {
+    "StockName": "NIBL"
+  },
+  {
+    "StockName": "NIFTYBEES"
+  },
+  {
+    "StockName": "NIITLTD"
+  },
+  {
+    "StockName": "NILAINFRA"
+  },
+  {
+    "StockName": "NILKAMAL"
+  },
+  {
+    "StockName": "NIPPOBATRY"
+  },
+  {
+    "StockName": "NIRAJ"
+  },
+  {
+    "StockName": "NITCO"
+  },
+  {
+    "StockName": "NITINSPIN"
+  },
+  {
+    "StockName": "NITIRAJ"
+  },
+  {
+    "StockName": "NLCINDIA"
+  },
+  {
+    "StockName": "NMDC"
+  },
+  {
+    "StockName": "NOCIL"
+  },
+  {
+    "StockName": "NOIDATOLL"
+  },
+  {
+    "StockName": "NORBTEAEXP"
+  },
+  {
+    "StockName": "NOVARTIND"
+  },
+  {
+    "StockName": "NPBET"
+  },
+  {
+    "StockName": "NRAIL"
+  },
+  {
+    "StockName": "NRBBEARING"
+  },
+  {
+    "StockName": "NSIL"
+  },
+  {
+    "StockName": "NTPC"
+  },
+  {
+    "StockName": "NUCLEUS"
+  },
+  {
+    "StockName": "NURECA"
+  },
+  {
+    "StockName": "NUVOCO"
+  },
+  {
+    "StockName": "NXTDIGITAL"
+  },
+  {
+    "StockName": "NYKAA"
+  },
+  {
+    "StockName": "OAL"
+  },
+  {
+    "StockName": "OBEROIRLTY"
+  },
+  {
+    "StockName": "OCCL"
+  },
+  {
+    "StockName": "OFSS"
+  },
+  {
+    "StockName": "OIL"
+  },
+  {
+    "StockName": "OILCOUNTUB"
+  },
+  {
+    "StockName": "OLECTRA"
+  },
+  {
+    "StockName": "OMAXAUTO"
+  },
+  {
+    "StockName": "OMAXE"
+  },
+  {
+    "StockName": "OMINFRAL"
+  },
+  {
+    "StockName": "OMKARCHEM"
+  },
+  {
+    "StockName": "ONELIFECAP"
+  },
+  {
+    "StockName": "ONEPOINT"
+  },
+  {
+    "StockName": "ONGC"
+  },
+  {
+    "StockName": "ONMOBILE"
+  },
+  {
+    "StockName": "ONWARDTEC"
+  },
+  {
+    "StockName": "OPTIEMUS"
+  },
+  {
+    "StockName": "ORBTEXP"
+  },
+  {
+    "StockName": "ORCHPHARMA"
+  },
+  {
+    "StockName": "ORICONENT"
+  },
+  {
+    "StockName": "ORIENTABRA"
+  },
+  {
+    "StockName": "ORIENTBELL"
+  },
+  {
+    "StockName": "ORIENTCEM"
+  },
+  {
+    "StockName": "ORIENTELEC"
+  },
+  {
+    "StockName": "ORIENTHOT"
+  },
+  {
+    "StockName": "ORIENTLTD"
+  },
+  {
+    "StockName": "ORIENTPPR"
+  },
+  {
+    "StockName": "ORISSAMINE"
+  },
+  {
+    "StockName": "ORTINLAB"
+  },
+  {
+    "StockName": "OSWALAGRO"
+  },
+  {
+    "StockName": "PAGEIND"
+  },
+  {
+    "StockName": "PAISALO"
+  },
+  {
+    "StockName": "PALREDTEC"
+  },
+  {
+    "StockName": "PANACEABIO"
+  },
+  {
+    "StockName": "PANACHE"
+  },
+  {
+    "StockName": "PANAMAPET"
+  },
+  {
+    "StockName": "PANSARI"
+  },
+  {
+    "StockName": "PAR"
+  },
+  {
+    "StockName": "PARAGMILK"
+  },
+  {
+    "StockName": "PARAS"
+  },
+  {
+    "StockName": "PASUPTAC"
+  },
+  {
+    "StockName": "PATINTLOG"
+  },
+  {
+    "StockName": "PAYTM"
+  },
+  {
+    "StockName": "PBAINFRA"
+  },
+  {
+    "StockName": "PCBL"
+  },
+  {
+    "StockName": "PCJEWELLER"
+  },
+  {
+    "StockName": "PDMJEPAPER"
+  },
+  {
+    "StockName": "PDSMFL"
+  },
+  {
+    "StockName": "PEARLPOLY"
+  },
+  {
+    "StockName": "PEL"
+  },
+  {
+    "StockName": "PENIND"
+  },
+  {
+    "StockName": "PERSISTENT"
+  },
+  {
+    "StockName": "PETRONET"
+  },
+  {
+    "StockName": "PFC"
+  },
+  {
+    "StockName": "PFIZER"
+  },
+  {
+    "StockName": "PFOCUS"
+  },
+  {
+    "StockName": "PFS"
+  },
+  {
+    "StockName": "PGEL"
+  },
+  {
+    "StockName": "PGHH"
+  },
+  {
+    "StockName": "PGHL"
+  },
+  {
+    "StockName": "PGIL"
+  },
+  {
+    "StockName": "PHOENIXLTD"
+  },
+  {
+    "StockName": "PIDILITIND"
+  },
+  {
+    "StockName": "PIIND"
+  },
+  {
+    "StockName": "PILANIINVS"
+  },
+  {
+    "StockName": "PIONDIST"
+  },
+  {
+    "StockName": "PIONEEREMB"
+  },
+  {
+    "StockName": "PITTIENG"
+  },
+  {
+    "StockName": "PLASTIBLEN"
+  },
+  {
+    "StockName": "PNB"
+  },
+  {
+    "StockName": "PNBGILTS"
+  },
+  {
+    "StockName": "PNBHOUSING"
+  },
+  {
+    "StockName": "PNC"
+  },
+  {
+    "StockName": "PNCINFRA"
+  },
+  {
+    "StockName": "PODDARHOUS"
+  },
+  {
+    "StockName": "PODDARMENT"
+  },
+  {
+    "StockName": "POKARNA"
+  },
+  {
+    "StockName": "POLICYBZR"
+  },
+  {
+    "StockName": "POLYCAB"
+  },
+  {
+    "StockName": "POLYMED"
+  },
+  {
+    "StockName": "POLYPLEX"
+  },
+  {
+    "StockName": "PONNIERODE"
+  },
+  {
+    "StockName": "POONAWALLA"
+  },
+  {
+    "StockName": "POWERGRID"
+  },
+  {
+    "StockName": "POWERINDIA"
+  },
+  {
+    "StockName": "POWERMECH"
+  },
+  {
+    "StockName": "PPAP"
+  },
+  {
+    "StockName": "PPL"
+  },
+  {
+    "StockName": "PRAJIND"
+  },
+  {
+    "StockName": "PRAKASH"
+  },
+  {
+    "StockName": "PRAKASHSTL"
+  },
+  {
+    "StockName": "PRAXIS"
+  },
+  {
+    "StockName": "PRECAM"
+  },
+  {
+    "StockName": "PRECOT"
+  },
+  {
+    "StockName": "PRECWIRE"
+  },
+  {
+    "StockName": "PREMEXPLN"
+  },
+  {
+    "StockName": "PREMIERPOL"
+  },
+  {
+    "StockName": "PRESSMN"
+  },
+  {
+    "StockName": "PRESTIGE"
+  },
+  {
+    "StockName": "PRICOLLTD"
+  },
+  {
+    "StockName": "PRIMESECU"
+  },
+  {
+    "StockName": "PRINCEPIPE"
+  },
+  {
+    "StockName": "PRITIKAUTO"
+  },
+  {
+    "StockName": "PRIVISCL"
+  },
+  {
+    "StockName": "PRSMJOHNSN"
+  },
+  {
+    "StockName": "PSB"
+  },
+  {
+    "StockName": "PSPPROJECT"
+  },
+  {
+    "StockName": "PSUBNKBEES"
+  },
+  {
+    "StockName": "PTC"
+  },
+  {
+    "StockName": "PTL"
+  },
+  {
+    "StockName": "PUNJABCHEM"
+  },
+  {
+    "StockName": "PURVA"
+  },
+  {
+    "StockName": "PVR"
+  },
+  {
+    "StockName": "QGOLDHALF"
+  },
+  {
+    "StockName": "QNIFTY"
+  },
+  {
+    "StockName": "QUESS"
+  },
+  {
+    "StockName": "QUICKHEAL"
+  },
+  {
+    "StockName": "RADICO"
+  },
+  {
+    "StockName": "RADIOCITY"
+  },
+  {
+    "StockName": "RAILTEL"
+  },
+  {
+    "StockName": "RAIN"
+  },
+  {
+    "StockName": "RAJESHEXPO"
+  },
+  {
+    "StockName": "RAJMET"
+  },
+  {
+    "StockName": "RAJRATAN"
+  },
+  {
+    "StockName": "RALLIS"
+  },
+  {
+    "StockName": "RAMANEWS"
+  },
+  {
+    "StockName": "RAMASTEEL"
+  },
+  {
+    "StockName": "RAMCOCEM"
+  },
+  {
+    "StockName": "RAMCOIND"
+  },
+  {
+    "StockName": "RAMCOSYS"
+  },
+  {
+    "StockName": "RAMKY"
+  },
+  {
+    "StockName": "RANASUG"
+  },
+  {
+    "StockName": "RANEENGINE"
+  },
+  {
+    "StockName": "RANEHOLDIN"
+  },
+  {
+    "StockName": "RATEGAIN"
+  },
+  {
+    "StockName": "RATNAMANI"
+  },
+  {
+    "StockName": "RAYMOND"
+  },
+  {
+    "StockName": "RBL"
+  },
+  {
+    "StockName": "RBLBANK"
+  },
+  {
+    "StockName": "RCF"
+  },
+  {
+    "StockName": "RECLTD"
+  },
+  {
+    "StockName": "REDINGTON"
+  },
+  {
+    "StockName": "REFEX"
+  },
+  {
+    "StockName": "RELAXO"
+  },
+  {
+    "StockName": "RELCAPITAL"
+  },
+  {
+    "StockName": "RELIANCE"
+  },
+  {
+    "StockName": "RELIGARE"
+  },
+  {
+    "StockName": "RELINFRA"
+  },
+  {
+    "StockName": "REMSONSIND"
+  },
+  {
+    "StockName": "RENUKA"
+  },
+  {
+    "StockName": "REPCOHOME"
+  },
+  {
+    "StockName": "REPL"
+  },
+  {
+    "StockName": "REPRO"
+  },
+  {
+    "StockName": "RESPONIND"
+  },
+  {
+    "StockName": "REVATHI"
+  },
+  {
+    "StockName": "RGL"
+  },
+  {
+    "StockName": "RHIM"
+  },
+  {
+    "StockName": "RICOAUTO"
+  },
+  {
+    "StockName": "RIIL"
+  },
+  {
+    "StockName": "RITES"
+  },
+  {
+    "StockName": "RKEC"
+  },
+  {
+    "StockName": "RKFORGE"
+  },
+  {
+    "StockName": "RML"
+  },
+  {
+    "StockName": "ROHLTD"
+  },
+  {
+    "StockName": "ROLEXRINGS"
+  },
+  {
+    "StockName": "ROML"
+  },
+  {
+    "StockName": "ROSSARI"
+  },
+  {
+    "StockName": "ROSSELLIND"
+  },
+  {
+    "StockName": "ROUTE"
+  },
+  {
+    "StockName": "RPGLIFE"
+  },
+  {
+    "StockName": "RPOWER"
+  },
+  {
+    "StockName": "RPPINFRA"
+  },
+  {
+    "StockName": "RPPL"
+  },
+  {
+    "StockName": "RPSGVENT"
+  },
+  {
+    "StockName": "RSSOFTWARE"
+  },
+  {
+    "StockName": "RSWM"
+  },
+  {
+    "StockName": "RSYSTEMS"
+  },
+  {
+    "StockName": "RTNINDIA"
+  },
+  {
+    "StockName": "RUBYMILLS"
+  },
+  {
+    "StockName": "RUCHI"
+  },
+  {
+    "StockName": "RUCHIRA"
+  },
+  {
+    "StockName": "RUPA"
+  },
+  {
+    "StockName": "RUSHIL"
+  },
+  {
+    "StockName": "RVHL"
+  },
+  {
+    "StockName": "RVNL"
+  },
+  {
+    "StockName": "SADBHAV"
+  },
+  {
+    "StockName": "SADBHIN"
+  },
+  {
+    "StockName": "SAFARI"
+  },
+  {
+    "StockName": "SAGCEM"
+  },
+  {
+    "StockName": "SAIL"
+  },
+  {
+    "StockName": "SAKAR"
+  },
+  {
+    "StockName": "SAKSOFT"
+  },
+  {
+    "StockName": "SAKUMA"
+  },
+  {
+    "StockName": "SALASAR"
+  },
+  {
+    "StockName": "SALONA"
+  },
+  {
+    "StockName": "SALSTEEL"
+  },
+  {
+    "StockName": "SALZERELEC"
+  },
+  {
+    "StockName": "SANDESH"
+  },
+  {
+    "StockName": "SANDHAR"
+  },
+  {
+    "StockName": "SANGAMIND"
+  },
+  {
+    "StockName": "SANGHIIND"
+  },
+  {
+    "StockName": "SANGHVIMOV"
+  },
+  {
+    "StockName": "SANGINITA"
+  },
+  {
+    "StockName": "SANOFI"
+  },
+  {
+    "StockName": "SANSERA"
+  },
+  {
+    "StockName": "SAPPHIRE"
+  },
+  {
+    "StockName": "SARDAEN"
+  },
+  {
+    "StockName": "SARLAPOLY"
+  },
+  {
+    "StockName": "SASKEN"
+  },
+  {
+    "StockName": "SASTASUNDR"
+  },
+  {
+    "StockName": "SATIA"
+  },
+  {
+    "StockName": "SBCL"
+  },
+  {
+    "StockName": "SBICARD"
+  },
+  {
+    "StockName": "SBIETFCON"
+  },
+  {
+    "StockName": "SBIETFIT"
+  },
+  {
+    "StockName": "SBIETFPB"
+  },
+  {
+    "StockName": "SBIETFQLTY"
+  },
+  {
+    "StockName": "SBILIFE"
+  },
+  {
+    "StockName": "SBIN"
+  },
+  {
+    "StockName": "SCAPDVR"
+  },
+  {
+    "StockName": "SCHAEFFLER"
+  },
+  {
+    "StockName": "SCHAND"
+  },
+  {
+    "StockName": "SCHNEIDER"
+  },
+  {
+    "StockName": "SCI"
+  },
+  {
+    "StockName": "SDBL"
+  },
+  {
+    "StockName": "SEAMECLTD"
+  },
+  {
+    "StockName": "SECURKLOUD"
+  },
+  {
+    "StockName": "SELAN"
+  },
+  {
+    "StockName": "SELMC"
+  },
+  {
+    "StockName": "SEQUENT"
+  },
+  {
+    "StockName": "SESHAPAPER"
+  },
+  {
+    "StockName": "SETCO"
+  },
+  {
+    "StockName": "SETF10GILT"
+  },
+  {
+    "StockName": "SETFGOLD"
+  },
+  {
+    "StockName": "SETFNIF50"
+  },
+  {
+    "StockName": "SETFNIFBK"
+  },
+  {
+    "StockName": "SETFNN50"
+  },
+  {
+    "StockName": "SEYAIND"
+  },
+  {
+    "StockName": "SFL"
+  },
+  {
+    "StockName": "SGIL"
+  },
+  {
+    "StockName": "SGL"
+  },
+  {
+    "StockName": "SHAHALLOYS"
+  },
+  {
+    "StockName": "SHAKTIPUMP"
+  },
+  {
+    "StockName": "SHALBY"
+  },
+  {
+    "StockName": "SHALPAINTS"
+  },
+  {
+    "StockName": "SHANKARA"
+  },
+  {
+    "StockName": "SHANTIGEAR"
+  },
+  {
+    "StockName": "SHARDACROP"
+  },
+  {
+    "StockName": "SHARDAMOTR"
+  },
+  {
+    "StockName": "SHAREINDIA"
+  },
+  {
+    "StockName": "SHARIABEES"
+  },
+  {
+    "StockName": "SHEMAROO"
+  },
+  {
+    "StockName": "SHIL"
+  },
+  {
+    "StockName": "SHILPAMED"
+  },
+  {
+    "StockName": "SHIVALIK"
+  },
+  {
+    "StockName": "SHIVAMAUTO"
+  },
+  {
+    "StockName": "SHIVAMILLS"
+  },
+  {
+    "StockName": "SHIVATEX"
+  },
+  {
+    "StockName": "SHK"
+  },
+  {
+    "StockName": "SHOPERSTOP"
+  },
+  {
+    "StockName": "SHRADHA"
+  },
+  {
+    "StockName": "SHREDIGCEM"
+  },
+  {
+    "StockName": "SHREECEM"
+  },
+  {
+    "StockName": "SHREEPUSHK"
+  },
+  {
+    "StockName": "SHREYANIND"
+  },
+  {
+    "StockName": "SHREYAS"
+  },
+  {
+    "StockName": "SHRIRAMCIT"
+  },
+  {
+    "StockName": "SHRIRAMEPC"
+  },
+  {
+    "StockName": "SHRIRAMPPS"
+  },
+  {
+    "StockName": "SHYAMCENT"
+  },
+  {
+    "StockName": "SHYAMMETL"
+  },
+  {
+    "StockName": "SICAL"
+  },
+  {
+    "StockName": "SIEMENS"
+  },
+  {
+    "StockName": "SIGACHI"
+  },
+  {
+    "StockName": "SIGIND"
+  },
+  {
+    "StockName": "SIKKO"
+  },
+  {
+    "StockName": "SILGO"
+  },
+  {
+    "StockName": "SILINV"
+  },
+  {
+    "StockName": "SILLYMONKS"
+  },
+  {
+    "StockName": "SIMBHALS"
+  },
+  {
+    "StockName": "SIMPLEXINF"
+  },
+  {
+    "StockName": "SINTERCOM"
+  },
+  {
+    "StockName": "SIRCA"
+  },
+  {
+    "StockName": "SIS"
+  },
+  {
+    "StockName": "SIYSIL"
+  },
+  {
+    "StockName": "SJS"
+  },
+  {
+    "StockName": "SJVN"
+  },
+  {
+    "StockName": "SKFINDIA"
+  },
+  {
+    "StockName": "SKIPPER"
+  },
+  {
+    "StockName": "SKMEGGPROD"
+  },
+  {
+    "StockName": "SMARTLINK"
+  },
+  {
+    "StockName": "SMCGLOBAL"
+  },
+  {
+    "StockName": "SMLISUZU"
+  },
+  {
+    "StockName": "SMLT"
+  },
+  {
+    "StockName": "SMSLIFE"
+  },
+  {
+    "StockName": "SMSPHARMA"
+  },
+  {
+    "StockName": "SNOWMAN"
+  },
+  {
+    "StockName": "SOBHA"
+  },
+  {
+    "StockName": "SOLARA"
+  },
+  {
+    "StockName": "SOLARINDS"
+  },
+  {
+    "StockName": "SOMANYCERA"
+  },
+  {
+    "StockName": "SOMICONVEY"
+  },
+  {
+    "StockName": "SONACOMS"
+  },
+  {
+    "StockName": "SONATSOFTW"
+  },
+  {
+    "StockName": "SORILINFRA"
+  },
+  {
+    "StockName": "SOTL"
+  },
+  {
+    "StockName": "SOUTHBANK"
+  },
+  {
+    "StockName": "SOUTHWEST"
+  },
+  {
+    "StockName": "SPAL"
+  },
+  {
+    "StockName": "SPANDANA"
+  },
+  {
+    "StockName": "SPARC"
+  },
+  {
+    "StockName": "SPECIALITY"
+  },
+  {
+    "StockName": "SPENCERS"
+  },
+  {
+    "StockName": "SPIC"
+  },
+  {
+    "StockName": "SPICEJET"
+  },
+  {
+    "StockName": "SPLIL"
+  },
+  {
+    "StockName": "SPMLINFRA"
+  },
+  {
+    "StockName": "SPTL"
+  },
+  {
+    "StockName": "SREEL"
+  },
+  {
+    "StockName": "SREINFRA"
+  },
+  {
+    "StockName": "SRF"
+  },
+  {
+    "StockName": "SRHHYPOLTD"
+  },
+  {
+    "StockName": "SRTRANSFIN"
+  },
+  {
+    "StockName": "SSWL"
+  },
+  {
+    "StockName": "STAR"
+  },
+  {
+    "StockName": "STARCEMENT"
+  },
+  {
+    "StockName": "STARHEALTH"
+  },
+  {
+    "StockName": "STARPAPER"
+  },
+  {
+    "StockName": "STCINDIA"
+  },
+  {
+    "StockName": "STEELCAS"
+  },
+  {
+    "StockName": "STEELCITY"
+  },
+  {
+    "StockName": "STEL"
+  },
+  {
+    "StockName": "STERTOOLS"
+  },
+  {
+    "StockName": "STLTECH"
+  },
+  {
+    "StockName": "STOVEKRAFT"
+  },
+  {
+    "StockName": "STYLAMIND"
+  },
+  {
+    "StockName": "SUBEXLTD"
+  },
+  {
+    "StockName": "SUBROS"
+  },
+  {
+    "StockName": "SUDARSCHEM"
+  },
+  {
+    "StockName": "SUMEETINDS"
+  },
+  {
+    "StockName": "SUMICHEM"
+  },
+  {
+    "StockName": "SUMIT"
+  },
+  {
+    "StockName": "SUMMITSEC"
+  },
+  {
+    "StockName": "SUNCLAYLTD"
+  },
+  {
+    "StockName": "SUNDARMFIN"
+  },
+  {
+    "StockName": "SUNDARMHLD"
+  },
+  {
+    "StockName": "SUNDRMBRAK"
+  },
+  {
+    "StockName": "SUNDRMFAST"
+  },
+  {
+    "StockName": "SUNFLAG"
+  },
+  {
+    "StockName": "SUNPHARMA"
+  },
+  {
+    "StockName": "SUNTECK"
+  },
+  {
+    "StockName": "SUNTV"
+  },
+  {
+    "StockName": "SUPERHOUSE"
+  },
+  {
+    "StockName": "SUPERSPIN"
+  },
+  {
+    "StockName": "SUPPETRO"
+  },
+  {
+    "StockName": "SUPRAJIT"
+  },
+  {
+    "StockName": "SUPREMEENG"
+  },
+  {
+    "StockName": "SUPREMEIND"
+  },
+  {
+    "StockName": "SUPRIYA"
+  },
+  {
+    "StockName": "SURYALAXMI"
+  },
+  {
+    "StockName": "SURYAROSNI"
+  },
+  {
+    "StockName": "SURYODAY"
+  },
+  {
+    "StockName": "SUTLEJTEX"
+  },
+  {
+    "StockName": "SUULD"
+  },
+  {
+    "StockName": "SUVEN"
+  },
+  {
+    "StockName": "SUVENPHAR"
+  },
+  {
+    "StockName": "SUVIDHAA"
+  },
+  {
+    "StockName": "SUZLON"
+  },
+  {
+    "StockName": "SVPGLOB"
+  },
+  {
+    "StockName": "SWANENERGY"
+  },
+  {
+    "StockName": "SWARAJENG"
+  },
+  {
+    "StockName": "SWSOLAR"
+  },
+  {
+    "StockName": "SYMPHONY"
+  },
+  {
+    "StockName": "SYNGENE"
+  },
+  {
+    "StockName": "TAINWALCHM"
+  },
+  {
+    "StockName": "TAJGVK"
+  },
+  {
+    "StockName": "TAKE"
+  },
+  {
+    "StockName": "TALBROAUTO"
+  },
+  {
+    "StockName": "TANLA"
+  },
+  {
+    "StockName": "TARC"
+  },
+  {
+    "StockName": "TARMAT"
+  },
+  {
+    "StockName": "TARSONS"
+  },
+  {
+    "StockName": "TASTYBITE"
+  },
+  {
+    "StockName": "TATACHEM"
+  },
+  {
+    "StockName": "TATACOFFEE"
+  },
+  {
+    "StockName": "TATACOMM"
+  },
+  {
+    "StockName": "TATACONSUM"
+  },
+  {
+    "StockName": "TATAELXSI"
+  },
+  {
+    "StockName": "TATAINVEST"
+  },
+  {
+    "StockName": "TATAMETALI"
+  },
+  {
+    "StockName": "TATAMOTORS"
+  },
+  {
+    "StockName": "TATAMTRDVR"
+  },
+  {
+    "StockName": "TATAPOWER"
+  },
+  {
+    "StockName": "TATASTEEL"
+  },
+  {
+    "StockName": "TATASTLLP"
+  },
+  {
+    "StockName": "TATVA"
+  },
+  {
+    "StockName": "TBZ"
+  },
+  {
+    "StockName": "TCI"
+  },
+  {
+    "StockName": "TCIDEVELOP"
+  },
+  {
+    "StockName": "TCIEXP"
+  },
+  {
+    "StockName": "TCNSBRANDS"
+  },
+  {
+    "StockName": "TCPLPACK"
+  },
+  {
+    "StockName": "TCS"
+  },
+  {
+    "StockName": "TDPOWERSYS"
+  },
+  {
+    "StockName": "TEAMLEASE"
+  },
+  {
+    "StockName": "TECH"
+  },
+  {
+    "StockName": "TECHIN"
+  },
+  {
+    "StockName": "TECHM"
+  },
+  {
+    "StockName": "TECHNOE"
+  },
+  {
+    "StockName": "TEGA"
+  },
+  {
+    "StockName": "TEJASNET"
+  },
+  {
+    "StockName": "TEMBO"
+  },
+  {
+    "StockName": "TERASOFT"
+  },
+  {
+    "StockName": "TEXINFRA"
+  },
+  {
+    "StockName": "TEXMOPIPES"
+  },
+  {
+    "StockName": "TEXRAIL"
+  },
+  {
+    "StockName": "TFCILTD"
+  },
+  {
+    "StockName": "TFL"
+  },
+  {
+    "StockName": "TGBHOTELS"
+  },
+  {
+    "StockName": "THANGAMAYL"
+  },
+  {
+    "StockName": "THEINVEST"
+  },
+  {
+    "StockName": "THEMISMED"
+  },
+  {
+    "StockName": "THERMAX"
+  },
+  {
+    "StockName": "THOMASCOOK"
+  },
+  {
+    "StockName": "THYROCARE"
+  },
+  {
+    "StockName": "TIDEWATER"
+  },
+  {
+    "StockName": "TIIL"
+  },
+  {
+    "StockName": "TIINDIA"
+  },
+  {
+    "StockName": "TIL"
+  },
+  {
+    "StockName": "TIMESGTY"
+  },
+  {
+    "StockName": "TIMETECHNO"
+  },
+  {
+    "StockName": "TIMKEN"
+  },
+  {
+    "StockName": "TINPLATE"
+  },
+  {
+    "StockName": "TIRUMALCHM"
+  },
+  {
+    "StockName": "TIRUPATIFL"
+  },
+  {
+    "StockName": "TITAN"
+  },
+  {
+    "StockName": "TMRVL"
+  },
+  {
+    "StockName": "TNPETRO"
+  },
+  {
+    "StockName": "TNPL"
+  },
+  {
+    "StockName": "TOKYOPLAST"
+  },
+  {
+    "StockName": "TORNTPHARM"
+  },
+  {
+    "StockName": "TORNTPOWER"
+  },
+  {
+    "StockName": "TOUCHWOOD"
+  },
+  {
+    "StockName": "TPLPLASTEH"
+  },
+  {
+    "StockName": "TREJHARA"
+  },
+  {
+    "StockName": "TRENT"
+  },
+  {
+    "StockName": "TRIGYN"
+  },
+  {
+    "StockName": "TRIL"
+  },
+  {
+    "StockName": "TRITURBINE"
+  },
+  {
+    "StockName": "TRIVENI"
+  },
+  {
+    "StockName": "TTKHLTCARE"
+  },
+  {
+    "StockName": "TTKPRESTIG"
+  },
+  {
+    "StockName": "TTL"
+  },
+  {
+    "StockName": "TV18BRDCST"
+  },
+  {
+    "StockName": "TVSELECT"
+  },
+  {
+    "StockName": "TVSMOTOR"
+  },
+  {
+    "StockName": "TVSSRICHAK"
+  },
+  {
+    "StockName": "TVTODAY"
+  },
+  {
+    "StockName": "TWL"
+  },
+  {
+    "StockName": "UBL"
+  },
+  {
+    "StockName": "UCALFUEL"
+  },
+  {
+    "StockName": "UCOBANK"
+  },
+  {
+    "StockName": "UDAICEMENT"
+  },
+  {
+    "StockName": "UFLEX"
+  },
+  {
+    "StockName": "UFO"
+  },
+  {
+    "StockName": "UGARSUGAR"
+  },
+  {
+    "StockName": "UGROCAP"
+  },
+  {
+    "StockName": "UJAAS"
+  },
+  {
+    "StockName": "UJJIVAN"
+  },
+  {
+    "StockName": "UJJIVANSFB"
+  },
+  {
+    "StockName": "ULTRACEMCO"
+  },
+  {
+    "StockName": "UMANGDAIRY"
+  },
+  {
+    "StockName": "UNICHEMLAB"
+  },
+  {
+    "StockName": "UNIDT"
+  },
+  {
+    "StockName": "UNIENTER"
+  },
+  {
+    "StockName": "UNIINFO"
+  },
+  {
+    "StockName": "UNIONBANK"
+  },
+  {
+    "StockName": "UNITEDPOLY"
+  },
+  {
+    "StockName": "UNITEDTEA"
+  },
+  {
+    "StockName": "UNIVASTU"
+  },
+  {
+    "StockName": "UNIVCABLES"
+  },
+  {
+    "StockName": "UNIVPHOTO"
+  },
+  {
+    "StockName": "UPL"
+  },
+  {
+    "StockName": "USHAMART"
+  },
+  {
+    "StockName": "UTIAMC"
+  },
+  {
+    "StockName": "UTIBANKETF"
+  },
+  {
+    "StockName": "UTINEXT50"
+  },
+  {
+    "StockName": "UTINIFTETF"
+  },
+  {
+    "StockName": "UTISENSETF"
+  },
+  {
+    "StockName": "UTISXN50"
+  },
+  {
+    "StockName": "UTTAMSUGAR"
+  },
+  {
+    "StockName": "V2RETAIL"
+  },
+  {
+    "StockName": "VADILALIND"
+  },
+  {
+    "StockName": "VAIBHAVGBL"
+  },
+  {
+    "StockName": "VAISHALI"
+  },
+  {
+    "StockName": "VAKRANGEE"
+  },
+  {
+    "StockName": "VALIANTORG"
+  },
+  {
+    "StockName": "VARDHACRLC"
+  },
+  {
+    "StockName": "VARDMNPOLY"
+  },
+  {
+    "StockName": "VARROC"
+  },
+  {
+    "StockName": "VASCONEQ"
+  },
+  {
+    "StockName": "VASWANI"
+  },
+  {
+    "StockName": "VBL"
+  },
+  {
+    "StockName": "VEDL"
+  },
+  {
+    "StockName": "VENKEYS"
+  },
+  {
+    "StockName": "VENUSREM"
+  },
+  {
+    "StockName": "VERTOZ"
+  },
+  {
+    "StockName": "VESUVIUS"
+  },
+  {
+    "StockName": "VETO"
+  },
+  {
+    "StockName": "VGUARD"
+  },
+  {
+    "StockName": "VHL"
+  },
+  {
+    "StockName": "VIDHIING"
+  },
+  {
+    "StockName": "VIJAYA"
+  },
+  {
+    "StockName": "VIKASECO"
+  },
+  {
+    "StockName": "VIMTALABS"
+  },
+  {
+    "StockName": "VINATIORGA"
+  },
+  {
+    "StockName": "VINDHYATEL"
+  },
+  {
+    "StockName": "VINEETLAB"
+  },
+  {
+    "StockName": "VINYLINDIA"
+  },
+  {
+    "StockName": "VIPCLOTHNG"
+  },
+  {
+    "StockName": "VIPIND"
+  },
+  {
+    "StockName": "VIPULLTD"
+  },
+  {
+    "StockName": "VISAKAIND"
+  },
+  {
+    "StockName": "VISASTEEL"
+  },
+  {
+    "StockName": "VISHAL"
+  },
+  {
+    "StockName": "VISHWARAJ"
+  },
+  {
+    "StockName": "VIVIMEDLAB"
+  },
+  {
+    "StockName": "VLSFINANCE"
+  },
+  {
+    "StockName": "VMART"
+  },
+  {
+    "StockName": "VOLTAMP"
+  },
+  {
+    "StockName": "VOLTAS"
+  },
+  {
+    "StockName": "VRLLOG"
+  },
+  {
+    "StockName": "VSSL"
+  },
+  {
+    "StockName": "VSTIND"
+  },
+  {
+    "StockName": "VSTTILLERS"
+  },
+  {
+    "StockName": "VTL"
+  },
+  {
+    "StockName": "WABAG"
+  },
+  {
+    "StockName": "WABCOINDIA"
+  },
+  {
+    "StockName": "WALCHANNAG"
+  },
+  {
+    "StockName": "WATERBASE"
+  },
+  {
+    "StockName": "WEBELSOLAR"
+  },
+  {
+    "StockName": "WEIZMANIND"
+  },
+  {
+    "StockName": "WELCORP"
+  },
+  {
+    "StockName": "WELENT"
+  },
+  {
+    "StockName": "WELINV"
+  },
+  {
+    "StockName": "WELSPUNIND"
+  },
+  {
+    "StockName": "WENDT"
+  },
+  {
+    "StockName": "WESTLIFE"
+  },
+  {
+    "StockName": "WFL"
+  },
+  {
+    "StockName": "WHEELS"
+  },
+  {
+    "StockName": "WHIRLPOOL"
+  },
+  {
+    "StockName": "WILLAMAGOR"
+  },
+  {
+    "StockName": "WINDLAS"
+  },
+  {
+    "StockName": "WINDMACHIN"
+  },
+  {
+    "StockName": "WINPRO"
+  },
+  {
+    "StockName": "WIPRO"
+  },
+  {
+    "StockName": "WOCKPHARMA"
+  },
+  {
+    "StockName": "WONDERLA"
+  },
+  {
+    "StockName": "WORTH"
+  },
+  {
+    "StockName": "WSTCSTPAPR"
+  },
+  {
+    "StockName": "XCHANGING"
+  },
+  {
+    "StockName": "XELPMOC"
+  },
+  {
+    "StockName": "YAARI"
+  },
+  {
+    "StockName": "YESBANK"
+  },
+  {
+    "StockName": "YUKEN"
+  },
+  {
+    "StockName": "ZEEL"
+  },
+  {
+    "StockName": "ZEELEARN"
+  },
+  {
+    "StockName": "ZEEMEDIA"
+  },
+  {
+    "StockName": "ZENITHEXPO"
+  },
+  {
+    "StockName": "ZENSARTECH"
+  },
+  {
+    "StockName": "ZENTEC"
+  },
+  {
+    "StockName": "ZODIACLOTH"
+  },
+  {
+    "StockName": "ZOMATO"
+  },
+  {
+    "StockName": "ZOTA"
+  },
+  {
+    "StockName": "ZUARI"
+  },
+  {
+    "StockName": "ZUARIGLOB"
+  },
+  {
+    "StockName": "ZYDUSWELL"
+  }
 ]

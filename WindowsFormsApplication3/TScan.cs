@@ -33,6 +33,7 @@ using System.Diagnostics;
 using Model;
 using MongoDB.Driver;
 using DAL;
+using System.Media;
 
 namespace _15MCE
 {
@@ -389,6 +390,7 @@ namespace _15MCE
                 orders.Columns.Add("target", typeof(double));
                 orders.Columns.Add("stoploss", typeof(double));
                 orders.Columns.Add("candle", typeof(DateTime));
+
                 orders.Columns.Add("direction", typeof(string));
                 orders.Columns.Add("Aentry", typeof(double));
                 orders.Columns.Add("Aexit", typeof(double));
@@ -489,6 +491,106 @@ namespace _15MCE
 
 
         }
+
+        public Candle MyCandle(List<Candle> candles, DateTime currentTimeStamp)
+        {
+            return new Candle { High = candles.Max(a => a.High), Low = candles.Min(a => a.Low), Open = candles.First().Open, Close = candles.Where(a => a.TimeStamp <= currentTimeStamp).Last().Close };
+
+        }
+        public Candle MyCandle(List<Candle> candles)
+        {
+            candles = candles.OrderBy(a => a.TimeStamp).ToList();
+            return new Candle { High = candles.Max(a => a.High), Low = candles.Min(a => a.Low), Open = candles.First().Open, Close = candles.Last().Close };
+
+        }
+        public void GetHighProbabiltyLowRiskStock(DateTime CurrentTimeStamp)
+        {
+
+
+            if (Convert.ToInt32(txtTam.Text) >= -3)
+            {
+                List<StockData> sGap = new List<StockData>();
+
+                // above moving average 50
+                Parallel.ForEach(AllFNO, (a) =>
+                {
+
+                    var stock = allData["5minute"][a].Where(b => b.TimeStamp == CurrentTimeStamp).FirstOrDefault();
+                    var todaysData = allData["5minute"][a].Where(b => b.TimeStamp <= CurrentTimeStamp && b.TimeStamp.Date == CurrentTradingDate);
+                    var high = todaysData.Max(b => b.High);
+                    var low = todaysData.Min(b => b.Low);
+                    var firstCandleOfStock = allData["5minute"][a].Where(b => b.TimeStamp.Date == CurrentTradingDate).First();
+
+                    //var niftyCandle = MyCandle(allData["day"]["Nifty50"].ToList(), CurrentTimeStamp);
+                    //var todaysCandle = MyCandle((allData["day"]["Nifty50"].ToList(), currentTimeStamp);
+                    if (stock.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Oversold)
+                    {
+                        if (high <= stock.dR1 && ((stock.Close > stock.SMA50 && stock.SMA20 > stock.SMA50 && stock.CandleType == "G" && stock.Close > stock.dPP && firstCandleOfStock.CandleType == "G" && ((stock.Close - stock.dPP) / stock.Close) * 100 * 4 <= ((stock.dR1 - stock.Close) / stock.Close) * 100 && stock.Low <= stock.SMA50 && stock.Low <= stock.dPP)
+|| (stock.Close > stock.SMA20 && stock.SMA20 > stock.SMA50 && stock.Close > stock.dPP && stock.CandleType == "G" && firstCandleOfStock.CandleType == "G" && ((stock.Close - stock.dPP) / stock.Close) * 100 * 4 <= ((stock.dR1 - stock.Close) / stock.Close) * 100 && stock.Low <= stock.SMA20 && stock.Low <= stock.dPP))
+                        )
+                        {
+                            sGap.Add(new StockData
+                            {
+                                Symbol = stock.Stock,
+                                Open = 0,
+                                Vol = stock.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = stock.High,
+                                Low = stock.Low,
+                                Direction = "BM",
+                                stopLoss = stock.Low,
+                                TradingDate = stock.TimeStamp,
+                                Quantity = Convert.ToInt32(MaxRisk / (stock.High - stock.Low + 0.2)),
+                                dClose = 0,
+                                Close = stock.Close
+                            });
+                        }
+                    }
+
+                    else if (stock.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Overbought)
+                    {
+                        if (low >= stock.dS1 && ((stock.Close < stock.SMA50 && stock.SMA20 < stock.SMA50 && stock.Close < stock.dPP && firstCandleOfStock.CandleType == "R" && stock.CandleType == "R" && ((stock.dPP - stock.Close) / stock.Close) * 100 * 4 <= ((stock.Close - stock.dS1) / stock.Close) * 100 && stock.High >= stock.SMA50 && stock.High >= stock.dPP)
+|| (stock.Close < stock.SMA20 && stock.SMA20 < stock.SMA50 && stock.Close < stock.dPP && firstCandleOfStock.CandleType == "R" && stock.CandleType == "R" && ((stock.dPP - stock.Close) / stock.Close) * 100 * 4 <= ((stock.Close - stock.dS1) / stock.Close) * 100 && stock.High >= stock.SMA20 && stock.High >= stock.dPP)
+                        ))
+                        {
+                            sGap.Add(new StockData
+                            {
+                                Symbol = stock.Stock,
+                                Open = 0,
+                                Vol = stock.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = stock.High,
+                                Low = stock.Low,
+                                Direction = "SM",
+                                stopLoss = stock.Low,
+                                TradingDate = stock.TimeStamp,
+                                Quantity = Convert.ToInt32(MaxRisk / (stock.High - stock.Low + 0.2)),
+                                dClose = 0,
+                                Close = stock.Close
+                            });
+                        }
+                    }
+
+                });
+
+
+
+                foreach (var s in sGap.OrderByDescending(a => a.Vol * a.Open).Take(1))
+                {
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Direction == "SM" ? s.Low - 0.1 : s.High + 0.1, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_5Minute_High", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+
+                    if (o != null)
+                    {
+                        PlacePartialOrders(o);
+                    }
+
+                }
+
+
+            }
+        }
         public void GetDualTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
         {
             string HT = "day";
@@ -510,60 +612,66 @@ namespace _15MCE
                 HT = "day";
             }
 
-            if (Convert.ToInt32(txtTam.Text) >= -2)
+            else if (higherTimeFrame == 200)
+            {
+                HT = "week";
+            }
+
+            if (Convert.ToInt32(txtTam.Text) >= -3)
             {
                 List<StockData> sGap = new List<StockData>();
 
                 Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
 
                 var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
+                var lastDate = getTradedStocks.OrderBy(a => a.Value.Date).Last();
+
+                if (LT == "day")
+                {
+                    finalStocks = getTradedStocks.Where(b => b.Value.Date == CurrentTradingDate.Date).ToList();
+                }
+
+
                 foreach (var a in finalStocks)
                 {
                     try
                     {
+                        var mc = MyCandle(allData["5minute"][a.Value.Stock].Where(d => d.TimeStamp.Date == CurrentTradingDate && d.TimeStamp <= TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList(), TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)
+                            );
+                        var dc =allData["day"][a.Value.Stock].Where(d => d.TimeStamp.Date < CurrentTradingDate.Date
+                            ).Last();
+                        List<SR> list = new List<SR>();
+
+                        list.Add(new SR { price = Math.Round(a.Value.CurrentCandle.dR3, 1), LevelName = "dR3" });
+                        list.Add(new SR { price = Math.Round(a.Value.CurrentCandle.dS3, 1), LevelName = "dS3" });
+                        list.Add(new SR { price = Math.Round(dc.STrend.SuperTrend, 1), LevelName = "mSuperTrend" });
+                        
+
+                        var ls = WildAnalysis(mc.Low, mc.High, mc.Close, mc.Open, list);
+
                         if (a.Value.Trade == Model.Trade.BUY)
                         {
-                            sGap.Add(new StockData
-                            {
-                                Symbol = a.Value.Stock,
-                                Open = 0,
-                                Vol = a.Value.Volume,
-                                //dHigh = tradingCandle.High,
-                                //dLow = tradi,
-                                High = a.Value.High,
-                                Low = a.Value.Low,
-                                Direction = "BM",
-                                stopLoss = a.Value.Low - 0.1,
-                                TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                dClose = 0,
-                                Close = a.Value.Close
-                            });
+                            if (ls.Where(e => e.SupportOrResistance == "S").Count() > 1)
+                           
+                                //if ((GetBody(mc) / mc.Open) * 100 < 0.3 && (GetUpperWick(mc) / mc.Open) * 100 < 0.3 && (GetLowerWick(mc) / mc.Open) * 100 >= 0.5 )
+                                    sGap.Add(new StockData
+                                    {
+                                        Symbol = a.Value.Stock,
+                                        Open = 0,
+                                        Vol = a.Value.Volume,
+                                        //dHigh = tradingCandle.High,
+                                        //dLow = tradi,
+                                        High = a.Value.High,
+                                        Low = a.Value.Low,
+                                        Direction = "BM",
+                                        stopLoss = a.Value.Low - 0.1,
+                                        TradingDate = a.Value.Date,
+                                        Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                        dClose = 0,
+                                        Close = a.Value.Close
+                                    });
 
                         }
-                        else if (a.Value.Trade == Model.Trade.SELL)
-                        {
-                            sGap.Add(new StockData
-                            {
-                                Symbol = a.Value.Stock,
-                                Open = 0,
-                                Vol = a.Value.Volume,
-                                //dHigh = tradingCandle.High,
-                                //dLow = tradi,
-                                High = a.Value.High,
-                                Low = a.Value.Low,
-                                Direction = "SM",
-                                stopLoss = a.Value.High + 0.1,
-                                TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                dClose = 0,
-                                Close = a.Value.Close,
-
-
-                            });
-
-                        }
-
 
 
                     }
@@ -573,7 +681,7 @@ namespace _15MCE
 
                 }
 
-                foreach (var s in sGap)
+                foreach (var s in sGap.OrderByDescending(a => a.Vol * a.Close).Take(1))
                 {
                     NSA.Order o = new NSA.Order() { EntryPrice = s.Direction == "SM" ? s.Low - 0.1 : s.High + 0.1, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
@@ -586,6 +694,11 @@ namespace _15MCE
 
 
             }
+        }
+        List<DataRow> stocksIdentified = new List<DataRow>();
+        public void WaitForOverSoldPositionInThQueue()
+        {
+
         }
         public void RefreshData()
         {
@@ -606,13 +719,42 @@ namespace _15MCE
 
                 orderDetails.Clear();
 
-                if (Convert.ToInt16(txtTam.Text) == -2)
+
+                GetDualTimeFrameStocks(200, 100);
+
+
+                if (Convert.ToInt16(txtTam.Text) == -3)
                 {
-                    if (!DONT_DELETE) LoadDataDaily();
+                    if (!DONT_DELETE)
+                    {
+                        LoadDataDaily();
+                        LoadDataCommon(60);
+                    }
                 }
 
-                //if (!DONT_DELETE) LoadDataCommon(5);
-                //GetDualTimeFrameStocks(60, 5);
+
+                if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
+                {
+                    if (!DONT_DELETE) LoadDataCommon(60);
+                    //GetDualTimeFrameStocks(100, 60);
+
+                }
+                if (!DONT_DELETE)
+                    LoadDataCommon(5);
+                if (Convert.ToInt16(txtTam.Text) >= -2)
+                {
+                    //reason 1 to buy
+                    GetDualTimeFrameStocks(60, 5);
+                }
+
+
+
+
+
+
+
+                //GetHighProbabiltyLowRiskStock(TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate));
+                /// GetDualTimeFrameStocks(60, 5);
                 //GetDualTimeFrameStocks(30, 5);
 
                 //if (Convert.ToInt16(txtTam.Text) % 2 != 0)
@@ -621,33 +763,46 @@ namespace _15MCE
                 //    GetDualTimeFrameStocks(60, 10);
                 //    GetDualTimeFrameStocks(100, 10);
                 //}
-                if ((txtTam.Text == "0" || txtTam.Text == "3" || txtTam.Text == "6" || txtTam.Text == "9" || txtTam.Text == "12" || txtTam.Text == "15" || txtTam.Text == "12"
-                        || txtTam.Text == "15" || txtTam.Text == "18" || txtTam.Text == "21" || txtTam.Text == "24" || txtTam.Text == "27" || txtTam.Text == "30" || txtTam.Text == "33"
-                        || txtTam.Text == "36" || txtTam.Text == "39" || txtTam.Text == "42" || txtTam.Text == "45" || txtTam.Text == "48" || txtTam.Text == "51" || txtTam.Text == "54"
-                        || txtTam.Text == "57" || txtTam.Text == "60" || txtTam.Text == "63" || txtTam.Text == "66" || txtTam.Text == "69"))
-                {
-                    if (!DONT_DELETE) LoadDataCommon(15);
-                    //GetDualTimeFrameStocks(100, 15);
-                    GetDualTimeFrameStocks(60, 15);
-                }
-                if ((txtTam.Text == "3" || txtTam.Text == "9" || txtTam.Text == "15" || txtTam.Text == "21" || txtTam.Text == "27" || txtTam.Text == "33" || txtTam.Text == "39" || txtTam.Text == "45" || txtTam.Text == "51" || txtTam.Text == "57" || txtTam.Text == "63"))
-                {
-                    if (!DONT_DELETE) LoadDataCommon(30);
-                    GetDualTimeFrameStocks(100, 30);
+                /*
+                 if ((txtTam.Text == "0" || txtTam.Text == "3" || txtTam.Text == "6" || txtTam.Text == "9" || txtTam.Text == "12" || txtTam.Text == "15" || txtTam.Text == "12"
+                         || txtTam.Text == "15" || txtTam.Text == "18" || txtTam.Text == "21" || txtTam.Text == "24" || txtTam.Text == "27" || txtTam.Text == "30" || txtTam.Text == "33"
+                         || txtTam.Text == "36" || txtTam.Text == "39" || txtTam.Text == "42" || txtTam.Text == "45" || txtTam.Text == "48" || txtTam.Text == "51" || txtTam.Text == "54"
+                         || txtTam.Text == "57" || txtTam.Text == "60" || txtTam.Text == "63" || txtTam.Text == "66" || txtTam.Text == "69" || txtTam.Text == "72" || txtTam.Text == "75"))
+                 {
+                     if (!DONT_DELETE)
+                     {
+                         LoadDataCommon(15);
+                         LoadDataCommon(60);
+                     }
+                     //GetDualTimeFrameStocks(100, 15);
+                     //GetDualTimeFrameStocks(60, 15);
+                 }
+                 if ((txtTam.Text == "3" || txtTam.Text == "9" || txtTam.Text == "15" || txtTam.Text == "21" || txtTam.Text == "27" || txtTam.Text == "33" || txtTam.Text == "39" || txtTam.Text == "45" || txtTam.Text == "51" || txtTam.Text == "57" || txtTam.Text == "63" || txtTam.Text == "69" || txtTam.Text == "75"))
+                 {
+                     if (!DONT_DELETE) LoadDataCommon(30);
+                     // GetDualTimeFrameStocks(100, 30);
 
-                }
+                 }
 
-                if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57"))
-                {
-                    if (!DONT_DELETE) LoadDataCommon(60);
-                    GetDualTimeFrameStocks(100, 60);
+                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
+                 {
+                     if (!DONT_DELETE) LoadDataCommon(60);
+                     //GetDualTimeFrameStocks(100, 60);
 
-                }
-                //UpdateOrders(30);
-
+                 }
+                 //UpdateOrders(30);
+                 */
                 foreach (var xx in orderDetails)
                 {
+                    stocksIdentified.Add(xx);
                     orders.Rows.Add(xx);
+                    if (!DONT_DELETE)
+                    {
+                        SoundPlayer snd = new SoundPlayer(NSA.Properties.Resources.ALARM);
+                        snd.Play();
+                    }
+
+
                 }
                 LogStatus("All orders placed within  " + (DateTime.Now - f1).Seconds);
                 orders.AcceptChanges();
@@ -655,6 +810,7 @@ namespace _15MCE
                 {
                     File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " - Orders Rows Count :- " + orders.Rows.Count);
                     rgvStocks.DataSource = orders;
+
                 }
                 catch (Exception ex)
                 {
@@ -673,8 +829,6 @@ namespace _15MCE
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.InnerException);
             }
         }
-
-
 
         public void RemoveFiles()
         {
@@ -1045,6 +1199,27 @@ namespace _15MCE
 
         }
 
+        public void LoadDataForStocksList(int period, List<string> stocksList)
+        {
+            try
+            {
+
+                downlodableScrip = AllFNO.ToList().Intersect<string>(stocksList.ToArray()).ToList();
+                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+                {
+
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute", period.ToString());
+
+                });
+
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
         public void LoadDataCommon(int period)
         {
             try
@@ -1054,7 +1229,7 @@ namespace _15MCE
                 Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
 
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute");
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute", period.ToString());
 
                 });
 
@@ -1075,7 +1250,29 @@ namespace _15MCE
                 downlodableScrip = AllFNO.ToList();
                 Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-150).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "day");
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-150).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "day", "daily");
+
+
+                });
+
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        public void LoadDataWeekly()
+        {
+            try
+            {
+
+                downlodableScrip = AllEQ.ToList();
+                Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+                {
+                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-1050).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "week", "weekly");
 
 
                 });
@@ -1130,7 +1327,7 @@ namespace _15MCE
 
             if (txtSwitchMode.Text == string.Empty)
             {
-                downlodableScrip = AllFNO.ToList();
+                downlodableScrip = AllEQ.ToList();
             }
             else
             {
@@ -1140,7 +1337,7 @@ namespace _15MCE
                         downlodableScrip.Add(dr["scrip"].ToString());
                 }
                 if (SMAQuanitty + PSAAQuantity + _60MinQuantity + SuperTrendQuanaity > 0)
-                    downlodableScrip = AllFNO.ToList();
+                    downlodableScrip = AllEQ.ToList();
             }
 
             bool load30 = Convert.ToBoolean(mySettings["30"]);
@@ -1153,29 +1350,31 @@ namespace _15MCE
             int noOfDaysMultiplier = 1;
             if (duation.ToLower() == "short")
             {
-                noOfDaysMultiplier = 10;
+                noOfDaysMultiplier = 5;
             }
 
             Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
             {
-                if (load60)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-400 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "60" + "minute", "60");
-                if (load10)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "10" + "minute", "10");
-                if (load30)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "30" + "minute", "30");
-                if (load15)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
-                if (load5)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
-                if (loaddaily)
-                    CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
-
+                if (s != null)
+                {
+                    if (load60)
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-400 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "60" + "minute", "60");
+                    if (load10)
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "10" + "minute", "10");
+                    if (load30)
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "30" + "minute", "30");
+                    if (load15)
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
+                    if (load5)
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
+                    if (loaddaily)
+                    {
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
+                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
+                    }
+                }
 
             });
-
-
-
 
             MessageBox.Show("All data loaded");
         }
@@ -3312,7 +3511,7 @@ Variety: Constants.VARIETY_CO//,,
 
             foreach (SR srObje in fullList)
             {
-                if (close < srObje.price && high >= srObje.price)
+                if (close < srObje.price && high >= srObje.price && open <= srObje.price)
                 {
                     SR x = new SR();
                     x.price = srObje.price;
@@ -3320,7 +3519,7 @@ Variety: Constants.VARIETY_CO//,,
                     x.SupportOrResistance = "R";
                     resultSet.Add(x);
                 }
-                else if (close > srObje.price && low <= srObje.price)
+                else if (close > srObje.price && low <= srObje.price && open>=srObje.price)
                 {
                     SR x = new SR();
                     x.price = srObje.price;
@@ -3463,7 +3662,7 @@ Variety: Constants.VARIETY_CO//,,
                 }
                 List<Candle> ls = new List<Candle>();
 
-                if (true)//!DONT_DELETE)
+                if (!DONT_DELETE)//!DONT_DELETE)
                 {
 
                     string URL_ADDRESS = string.Format("https://api.kite.trade/instruments/historical/{0}/{5}?from={1}&to={2}&api_key={3}&access_token={4}", InstrumentToken, dateFrom, dateTo, apiKey, accessToken, interval);
@@ -3492,7 +3691,7 @@ Variety: Constants.VARIETY_CO//,,
                 }
                 else
                 {
-                    ls = ohlcObj.GetOHLC(Convert.ToDateTime(dateFrom), Convert.ToDateTime(dateTo), InstrumentToken, Convert.ToInt32(interval.Replace("minute", string.Empty)));
+                    ls = TokenChannel.ConvertToJason(File.ReadAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json"), SymbolName);
 
                 }
                 allData[interval].Add(SymbolName, ls);
@@ -3500,7 +3699,7 @@ Variety: Constants.VARIETY_CO//,,
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + " Download error!!");
+                // MessageBox.Show(ex.Message + " Download error!!");
             }
 
         }
@@ -3791,304 +3990,76 @@ Variety: Constants.VARIETY_CO//,,
 
         Dictionary<string, List<StockData>> pivotList = new Dictionary<string, List<StockData>>();
 
-        //public void LoadDailyNPivotsDataZerodha()
-        //{
-        //    try
-        //    {
-        //        //scrips = new string[] { "ITC" };
-        //        if (new DirectoryInfo(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\pivotpoints\").GetFiles().Count() == 0)
-        //        {
-        //            Parallel.ForEach(AllFNO, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
-        //            {
-        //                CallWebServiceZerodha(instrToken.Tables[0].Select("symbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-50).ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "day");
+        public void LoadDailyNPivotsDataZerodha()
+        {
+            try
+            {
 
-        //            });
+                Parallel.ForEach(AllFNO, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
+                {
 
-        //            Parallel.ForEach(AllFNO, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
-        //            {
-        //                CallWebServiceZerodha(instrToken.Tables[0].Select("symbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-50).ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5minute");
+                    var prevDayCandle = allData["day"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last();
 
-        //            });
+                    var lastMonthData = allData["day"][s].Where(a => a.TimeStamp.Month == CurrentTradingDate.AddMonths(-1).Month && a.TimeStamp.Year== CurrentTradingDate.AddMonths(-1).Year);
+                    var monthlyCandle = MyCandle(lastMonthData.ToList());
 
-        //            Parallel.ForEach(AllFNO, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
-        //            {
-        //                List<StockData> lstStockData = new List<StockData>();
-        //                string FileName = string.Empty;
-        //                FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\day\" + s.Replace("-", string.Empty) + ".txt";
-        //                string json = File.ReadAllText(FileName).Replace("]}}", string.Empty).Replace("\"", "").Replace("T", " ").Replace("+", " ");
-        //                DataSet ds = TokenChannel.ConvertToJason(json);
-        //                DataTable dtDataHistory = ds.Tables[0];
+                    var mPP = Math.Round((monthlyCandle.Close + monthlyCandle.High + monthlyCandle.Low) / 3, 2);
+                    var mR1 = Math.Round((2 * mPP) - monthlyCandle.Low, 2);
+                    var mS1 = Math.Round((2 * mPP) - monthlyCandle.High, 2);
+                    var mR2 = Math.Round(mPP + (monthlyCandle.High - monthlyCandle.Low), 2);
+                    var mS2 = Math.Round(mPP - (monthlyCandle.High - monthlyCandle.Low), 2);
+                    var mR3 = Math.Round(mPP + 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
+                    var mS3 = Math.Round(mPP - 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
+
+                    double prevDayClose = allData["5minute"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last().Close;
 
 
+                    double prevDayOpen = prevDayCandle.Open;
+                    double prevDayHigh = prevDayCandle.High;
+                    double prevDayLow = prevDayCandle.Low;
+                    double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
+                    var dPP = Math.Round(dailyPivot, 2);
+                    var dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
+                    var dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
+                    var dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
+                    var dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
+                    var dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
+                    var dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
+                    var dClose = prevDayClose;
+                    var dHigh = prevDayHigh;
+                    var dLow = prevDayLow;
+                    var dOpen = prevDayOpen;
 
-        //                Indicator ind1 = new Indicator();
-        //                ind1.IndicatorName = "SuperTrend";
+                    Parallel.ForEach(allData["5minute"][s].Where(a => a.TimeStamp.Date == CurrentTradingDate), (a) =>
+                         {
+                             a.dPP = dPP;
+                             a.dR1 = dR1;
+                             a.dS1 = dS1;
+                             a.dS2 = dS2;
+                             a.dS3 = dS3;
+                             a.dR2 = dR2;
+                             a.dR3 = dR3;
+                             a.mPP = mPP;
+                             a.mR1 = mR1;
+                             a.mR2 = mR2;
+                             a.mR3 = mR3;
+                             a.mS1 = mS1;
+                             a.mS2 = mS2;
+                             a.mS3 = mS3;
 
-        //                Indicator ind2 = new Indicator();
-        //                ind2.IndicatorName = "SMA20";
+                         });
 
-        //                Indicator ind3 = new Indicator();
-        //                ind3.IndicatorName = "SMA50";
+                });
 
-        //                Indicator ind4 = new Indicator();
-        //                ind4.IndicatorName = "SMA200";
+                LogStatus("Pivot points are loaded successfully.");
 
-        //                Indicator ind5 = new Indicator();
-        //                ind5.IndicatorName = "MACD";
+            }
+            catch (Exception ex)
+            {
+                LogStatus("Pivot points are loaded successfully.exception occured");
 
-
-        //                List<Indicator> xInd = new List<Indicator>();
-        //                xInd.Add(ind1);
-        //                xInd.Add(ind2);
-        //                xInd.Add(ind3);
-        //                xInd.Add(ind4);
-        //                xInd.Add(ind5);
-
-        //                //Indicator ind2 = new Indicator();
-        //                //ind2.IndicatorName = "RSI";              
-        //                //xInd.Add(ind2);
-
-        //                Indicators.AddIndicators(ref ds, xInd);
-
-
-        //                foreach (DataRow dr in dtDataHistory.Rows)
-        //                {
-        //                    lstStockData.Add(new StockData { TradingDate = Convert.ToDateTime(dr["Timestamp"]).Date, Symbol = s, High = Convert.ToDouble(dr["f3"]), Open = Convert.ToDouble(dr["f5"]), Close = Convert.ToDouble(dr["f2"]), Low = Convert.ToDouble(dr["f4"]), MACD = Convert.ToDouble(dr["MACD"]), MACD9 = Convert.ToDouble(dr["MACD9"]), HISTOGRAM = Convert.ToDouble(dr["HISTOGRAM"]), SuperTrend = Convert.ToDouble(dr["SuperTrend"]), SMA20 = Convert.ToDouble(dr["20"]), SMA50 = Convert.ToDouble(dr["50"]), SMA200 = Convert.ToDouble(dr["200"]) });
-        //                }
-        //                if (lstStockData.Where(a => a.TradingDate == CurrentTradingDate).Count() == 0)
-        //                {
-        //                    lstStockData.Add(new StockData { TradingDate = CurrentTradingDate, Symbol = s, High = 0, Open = 0, Close = 0, Low = 0, MACD = 0, MACD9 = 0, HISTOGRAM = 0, SMA20 = 0, SMA200 = 0, SMA50 = 0, SuperTrend = 0 });
-        //                }
-
-        //                // pivot calculation for 5,10,15 Min & 60 Min chart - range is 1 Day & for last 2 years
-        //                lstStockData = lstStockData.OrderBy(a => a.TradingDate).ToList();
-        //                int i = 0;
-        //                foreach (StockData sd in lstStockData)
-        //                {
-        //                    if (i - 1 >= 0)
-        //                    {
-        //                        DateTime currentDay = sd.TradingDate;
-        //                        DateTime prevDate = lstStockData[i - 1].TradingDate;
-        //                        double prevDayClose = lstStockData.Where(a => a.TradingDate == prevDate).First().Close;
-        //                        // get last price from 5 minutes tick
-        //                        string FileNameforLastPrice = string.Empty;
-        //                        FileNameforLastPrice = @"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\5\" + s.Replace("-", string.Empty) + ".txt";
-        //                        string jsonforLastPrice = File.ReadAllText(FileNameforLastPrice).Replace("]}}", string.Empty).Replace("\"", "").Replace("T", " ").Replace("+", " ");
-
-        //                        DataSet dsforLastPrice = TokenChannel.ConvertToJason(jsonforLastPrice);
-
-        //                        DataTable dtforLastPrice = dsforLastPrice.Tables[0];
-        //                        string timeStamp = TokenChannel.GetTimeStamp(-2, prevDate.Date);
-        //                        string timeStampLast = TokenChannel.GetTimeStamp(-2, prevDate.Date.AddDays(1));
-        //                        var data = dsforLastPrice.Tables[0].AsEnumerable().Where(a => Convert.ToDateTime(a.Field<String>("Timestamp")) >= Convert.ToDateTime(timeStamp) && Convert.ToDateTime(a.Field<String>("Timestamp")) < Convert.ToDateTime(timeStampLast)).OrderByDescending(a => Convert.ToDateTime(a.Field<String>("Timestamp"))).ToList();
-        //                        if (data.Count > 0)
-        //                        {
-        //                            prevDayClose = Convert.ToDouble(data[0].Field<double>("f2"));
-        //                        }
-
-        //                        double prevDayOpen = lstStockData.Where(a => a.TradingDate == prevDate).First().Open;
-        //                        double prevDayHigh = lstStockData.Where(a => a.TradingDate == prevDate).First().High;
-        //                        double prevDayLow = lstStockData.Where(a => a.TradingDate == prevDate).First().Low;
-        //                        double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
-        //                        sd.dPP = Math.Round(dailyPivot, 2);
-        //                        sd.dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
-        //                        sd.dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
-        //                        sd.dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
-        //                        sd.dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
-        //                        sd.dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
-        //                        sd.dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
-        //                        sd.dClose = prevDayClose;
-        //                        sd.dHigh = prevDayHigh;
-        //                        sd.dLow = prevDayLow;
-        //                        sd.dOpen = prevDayOpen;
-
-
-        //                        // pivot calculation for monthly & weekly chart - range is one year
-        //                        int currentYear = sd.TradingDate.Year;
-        //                        int lastYear = currentYear - 1;
-        //                        if (lstStockData.Where(a => a.TradingDate.Year == lastYear).Count() > 0)
-        //                        {
-        //                            double lastYearClose = lstStockData.Where(a => a.TradingDate.Year == lastYear).OrderBy(a => a.TradingDate).Last().Close;
-        //                            double lastYearHigh = lstStockData.Where(a => a.TradingDate.Year == lastYear).Max(a => a.High);
-        //                            double lastYearLow = lstStockData.Where(a => a.TradingDate.Year == lastYear).Min(a => a.Low);
-        //                            double lastYearOpen = lstStockData.Where(a => a.TradingDate.Year == lastYear).First().Open;
-        //                            double yearPivot = (lastYearClose + lastYearHigh + lastYearLow) / 3;
-        //                            sd.yPP = Math.Round(yearPivot, 2);
-        //                            sd.yR1 = Math.Round((2 * yearPivot) - lastYearLow, 2);
-        //                            sd.yS1 = Math.Round((2 * yearPivot) - lastYearHigh, 2);
-        //                            sd.yR2 = Math.Round(yearPivot + (lastYearHigh - lastYearLow), 2);
-        //                            sd.yS2 = Math.Round(yearPivot - (lastYearHigh - lastYearLow), 2);
-        //                            sd.yR3 = Math.Round(yearPivot + 2 * (lastYearHigh - lastYearLow), 2);
-        //                            sd.yS3 = Math.Round(yearPivot - 2 * (lastYearHigh - lastYearLow), 2);
-        //                            sd.yClose = lastYearClose;
-        //                            sd.yHigh = lastYearHigh;
-        //                            sd.yLow = lastYearLow;
-        //                            sd.yOpen = lastYearOpen;
-        //                            sd.YearStartDate = lstStockData.Where(a => a.TradingDate.Year == lastYear).OrderBy(a => a.TradingDate).First().TradingDate;
-        //                            sd.YearEndDate = lstStockData.Where(a => a.TradingDate.Year == lastYear).OrderBy(a => a.TradingDate).Last().TradingDate;
-        //                        }
-
-        //                        // pivot calculation for daily chart - range is one month                
-        //                        int currentMonth = sd.TradingDate.Month;
-        //                        int lastMonth = currentMonth - 1;
-        //                        if (lastMonth == 0)
-        //                        {
-        //                            lastMonth = 12;
-        //                            currentYear = currentYear - 1;
-        //                        }
-        //                        if (lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).Count() > 0)
-        //                        {
-        //                            double lastMonthClose = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).OrderBy(a => a.TradingDate).Last().Close;
-        //                            double lastMonthHigh = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).Max(a => a.High);
-        //                            double lastMonthLow = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).Min(a => a.Low);
-        //                            double lastMonthOpen = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).First().Open;
-        //                            double monthPivot = (lastMonthClose + lastMonthHigh + lastMonthLow) / 3;
-        //                            sd.mPP = Math.Round(monthPivot, 2);
-        //                            sd.mR1 = Math.Round((2 * monthPivot) - lastMonthLow, 2);
-        //                            sd.mS1 = Math.Round((2 * monthPivot) - lastMonthHigh, 2);
-        //                            sd.mR2 = Math.Round(monthPivot + (lastMonthHigh - lastMonthLow), 2);
-        //                            sd.mS2 = Math.Round(monthPivot - (lastMonthHigh - lastMonthLow), 2);
-        //                            sd.mR3 = Math.Round(monthPivot + 2 * (lastMonthHigh - lastMonthLow), 2);
-        //                            sd.mS3 = Math.Round(monthPivot - 2 * (lastMonthHigh - lastMonthLow), 2);
-        //                            sd.mClose = lastMonthClose;
-        //                            sd.mHigh = lastMonthHigh;
-        //                            sd.mLow = lastMonthLow;
-        //                            sd.mOpen = lastMonthOpen;
-        //                            sd.MonthStartDate = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).OrderBy(a => a.TradingDate).First().TradingDate;
-        //                            sd.MonthEndDate = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == lastMonth).OrderBy(a => a.TradingDate).Last().TradingDate;
-        //                            try
-        //                            {
-        //                                sd.curMonthClose = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == sd.TradingDate.Month).OrderBy(a => a.TradingDate).Last().Close;
-        //                                sd.curMonthHigh = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == sd.TradingDate.Month).Max(a => a.High);
-        //                                sd.curMonthLow = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == sd.TradingDate.Month).Min(a => a.Low);
-        //                                sd.curMonthOpen = lstStockData.Where(a => a.TradingDate.Year == currentYear && a.TradingDate.Month == sd.TradingDate.Month).First().Open;
-        //                            }
-        //                            catch
-        //                            {
-        //                            }
-        //                        }
-        //                        currentYear = sd.TradingDate.Year;
-
-        //                        // pivot calculation for 30 Min & 60 Min chart - range is 1 week
-        //                        int curretnWeek = TokenChannel.GetWeekOfMonth(sd.TradingDate);
-        //                        int lastWeek = curretnWeek - 1;
-        //                        if (lastWeek == 0)
-        //                        {
-        //                            if (currentMonth == 1 && curretnWeek == 1)
-        //                            {
-        //                                currentYear = currentYear - 1;
-        //                                currentMonth = 12;
-        //                                curretnWeek = TokenChannel.GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
-        //                            }
-        //                            else if (curretnWeek == 1)
-        //                            {
-        //                                currentMonth = 12;
-        //                                curretnWeek = TokenChannel.GetWeekOfMonth(new DateTime(currentYear, currentMonth, 27));
-        //                            }
-        //                        }
-
-        //                        DateTime thisWeekMonday = sd.TradingDate.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
-        //                        DateTime thisWeekTuesday = thisWeekMonday.AddDays(1);
-        //                        DateTime thisWeekWednesday = thisWeekMonday.AddDays(2);
-        //                        DateTime thisWeekThursday = thisWeekMonday.AddDays(3);
-        //                        DateTime thisWeekFriday = thisWeekMonday.AddDays(4);
-        //                        List<DateTime> weekDayList = new List<DateTime>();
-        //                        weekDayList.Add(thisWeekMonday);
-        //                        weekDayList.Add(thisWeekTuesday);
-        //                        weekDayList.Add(thisWeekWednesday);
-        //                        weekDayList.Add(thisWeekThursday);
-        //                        weekDayList.Add(thisWeekFriday);
-
-        //                        var lstWeekData = lstStockData.Where(a => weekDayList.Contains(a.TradingDate)).OrderBy(a => a.TradingDate).ToList();
-
-
-        //                        DateTime curWeekMonday = sd.TradingDate.StartOfWeek(DayOfWeek.Monday);
-        //                        DateTime curWeekTuesday = curWeekMonday.AddDays(1);
-        //                        DateTime curWeekWednesday = curWeekMonday.AddDays(2);
-        //                        DateTime curWeekThursday = curWeekMonday.AddDays(3);
-        //                        DateTime curWeekFriday = curWeekMonday.AddDays(4);
-        //                        List<DateTime> curweekDayList = new List<DateTime>();
-        //                        curweekDayList.Add(curWeekMonday);
-        //                        curweekDayList.Add(curWeekTuesday);
-        //                        curweekDayList.Add(curWeekWednesday);
-        //                        curweekDayList.Add(curWeekThursday);
-        //                        curweekDayList.Add(curWeekFriday);
-
-        //                        var curWeekData = lstStockData.Where(a => curweekDayList.Contains(a.TradingDate)).OrderBy(a => a.TradingDate).ToList();
-        //                        if (curWeekData.Count() > 0)
-        //                        {
-        //                            sd.curWeekOpen = curWeekData.First().Open;
-        //                            sd.curWeekHigh = curWeekData.Max(a => a.High);
-        //                            sd.curWeekLow = curWeekData.Min(a => a.Low);
-        //                            sd.curWeekClose = curWeekData.Last().Close;
-        //                        }
-
-        //                        if (lstWeekData.Count() > 0)
-        //                        {
-
-        //                            double lastWeekclose = lstWeekData.Last().Close;
-        //                            double lastWeekHigh = lstWeekData.Max(a => a.High);
-        //                            double lastWeekLow = lstWeekData.Min(a => a.Low);
-        //                            double lastWeekOpen = lstWeekData.First().Open;
-        //                            double weekPivot = (lastWeekclose + lastWeekHigh + lastWeekLow) / 3;
-        //                            sd.wPP = Math.Round(weekPivot, 2);
-        //                            sd.wR1 = Math.Round((2 * weekPivot) - lastWeekLow, 2);
-        //                            sd.wS1 = Math.Round((2 * weekPivot) - lastWeekHigh, 2);
-        //                            sd.wR2 = Math.Round(weekPivot + (lastWeekHigh - lastWeekLow), 2);
-        //                            sd.wS2 = Math.Round(weekPivot - (lastWeekHigh - lastWeekLow), 2);
-        //                            sd.wR3 = Math.Round(weekPivot + 2 * (lastWeekHigh - lastWeekLow), 2);
-        //                            sd.wS3 = Math.Round(weekPivot - 2 * (lastWeekHigh - lastWeekLow), 2);
-        //                            sd.wClose = lastWeekclose;
-        //                            sd.wHigh = lastWeekHigh;
-        //                            sd.wLow = lastWeekLow;
-        //                            sd.wOpen = lastWeekOpen;
-        //                            sd.WeekStartDate = lstWeekData.First().TradingDate;
-        //                            sd.WeekEndDate = lstWeekData.Last().TradingDate;
-
-        //                        }
-        //                    }
-        //                    i++;
-        //                }
-
-
-        //                if (!pivotList.ContainsKey(s))
-        //                    pivotList.Add(s, lstStockData);
-        //            });
-
-
-
-        //            foreach (var dx in pivotList)
-        //            {
-        //                SerializeObject(dx.Value, @"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\PivotPoints\" + dx.Key + ".xml");
-        //            }
-        //        }
-
-
-        //        pList = null;
-        //        pList = new List<Pivots>();
-        //        if (scripTodaysLevels != null)
-        //        {
-        //            scripTodaysLevels.Clear();
-        //        }
-        //        foreach (string s in AllFNO)
-        //        {
-        //            List<StockData> allLevels = DeSerializeObject<List<StockData>>(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\PivotPoints\" + s + ".xml");
-        //            StockData todaysLevel = null;
-        //            todaysLevel = allLevels.Where(a => a.TradingDate == CurrentTradingDate).First();
-        //            scripTodaysLevels.Add(s, todaysLevel);
-        //        }
-        //        LogStatus("Pivot points are loaded successfully.");
-        //        txtSwitchMode.Enabled = true;
-        //        isPivotLoaded = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LogStatus("Pivot points are loaded successfully.");
-        //        txtSwitchMode.Enabled = true;
-        //        isPivotLoaded = true;
-        //        File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message);
-        //    }
-        //}
+            }
+        }
         public void SerializeObject<T>(T serializableObject, string fileName)
         {
             if (serializableObject == null) { return; }
@@ -4498,8 +4469,11 @@ Variety: Constants.VARIETY_CO//,,
         List<VolumeFilter> vList = new List<VolumeFilter>();
         private void goLiveTimer_Tick(object sender, EventArgs e)
         {
+            //goLiveTimer.Stop();
             RefreshData();
-            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 3);
+            radLabelElement1.Text = $"Last 5 minute tick :{ TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate).ToString()}";
+            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 1);
+
 
         }
 
@@ -4707,9 +4681,17 @@ Variety: Constants.VARIETY_CO//,,
         }
         public void TestRunMarket()
         {
+            if (DONT_DELETE)
+            {
+                LoadInstruments();
+            }
+            //LoadDataWeekly();
+            //LoadDataDaily();
             LoadAllDateTillDate();
+
+            LoadDailyNPivotsDataZerodha();
             backTestStatus = false;
-            goLiveTimer.Interval = 60000;
+            goLiveTimer.Interval = 5000;
             DONT_DELETE = true;
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;
@@ -4723,9 +4705,9 @@ Variety: Constants.VARIETY_CO//,,
         {
             backTestStatus = false;
 
-            txtTam.Text = TokenChannel.GetMinuteNumber(CurrentTradingDate).ToString();
+            //txtTam.Text = TokenChannel.GetMinuteNumber(CurrentTradingDate).ToString();
             DONT_DELETE = false;
-            goLiveTimer.Interval = 900000;
+            goLiveTimer.Interval = 300000;
 
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;

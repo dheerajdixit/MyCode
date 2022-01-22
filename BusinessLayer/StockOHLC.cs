@@ -299,38 +299,46 @@ namespace BAL
             Parallel.ForEach<KeyValuePair<string, List<Candle>>>(myTestDataLargeTimeFrame, delegate (KeyValuePair<string, List<Candle>> stock)
             {
 
-                List<Candle> allCandlesHigherTimeFrame = stock.Value;
-                List<Candle> allCandlesLowerTimeFrame = myTestDatSmallTimeFrame[stock.Key];
-
-                if (myProgres != null)
+                if (myTestDatSmallTimeFrame.ContainsKey(stock.Key))
                 {
-                    myProgres($"Collecting first candle for all days for {stock.Key}");
-                }
-                List<StrategyModel> selector = new List<StrategyModel>();
+                    List<Candle> allCandlesHigherTimeFrame = stock.Value;
+                    List<Candle> allCandlesLowerTimeFrame = myTestDatSmallTimeFrame[stock.Key];
 
-
-                filter1.Add(this.FilterDualTimeFrameMomentumStocks(allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
-                    new StrategyModel
+                    if (myProgres != null)
                     {
-                        Stock = b.Stock,
-                        Volume = b.Volume * b.Close,
-                        Range = this.GetRange(b, selectedIdea.Range),
-                        Date = b.TimeStamp,
-                        Close = b.Close,
-                        High = b.High,
-                        Low = b.Low,
-                        Open = b.Open,
-                        PreviousClose = b.PreviousCandle.Close,
-                        Imp1 = 0,
-                        Trade = b.Trade,
-                        CurrentCandle = b,
-                    }).ToList());
+                        myProgres($"Collecting first candle for all days for {stock.Key}");
+                    }
+                    List<StrategyModel> selector = new List<StrategyModel>();
+
+
+                    filter1.Add(this.FilterDualTimeFrameMomentumStocks(allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
+                    
+                        new StrategyModel
+                        {
+                            Stock = b.Stock,
+                            Volume = b.Volume * b.Close,
+                            Range = this.GetRange(b, selectedIdea.Range),
+                            Date = b.TimeStamp,
+                            Close = b.Close,
+                            High = b.High,
+                            Low = b.Low,
+                            Open = b.Open,
+                            PreviousClose = b.PreviousCandle.Close,
+                            Imp1 = 0,
+                            Trade = b.Trade,
+                            CurrentCandle = b,
+                        }).ToList());
+                }
             });
             Dictionary<Guid, StrategyModel> result = new Dictionary<Guid, StrategyModel>();
             foreach (var p in filter1)
             {
                 foreach (var q in p)
+                {
+                 
                     result.Add(Guid.NewGuid(), q);
+                }
+
 
             }
 
@@ -363,9 +371,12 @@ namespace BAL
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish)
+                        
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish || g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Oversold)
                         {
-                            c.Trade = Trade.BUY;
+                           
+                                c.Trade = Trade.BUY;
+                          
                         }
                         else
                         {
@@ -379,9 +390,11 @@ namespace BAL
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish || g.AllIndicators.Stochastic.OscillatorStatus==  OscillatorStatus.Overbought)
                         {
-                            c.Trade = Trade.SELL;
+                           
+                                c.Trade = Trade.SELL;
+                           
                         }
                         else
                         {
@@ -395,6 +408,7 @@ namespace BAL
             }
 
             var x = enumerable.Where(a => a.Trade != Trade.NONE);
+           
 
             return x;
 
@@ -616,19 +630,19 @@ namespace BAL
                     double close = gap.Value.Close;
                     double mtm = 0.0;
                     double stopLossRange = target.StopLossRange;
-                    //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
-                    int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
+                //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
+                int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
                     int num5 = quantity;
                     double stoploss = target.Stoploss;
-                    //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
-                    double num7 = stoploss;
+                //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
+                double num7 = stoploss;
                     double num8 = target.BookProfit1;
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
                                          where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
                                          select b).OrderBy(b => b.TimeStamp).ToList<Candle>();
-                    //list.Remove(list.Last());
-                    List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
+                //list.Remove(list.Last());
+                List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
                                           where b.TimeStamp.Date == gap.Value.Date.Date
                                           select b).ToList<Candle>();
                     bool flag2 = false;

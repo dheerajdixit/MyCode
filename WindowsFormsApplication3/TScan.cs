@@ -636,24 +636,14 @@ namespace _15MCE
                 {
                     try
                     {
-                        var mc = MyCandle(allData["5minute"][a.Value.Stock].Where(d => d.TimeStamp.Date == CurrentTradingDate && d.TimeStamp <= TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList(), TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)
-                            );
-                        var dc =allData["day"][a.Value.Stock].Where(d => d.TimeStamp.Date < CurrentTradingDate.Date
-                            ).Last();
-                        List<SR> list = new List<SR>();
-
-                        list.Add(new SR { price = Math.Round(a.Value.CurrentCandle.dR3, 1), LevelName = "dR3" });
-                        list.Add(new SR { price = Math.Round(a.Value.CurrentCandle.dS3, 1), LevelName = "dS3" });
-                        list.Add(new SR { price = Math.Round(dc.STrend.SuperTrend, 1), LevelName = "mSuperTrend" });
-                        
-
-                        var ls = WildAnalysis(mc.Low, mc.High, mc.Close, mc.Open, list);
-
-                        if (a.Value.Trade == Model.Trade.BUY)
+                       
+                        if (a.Value.Trade == Model.Trade.BUY && allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
+                            .OrderByDescending(c=>c.TimeStamp.Date)
+                            .First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish)
                         {
-                            if (ls.Where(e => e.SupportOrResistance == "S").Count() > 1)
+                            
                            
-                                //if ((GetBody(mc) / mc.Open) * 100 < 0.3 && (GetUpperWick(mc) / mc.Open) * 100 < 0.3 && (GetLowerWick(mc) / mc.Open) * 100 >= 0.5 )
+                             
                                     sGap.Add(new StockData
                                     {
                                         Symbol = a.Value.Stock,
@@ -671,6 +661,27 @@ namespace _15MCE
                                         Close = a.Value.Close
                                     });
 
+                        }
+                        else if (a.Value.Trade== Model.Trade.SELL && allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
+                            .OrderByDescending(c => c.TimeStamp.Date)
+                            .First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish)
+                        {
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "SM",
+                                stopLoss = a.Value.High - 0.2,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
                         }
 
 
@@ -720,7 +731,7 @@ namespace _15MCE
                 orderDetails.Clear();
 
 
-                GetDualTimeFrameStocks(200, 100);
+                //GetDualTimeFrameStocks(200, 100);
 
 
                 if (Convert.ToInt16(txtTam.Text) == -3)
@@ -1327,7 +1338,7 @@ namespace _15MCE
 
             if (txtSwitchMode.Text == string.Empty)
             {
-                downlodableScrip = AllEQ.ToList();
+                downlodableScrip = AllFNO.ToList();
             }
             else
             {
@@ -1337,7 +1348,7 @@ namespace _15MCE
                         downlodableScrip.Add(dr["scrip"].ToString());
                 }
                 if (SMAQuanitty + PSAAQuantity + _60MinQuantity + SuperTrendQuanaity > 0)
-                    downlodableScrip = AllEQ.ToList();
+                    downlodableScrip = AllFNO.ToList();
             }
 
             bool load30 = Convert.ToBoolean(mySettings["30"]);
@@ -3701,7 +3712,7 @@ Variety: Constants.VARIETY_CO//,,
             {
                 // MessageBox.Show(ex.Message + " Download error!!");
             }
-
+            
         }
 
         //private DataSet GetQuotesZerodha(string apiKey, string accessToken)

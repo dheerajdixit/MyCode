@@ -10,3 +10,9 @@ C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyRef
 C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
 C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
 C:\Trading Tool Latest\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyReference.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb

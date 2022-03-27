@@ -38,3 +38,23 @@ C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileIn
 C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CopyComplete
 C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.dll
 C:\Trading Tool Latest\MyCode\DataLayer\obj\Debug\DataLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\DataLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\DataLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\CommonLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\MongoData.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\Zerodha.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\MongoDB.Driver.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\MongoDB.Bson.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\MongoDB.Driver.Core.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\CommonLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\MongoData.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\Zerodha.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\obj\Debug\DataLayer.csproj.AssemblyReference.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\obj\Debug\DataLayer.csproj.CopyComplete
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\obj\Debug\DataLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\DataLayer\obj\Debug\DataLayer.pdb

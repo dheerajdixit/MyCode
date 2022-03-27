@@ -357,7 +357,7 @@ namespace BAL
 
             enumerable = from b in enumerable
                          where
-                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified))
+                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified) )
                          select b;
 
 
@@ -366,13 +366,13 @@ namespace BAL
                 DateTime reverstalTimeStmap = c.TimeStamp;
 
                 //Candle lastCandleOnLargeTimeFrame =
-                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal)
+                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Oversold)
                 {
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
                         
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish || g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Oversold)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish )
                         {
                            
                                 c.Trade = Trade.BUY;
@@ -384,13 +384,13 @@ namespace BAL
                         }
                     }
                 }
-                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal)
+                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && c.AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Overbought)
                 {
                     c.Trade = Trade.SELL;
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish || g.AllIndicators.Stochastic.OscillatorStatus==  OscillatorStatus.Overbought)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish )
                         {
                            
                                 c.Trade = Trade.SELL;

@@ -51,3 +51,21 @@ C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.csproj.CoreCompileIn
 C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.csproj.CopyComplete
 C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.dll
 C:\Trading Tool Latest\MyCode\MongoData\obj\Debug\MongoData.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoData.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoData.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\CommonLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoDB.Bson.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoDB.Driver.Core.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoDB.Driver.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoDB.Driver.GridFS.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\MongoDB.Driver.Legacy.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\CommonLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\bin\Debug\Newtonsoft.Json.xml
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\obj\Debug\MongoData.csproj.AssemblyReference.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\obj\Debug\MongoData.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\obj\Debug\MongoData.csproj.CopyComplete
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\obj\Debug\MongoData.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\MongoData\obj\Debug\MongoData.pdb

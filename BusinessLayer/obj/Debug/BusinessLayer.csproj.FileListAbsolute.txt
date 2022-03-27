@@ -44,3 +44,27 @@ C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.dll
 C:\Trading Tool Latest\MyCode\BusinessLayer\obj\Debug\BusinessLayer.pdb
 C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.dll
 C:\Trading Tool Latest\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.xml
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\BusinessLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\BusinessLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\CommonLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\DataLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\MongoData.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Zerodha.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\MongoDB.Driver.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\MongoDB.Bson.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\MongoDB.Driver.Core.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\CommonLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\DataLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Skender.Stock.Indicators.xml
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\MongoData.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\bin\Debug\Zerodha.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.AssemblyReference.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\obj\Debug\BusinessLayer.csproj.CopyComplete
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\obj\Debug\BusinessLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\BusinessLayer\obj\Debug\BusinessLayer.pdb

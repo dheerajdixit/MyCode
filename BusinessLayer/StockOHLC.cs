@@ -312,7 +312,7 @@ namespace BAL
 
 
                     filter1.Add(this.FilterDualTimeFrameMomentumStocks(allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
-                    
+
                         new StrategyModel
                         {
                             Stock = b.Stock,
@@ -335,7 +335,7 @@ namespace BAL
             {
                 foreach (var q in p)
                 {
-                 
+
                     result.Add(Guid.NewGuid(), q);
                 }
 
@@ -357,7 +357,7 @@ namespace BAL
 
             enumerable = from b in enumerable
                          where
-                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified) )
+                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified))
                          select b;
 
 
@@ -366,17 +366,44 @@ namespace BAL
                 DateTime reverstalTimeStmap = c.TimeStamp;
 
                 //Candle lastCandleOnLargeTimeFrame =
-                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Oversold)
+                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Oversold)
                 {
+                    var higherTimestamp = reverstalTimeStmap;
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish )
+
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish)
                         {
-                           
+                            ////check lowest point of bullish trend 
+                            //var higherTimeFrameBullishReversal = higherTimeFrame.Where(b => b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal &&
+                            //b.TimeStamp < reverstalTimeStmap
+                            //&& b.AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Oversold
+                            //).OrderBy(b => b.TimeStamp).Last();
+                            ////take last  4 candles 
+                            //var starttimestamp = higherTimeFrameBullishReversal.PreviousCandle.PreviousCandle.PreviousCandle.PreviousCandle.TimeStamp;
+                            //var minValue = higherTimeFrame.Where(a => a.TimeStamp >= starttimestamp).Min(b => b.Low);
+                            //var maxValue = Math.Max(higherTimeFrame.Where(a => a.TimeStamp >= starttimestamp && a.TimeStamp<=reverstalTimeStmap).Max(b => b.High), 
+                            //    lowerTimeFrame.Where(a => a.TimeStamp >= starttimestamp && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High ));
+
+                            var maxValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp<=reverstalTimeStmap).Max(b => b.High);
+                            var minValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
+                            var first = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).OrderBy(a => a.TimeStamp).First();
+
+                            var diff = (maxValue - minValue)/2;
+                            var dif50 = maxValue - diff;
+                            if (c.Close <= dif50 && c.Close>first.Open)
+                            {
+
                                 c.Trade = Trade.BUY;
-                          
+                            }
+                            else
+                            {
+                                c.Trade = Trade.NONE;
+                            }
+
+                            //c.Trade = Trade.BUY;
+
                         }
                         else
                         {
@@ -390,11 +417,23 @@ namespace BAL
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish )
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish)
                         {
-                           
+
+                            var maxValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High);
+                            var minValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
+                            var first = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).OrderBy(a => a.TimeStamp).First();
+                            var diff = (maxValue - minValue) / 2;
+                            var dif50 = maxValue - diff;
+                            if (c.Close >= dif50 && c.Close<first.Open)
+                            {
+
                                 c.Trade = Trade.SELL;
-                           
+                            }
+                            else
+                            {
+                                c.Trade = Trade.NONE;
+                            }
                         }
                         else
                         {
@@ -408,7 +447,7 @@ namespace BAL
             }
 
             var x = enumerable.Where(a => a.Trade != Trade.NONE);
-           
+
 
             return x;
 
@@ -630,19 +669,19 @@ namespace BAL
                     double close = gap.Value.Close;
                     double mtm = 0.0;
                     double stopLossRange = target.StopLossRange;
-                //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
-                int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
+                    //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
+                    int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
                     int num5 = quantity;
                     double stoploss = target.Stoploss;
-                //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
-                double num7 = stoploss;
+                    //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
+                    double num7 = stoploss;
                     double num8 = target.BookProfit1;
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
                                          where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
                                          select b).OrderBy(b => b.TimeStamp).ToList<Candle>();
-                //list.Remove(list.Last());
-                List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
+                    //list.Remove(list.Last());
+                    List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
                                           where b.TimeStamp.Date == gap.Value.Date.Date
                                           select b).ToList<Candle>();
                     bool flag2 = false;

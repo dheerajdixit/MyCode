@@ -636,35 +636,36 @@ namespace _15MCE
                 {
                     try
                     {
-                       
-                        if (a.Value.Trade == Model.Trade.BUY && allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
-                            .OrderByDescending(c=>c.TimeStamp.Date)
-                            .First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish)
+
+                        if (a.Value.Trade == Model.Trade.BUY
+                            //&& allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
+                            //.OrderByDescending(c=>c.TimeStamp.Date)
+                            //.First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish
+                            )
                         {
-                            
-                           
-                             
-                                    sGap.Add(new StockData
-                                    {
-                                        Symbol = a.Value.Stock,
-                                        Open = 0,
-                                        Vol = a.Value.Volume,
-                                        //dHigh = tradingCandle.High,
-                                        //dLow = tradi,
-                                        High = a.Value.High,
-                                        Low = a.Value.Low,
-                                        Direction = "BM",
-                                        stopLoss = a.Value.Low - 0.1,
-                                        TradingDate = a.Value.Date,
-                                        Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                        dClose = 0,
-                                        Close = a.Value.Close
-                                    });
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "BM",
+                                stopLoss = a.Value.Low - 0.1,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
 
                         }
-                        else if (a.Value.Trade== Model.Trade.SELL && allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
-                            .OrderByDescending(c => c.TimeStamp.Date)
-                            .First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish)
+                        else if (a.Value.Trade == Model.Trade.SELL
+                            //&& allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
+                            //.OrderByDescending(c => c.TimeStamp.Date)
+                            //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
+                            )
                         {
                             sGap.Add(new StockData
                             {
@@ -692,7 +693,7 @@ namespace _15MCE
 
                 }
 
-                foreach (var s in sGap.OrderByDescending(a => a.Vol * a.Close).Take(1))
+                foreach (var s in sGap.OrderByDescending(a => a.Vol * a.Close))
                 {
                     NSA.Order o = new NSA.Order() { EntryPrice = s.Direction == "SM" ? s.Low - 0.1 : s.High + 0.1, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
 
@@ -3530,7 +3531,7 @@ Variety: Constants.VARIETY_CO//,,
                     x.SupportOrResistance = "R";
                     resultSet.Add(x);
                 }
-                else if (close > srObje.price && low <= srObje.price && open>=srObje.price)
+                else if (close > srObje.price && low <= srObje.price && open >= srObje.price)
                 {
                     SR x = new SR();
                     x.price = srObje.price;
@@ -3712,7 +3713,7 @@ Variety: Constants.VARIETY_CO//,,
             {
                 // MessageBox.Show(ex.Message + " Download error!!");
             }
-            
+
         }
 
         //private DataSet GetQuotesZerodha(string apiKey, string accessToken)
@@ -4011,7 +4012,7 @@ Variety: Constants.VARIETY_CO//,,
 
                     var prevDayCandle = allData["day"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last();
 
-                    var lastMonthData = allData["day"][s].Where(a => a.TimeStamp.Month == CurrentTradingDate.AddMonths(-1).Month && a.TimeStamp.Year== CurrentTradingDate.AddMonths(-1).Year);
+                    var lastMonthData = allData["day"][s].Where(a => a.TimeStamp.Month == CurrentTradingDate.AddMonths(-1).Month && a.TimeStamp.Year == CurrentTradingDate.AddMonths(-1).Year);
                     var monthlyCandle = MyCandle(lastMonthData.ToList());
 
                     var mPP = Math.Round((monthlyCandle.Close + monthlyCandle.High + monthlyCandle.Low) / 3, 2);
@@ -4698,6 +4699,7 @@ Variety: Constants.VARIETY_CO//,,
             }
             //LoadDataWeekly();
             //LoadDataDaily();
+
             LoadAllDateTillDate();
 
             LoadDailyNPivotsDataZerodha();

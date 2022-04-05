@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -290,7 +292,7 @@ namespace BAL
             return dictionary2;
         }
 
-        public Dictionary<Guid, StrategyModel> ApplyDualMomentumStrategyModel(Dictionary<string, List<Candle>> myTestDataLargeTimeFrame, Dictionary<string, List<Candle>> myTestDatSmallTimeFrame, Idea selectedIdea, ProgressDelegate myProgres)
+        public Dictionary<Guid, StrategyModel> ApplyDualMomentumStrategyModel(DateTime tradingDate, Dictionary<string, List<Candle>> myTestDataLargeTimeFrame, Dictionary<string, List<Candle>> myTestDatSmallTimeFrame, Idea selectedIdea, ProgressDelegate myProgres)
         {
             Time t = this.GetTime(selectedIdea);
             ConcurrentBag<List<StrategyModel>> filter1 = new ConcurrentBag<List<StrategyModel>>();
@@ -311,23 +313,23 @@ namespace BAL
                     List<StrategyModel> selector = new List<StrategyModel>();
 
 
-                    filter1.Add(this.FilterDualTimeFrameMomentumStocks(allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
+                    filter1.Add(this.FilterDualTimeFrameMomentumStocks(tradingDate, allCandlesHigherTimeFrame, allCandlesLowerTimeFrame, selectedIdea, t).Select(b =>
 
-                        new StrategyModel
-                        {
-                            Stock = b.Stock,
-                            Volume = b.Volume * b.Close,
-                            Range = this.GetRange(b, selectedIdea.Range),
-                            Date = b.TimeStamp,
-                            Close = b.Close,
-                            High = b.High,
-                            Low = b.Low,
-                            Open = b.Open,
-                            PreviousClose = b.PreviousCandle.Close,
-                            Imp1 = 0,
-                            Trade = b.Trade,
-                            CurrentCandle = b,
-                        }).ToList());
+                         new StrategyModel
+                         {
+                             Stock = b.Stock,
+                             Volume = b.Volume * b.Close,
+                             Range = this.GetRange(b, selectedIdea.Range),
+                             Date = b.TimeStamp,
+                             Close = b.Close,
+                             High = b.High,
+                             Low = b.Low,
+                             Open = b.Open,
+                             PreviousClose = b.PreviousCandle.Close,
+                             Imp1 = 0,
+                             Trade = b.Trade,
+                             CurrentCandle = b,
+                         }).ToList());
                 }
             });
             Dictionary<Guid, StrategyModel> result = new Dictionary<Guid, StrategyModel>();
@@ -350,102 +352,298 @@ namespace BAL
             new DataAcess().InsertHistory(collectionName, period, json);
         }
 
-        public IEnumerable<Candle> FilterDualTimeFrameMomentumStocks(List<Candle> higherTimeFrame, List<Candle> lowerTimeFrame, Idea selctedIdea, Time t)
+        private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+
+        public void WriteToFileThreadSafe(string text, string path)
+        {
+            // Set Status to Locked
+            _readWriteLock.EnterWriteLock();
+            try
+            {
+                // Append text to the file
+                using (StreamWriter sw = File.AppendText(path))
+                {
+                    sw.WriteLine(text);
+                    sw.Close();
+                }
+            }
+            finally
+            {
+                // Release lock
+                _readWriteLock.ExitWriteLock();
+            }
+        }
+
+        public IEnumerable<Candle> FilterDualTimeFrameMomentumStocks(DateTime tradingDate, List<Candle> higherTimeFrame, List<Candle> lowerTimeFrame, Idea selctedIdea, Time t)
         {
             IEnumerable<Candle> enumerable = lowerTimeFrame;
 
 
             enumerable = from b in enumerable
                          where
-                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified))
+                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified)) && b.TimeStamp.Date == tradingDate.Date
                          select b;
 
 
             foreach (var c in enumerable)
             {
+                c.Trade = Trade.NONE;
                 DateTime reverstalTimeStmap = c.TimeStamp;
 
                 //Candle lastCandleOnLargeTimeFrame =
-                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Oversold)
+                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold)
                 {
                     var higherTimestamp = reverstalTimeStmap;
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
+                    var lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap &&
+                    ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold)
+                    ||
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
+                    )
+
+                    ).LastOrDefault();
+                    //var lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified && b.AllIndicators.Stochastic?.OscillatorPriceRange != OscillatorPriceRange.NotIdentified).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
 
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish ||
+                            (lastHigherReversal.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal
+                            && lastHigherReversal.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold)
+                            )
                         {
-                            ////check lowest point of bullish trend 
-                            //var higherTimeFrameBullishReversal = higherTimeFrame.Where(b => b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal &&
-                            //b.TimeStamp < reverstalTimeStmap
-                            //&& b.AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Oversold
-                            //).OrderBy(b => b.TimeStamp).Last();
-                            ////take last  4 candles 
-                            //var starttimestamp = higherTimeFrameBullishReversal.PreviousCandle.PreviousCandle.PreviousCandle.PreviousCandle.TimeStamp;
-                            //var minValue = higherTimeFrame.Where(a => a.TimeStamp >= starttimestamp).Min(b => b.Low);
-                            //var maxValue = Math.Max(higherTimeFrame.Where(a => a.TimeStamp >= starttimestamp && a.TimeStamp<=reverstalTimeStmap).Max(b => b.High), 
-                            //    lowerTimeFrame.Where(a => a.TimeStamp >= starttimestamp && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High ));
 
-                            var maxValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp<=reverstalTimeStmap).Max(b => b.High);
-                            var minValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
-                            var first = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).OrderBy(a => a.TimeStamp).First();
+                            lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold).LastOrDefault();
 
-                            var diff = (maxValue - minValue)/2;
-                            var dif50 = maxValue - diff;
-                            if (c.Close <= dif50 && c.Close>first.Open)
+                            //var bbbb = higherTimeFrame.Where(a => a.TimeStamp.Day == 4 && a.TimeStamp.Month == 4 && a.TimeStamp.Hour==11).FirstOrDefault().AllIndicators.Stochastic.OscillatorPriceRange;
+                            if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
                             {
+                                var maxValue = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High);
+                                var pointACandle = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Aggregate((curMin, x1) => (curMin == null || x1.High > curMin.High ? x1 : curMin));
 
-                                c.Trade = Trade.BUY;
-                            }
-                            else
-                            {
-                                c.Trade = Trade.NONE;
-                            }
+                                var minValue = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
+                                var first = lastHigherReversal;
+                                //var pointA = maxValue;
+                                var pointC = minValue;
+                                var proLow = lastHigherReversal.PreviousCandle.PreviousCandle.PreviousCandle;
 
-                            //c.Trade = Trade.BUY;
+                                var pointA = maxValue;
+                                var probableBReeversal = lowerTimeFrame.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp <= reverstalTimeStmap && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                              .BearishReversal);
+                                var probableOReeversal = lowerTimeFrame.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < probableBReeversal.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                              .BullishReversal);
+                                if (probableBReeversal.Count() >= 1)
+                                {
+                                    var trednStartValue = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp).Min(d => d.Low);
+                                    if (pointA > trednStartValue)
+                                    {
+                                        if (probableOReeversal.Count() > 0)
+                                        {
+                                            var gg = probableOReeversal.Aggregate((curMin, x1) => (curMin == null || x1.AllIndicators.Stochastic?.fast < curMin.AllIndicators.Stochastic?.fast ? x1 : curMin));
+
+                                            double pointCc = 0;
+                                            var pointCTimestamp = DateTime.Now;
+                                            foreach (var xx in probableBReeversal.Where(d => d.TimeStamp > gg.TimeStamp))
+                                            {
+                                                var maxOfReversal = Math.Max(Math.Max(xx.High, xx.PreviousCandle.High), xx.PreviousCandle.High);
+                                                var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle };
+                                                var finalCandle = big3.Aggregate((curMin, x1) => (curMin == null || x1.High > curMin.High ? x1 : curMin));
+                                                if (pointCc < finalCandle.High && finalCandle.High < pointA)
+                                                {
+                                                    pointCc = finalCandle.High;
+                                                    pointCTimestamp = finalCandle.TimeStamp;
+                                                }
+
+                                            }
+                                            double pointB = 0;
+                                            var scopeForPointB = lowerTimeFrame.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp);
+                                            if (scopeForPointB.Count() >= 1)
+                                            {
+                                                pointB = scopeForPointB.Min(d => d.Low);
+                                            }
+
+                                            var diff = (maxValue - trednStartValue) / 2;
+                                            var dif50 = maxValue - diff;
+                                            var reversalCandle = lowerTimeFrame.Where(d => d.TimeStamp == reverstalTimeStmap).FirstOrDefault();
+                                            var pointD = Math.Min(Math.Min(reversalCandle.Low, reversalCandle.PreviousCandle.Low), reversalCandle.PreviousCandle.PreviousCandle.Low);
+
+                                            bool ABC = pointA - pointB <= pointCc - pointD;
+
+                                            if (c.Close <= dif50 && /* changehere c.Close > first.Open && */ABC && pointCc > 0 && pointD > trednStartValue)
+                                            {
+                                                c.Trade = Trade.BUY;
+                                                if (c.TimeStamp.Day == 4)
+                                                {
+                                                    StringBuilder sb = new StringBuilder();
+                                                    sb.Append("  Name : ");
+                                                    sb.Append(c.Stock);
+                                                    sb.Append("  TimeStamp : ");
+                                                    sb.Append(c.TimeStamp);
+                                                    sb.Append("  LT : ");
+                                                    sb.Append((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  HT : ");
+                                                    sb.Append((higherTimeFrame.Last().TimeStamp - higherTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  TrendStartValue : ");
+                                                    sb.Append(trednStartValue);
+                                                    sb.Append("  A : ");
+                                                    sb.Append(pointA);
+                                                    sb.Append("  B : ");
+                                                    sb.Append(pointB);
+                                                    sb.Append("  C : ");
+                                                    sb.Append(pointCc);
+                                                    sb.Append("  D : ");
+                                                    sb.Append(pointD);
+                                                    sb.Append("  HigherTimeFrameReversal : ");
+                                                    sb.Append(lastHigherReversal.TimeStamp);
+                                                    sb.Append("  Trade : ");
+                                                    sb.Append(c.Trade);
+                                                    sb.Append(Environment.NewLine);
+
+                                                    WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
+
+                                                    // File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt", sb.ToString());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
 
                         }
-                        else
-                        {
-                            c.Trade = Trade.NONE;
-                        }
+
                     }
                 }
-                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && c.AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Overbought)
+                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && c.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
                 {
-                    c.Trade = Trade.SELL;
+
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap).LastOrDefault();
+
+                    var lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap &&
+                    ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold)
+                    ||
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
+                    )
+
+                    ).LastOrDefault();
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish ||
+                            (lastHigherReversal.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal
+                            && lastHigherReversal.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
+                            )
                         {
 
-                            var maxValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High);
-                            var minValue = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
-                            var first = lowerTimeFrame.Where(a => a.TimeStamp.Date == reverstalTimeStmap.Date && a.TimeStamp <= reverstalTimeStmap).OrderBy(a => a.TimeStamp).First();
-                            var diff = (maxValue - minValue) / 2;
-                            var dif50 = maxValue - diff;
-                            if (c.Close >= dif50 && c.Close<first.Open)
+                            lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought).LastOrDefault();
+                            if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
                             {
+                                var maxValue = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High);
 
-                                c.Trade = Trade.SELL;
+                                var pointACandle = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Aggregate((curMin, x1) => (curMin == null || x1.Low < curMin.Low ? x1 : curMin));
+
+
+                                var minValue = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
+
+
+
+                                var first = lastHigherReversal;
+
+                                var pointC = minValue;
+                                var proLow = lastHigherReversal.PreviousCandle.PreviousCandle.PreviousCandle;
+
+                                var pointA = minValue;
+
+                                var probableBReeversal = lowerTimeFrame.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp <= reverstalTimeStmap && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                              .BullishReversal);
+
+                                var probableOReeversal = lowerTimeFrame.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < probableBReeversal.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                              .BearishReversal);
+
+                                if (probableBReeversal.Count() >= 1)
+                                {
+                                    var trednStartValue = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp).Max(d => d.High);
+                                    if (pointA < trednStartValue)
+                                    {
+                                        if (probableOReeversal.Count() > 0)
+                                        {
+                                            var gg = probableOReeversal.Aggregate((curMin, x1) => (curMin == null || x1.AllIndicators.Stochastic?.fast > curMin.AllIndicators.Stochastic?.fast ? x1 : curMin));
+                                            double pointCc = double.MaxValue;
+                                            var pointCTimestamp = DateTime.Now;
+                                            foreach (var xx in probableBReeversal.Where(d => d.TimeStamp > gg.TimeStamp))
+                                            {
+                                                var minOfReversal = Math.Min(Math.Min(xx.Low, xx.PreviousCandle.Low), xx.PreviousCandle.Low);
+                                                var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle };
+                                                var finalCandle = big3.Aggregate((curMin, x1) => (curMin == null || x1.Low < curMin.Low ? x1 : curMin));
+                                                if (pointCc > finalCandle.Low && finalCandle.Low > pointA)
+                                                {
+                                                    pointCc = finalCandle.Low;
+                                                    pointCTimestamp = finalCandle.TimeStamp;
+                                                }
+
+                                            }
+                                            double pointB = 0;
+                                            var scopeForPointB = lowerTimeFrame.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp);
+                                            if (scopeForPointB.Count() >= 1)
+                                            {
+                                                pointB = scopeForPointB.Max(d => d.High);
+                                            }
+
+
+
+                                            var reversalCandle = lowerTimeFrame.Where(d => d.TimeStamp == reverstalTimeStmap).FirstOrDefault();
+                                            var pointD = Math.Max(Math.Max(reversalCandle.High, reversalCandle.PreviousCandle.High), reversalCandle.PreviousCandle.PreviousCandle.High);
+
+                                            bool ABC = pointB - pointA <= pointD - pointCc;
+                                            var diff = (trednStartValue - minValue) / 2;
+                                            var dif50 = maxValue - diff;
+                                            if (c.Close >= dif50 && ABC && pointCc > 0 && pointD < trednStartValue)
+                                            {
+
+                                                c.Trade = Trade.SELL;
+                                                if (c.TimeStamp.Day == 4)
+                                                {
+                                                    StringBuilder sb = new StringBuilder();
+                                                    sb.Append("  Name : ");
+                                                    sb.Append(c.Stock);
+                                                    sb.Append("  TimeStamp : ");
+                                                    sb.Append(c.TimeStamp);
+                                                    sb.Append("  LT : ");
+                                                    sb.Append((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  HT : ");
+                                                    sb.Append((higherTimeFrame.Last().TimeStamp - higherTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  TrendStartValue : ");
+                                                    sb.Append(trednStartValue);
+                                                    sb.Append("  A : ");
+                                                    sb.Append(pointA);
+                                                    sb.Append("  B : ");
+                                                    sb.Append(pointB);
+                                                    sb.Append("  C : ");
+                                                    sb.Append(pointCc);
+                                                    sb.Append("  D : ");
+                                                    sb.Append(pointD);
+                                                    sb.Append("  HigherTimeFrameReversal : ");
+                                                    sb.Append(lastHigherReversal.TimeStamp);
+                                                    sb.Append("  Trade : ");
+                                                    sb.Append(c.Trade);
+                                                    sb.Append(Environment.NewLine);
+
+                                                    WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
+
+                                                    //File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt", sb.ToString());
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+                                }
                             }
-                            else
-                            {
-                                c.Trade = Trade.NONE;
-                            }
-                        }
-                        else
-                        {
-                            c.Trade = Trade.NONE;
+
+
                         }
                     }
+
                 }
-                else
-                    c.Trade = Trade.NONE;
-
             }
-
             var x = enumerable.Where(a => a.Trade != Trade.NONE);
 
 

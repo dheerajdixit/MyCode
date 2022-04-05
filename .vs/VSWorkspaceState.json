@@ -1,6 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\BusinessLayer"
   ],
+  "SelectedNode": "\\BusinessLayer\\StockOHLC.cs",
   "PreviewInSolutionExplorer": false
 }

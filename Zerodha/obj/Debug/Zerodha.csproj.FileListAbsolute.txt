@@ -36,16 +36,16 @@ C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs
 C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
 C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.dll
 C:\Trading Tool Latest\MyCode\Zerodha\obj\Debug\Zerodha.pdb
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Zerodha.dll
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Zerodha.pdb
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\CommonLayer.dll
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\ModelLayer.dll
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.dll
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\CommonLayer.pdb
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\ModelLayer.pdb
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.xml
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.AssemblyReference.cache
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.dll
-C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.pdb
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Zerodha.dll
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Zerodha.pdb
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\CommonLayer.dll
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\CommonLayer.pdb
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.xml
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.AssemblyReference.cache
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.dll
+C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.pdb

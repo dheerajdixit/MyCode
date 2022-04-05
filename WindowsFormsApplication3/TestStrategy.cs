@@ -342,7 +342,7 @@ namespace _15MCE
                                     withIndicators2.ContinueWith((t3) =>
                                     {
 
-                                        Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.ApplyDualMomentumStrategyModel(t1.Result, t3.Result, selectedIdea, myProgres));
+                                        Task<Dictionary<Guid, Model.StrategyModel>> getTradedStocks = Task.Run<Dictionary<Guid, Model.StrategyModel>>(() => stockOHLC.ApplyDualMomentumStrategyModel(DateTime.Now,t1.Result, t3.Result, selectedIdea, myProgres));
                                         allTask.Add(getTradedStocks);
                                         Task tradeMyStocks = getTradedStocks.ContinueWith((t4) =>
                                         {

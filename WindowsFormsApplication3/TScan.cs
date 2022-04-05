@@ -121,7 +121,8 @@ namespace _15MCE
         {
             get
             {
-                return Common.GetStocks().Select(a => a.StockName).ToArray();
+                return Common.GetStocks().Select(a => a.StockName).ToArray().Where(a => a == "ICICIBANK").ToArray();
+                //return Common.GetStocks().Select(a => a.StockName).ToArray();
             }
         }
 
@@ -523,7 +524,7 @@ namespace _15MCE
 
                     //var niftyCandle = MyCandle(allData["day"]["Nifty50"].ToList(), CurrentTimeStamp);
                     //var todaysCandle = MyCandle((allData["day"]["Nifty50"].ToList(), currentTimeStamp);
-                    if (stock.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Oversold)
+                    if (stock.AllIndicators.Stochastic.OscillatorPriceRange == OscillatorPriceRange.Oversold)
                     {
                         if (high <= stock.dR1 && ((stock.Close > stock.SMA50 && stock.SMA20 > stock.SMA50 && stock.CandleType == "G" && stock.Close > stock.dPP && firstCandleOfStock.CandleType == "G" && ((stock.Close - stock.dPP) / stock.Close) * 100 * 4 <= ((stock.dR1 - stock.Close) / stock.Close) * 100 && stock.Low <= stock.SMA50 && stock.Low <= stock.dPP)
 || (stock.Close > stock.SMA20 && stock.SMA20 > stock.SMA50 && stock.Close > stock.dPP && stock.CandleType == "G" && firstCandleOfStock.CandleType == "G" && ((stock.Close - stock.dPP) / stock.Close) * 100 * 4 <= ((stock.dR1 - stock.Close) / stock.Close) * 100 && stock.Low <= stock.SMA20 && stock.Low <= stock.dPP))
@@ -548,7 +549,7 @@ namespace _15MCE
                         }
                     }
 
-                    else if (stock.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Overbought)
+                    else if (stock.AllIndicators.Stochastic.OscillatorPriceRange == OscillatorPriceRange.Overbought)
                     {
                         if (low >= stock.dS1 && ((stock.Close < stock.SMA50 && stock.SMA20 < stock.SMA50 && stock.Close < stock.dPP && firstCandleOfStock.CandleType == "R" && stock.CandleType == "R" && ((stock.dPP - stock.Close) / stock.Close) * 100 * 4 <= ((stock.Close - stock.dS1) / stock.Close) * 100 && stock.High >= stock.SMA50 && stock.High >= stock.dPP)
 || (stock.Close < stock.SMA20 && stock.SMA20 < stock.SMA50 && stock.Close < stock.dPP && firstCandleOfStock.CandleType == "R" && stock.CandleType == "R" && ((stock.dPP - stock.Close) / stock.Close) * 100 * 4 <= ((stock.Close - stock.dS1) / stock.Close) * 100 && stock.High >= stock.SMA20 && stock.High >= stock.dPP)
@@ -591,6 +592,84 @@ namespace _15MCE
 
             }
         }
+
+        private bool IsCanldeTouchedByReversal(KeyValuePair<System.Guid, StrategyModel> a, bool isSupport)
+        {
+            List<SR> list = new List<SR>();
+            var big4 = new List<Candle> { a.Value.CurrentCandle, a.Value.CurrentCandle.PreviousCandle, a.Value.CurrentCandle.PreviousCandle.PreviousCandle, a.Value.CurrentCandle.PreviousCandle.PreviousCandle.PreviousCandle };
+            var prevDayCandle = allData["day"][a.Value.Stock].Where(f => f.TimeStamp.Date < CurrentTradingDate.Date).Last();
+            Candle todaysLevel = null;
+            if (isSupport)
+            {
+                todaysLevel = big4.Aggregate((curMin, x) => (curMin == null || x.Low < curMin.Low ? x : curMin));
+                todaysLevel.High = big4.Aggregate((curMax, x) => (curMax == null || x.High > curMax.High ? x : curMax)).High;
+            }
+            else
+            {
+                todaysLevel = big4.Aggregate((curMax, x) => (curMax == null || x.High > curMax.High ? x : curMax));
+                todaysLevel.Low = big4.Aggregate((curMin, x) => (curMin == null || x.Low < curMin.Low ? x : curMin)).Low;
+            }
+
+            list.Add(new SR { price = Math.Round(prevDayCandle.dPP, 1), LevelName = "dPP" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dR1, 1), LevelName = "dR1" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dR2, 1), LevelName = "dR2" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dR3, 1), LevelName = "dR3" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dS1, 1), LevelName = "dS1" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dS2, 1), LevelName = "dS2" });
+            list.Add(new SR { price = Math.Round(prevDayCandle.dS3, 1), LevelName = "dS3" });
+
+            //list.Add(new SR { price = 0, LevelName = "D20MA" });
+            var listX = new List<SR>();
+            listX = list;
+
+            list = WildAnalysis(Math.Round(todaysLevel.Low, 1), Math.Round(todaysLevel.High, 1), Math.Round(todaysLevel.Close, 1), 0, list);
+            return list.Where(g => !string.IsNullOrEmpty(g.SupportOrResistance)).Count() >= 1;
+
+        }
+
+        private bool ABCPatternDetected(KeyValuePair<System.Guid, StrategyModel> a, bool isSupport)
+        {
+            var timeframe = (a.Value.CurrentCandle.TimeStamp - a.Value.CurrentCandle.PreviousCandle.TimeStamp).TotalMinutes;
+            var candlesToWatch = allData[timeframe + "minutes"][a.Value.Stock].Where(c => c.TimeStamp < a.Value.Date);
+            if (a.Value.Trade == Model.Trade.BUY)
+            {
+
+                //check what is the last bearish oversold reversal
+                var lastBearishOversold = candlesToWatch.Where(c => c.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought && c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal).Last();
+                var big4C = new List<Candle> { lastBearishOversold, lastBearishOversold.PreviousCandle, lastBearishOversold.PreviousCandle.PreviousCandle, lastBearishOversold.PreviousCandle.PreviousCandle.PreviousCandle };
+                var big4A = new List<Candle> { a.Value.CurrentCandle, a.Value.CurrentCandle.PreviousCandle, a.Value.CurrentCandle.PreviousCandle.PreviousCandle, a.Value.CurrentCandle.PreviousCandle.PreviousCandle.PreviousCandle };
+                var pointA = big4A.Max(c => c.High);
+                var pointC = big4C.Min(c => c.Low);
+
+                //point B
+                var previousBullishReversal = candlesToWatch.Where(c => c.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold && c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal).Last();
+                var lowOnB = new List<Candle> { previousBullishReversal, previousBullishReversal.PreviousCandle, previousBullishReversal.PreviousCandle.PreviousCandle, previousBullishReversal.PreviousCandle.PreviousCandle.PreviousCandle };
+                var bLow = lowOnB.Min(c => c.Low);
+                if (lastBearishOversold.TimeStamp < previousBullishReversal.TimeStamp)
+                {
+                    //check max point between B & C
+                    var allBC = candlesToWatch.Where(c => c.TimeStamp > previousBullishReversal.TimeStamp && c.TimeStamp < a.Value.Date);
+                    var pointB = allBC.Max(c => c.High);
+                    if (pointB - pointC >= pointA - bLow)
+                    {
+
+                        return true;
+                    }
+                }
+
+
+
+
+
+
+
+            }
+
+
+
+            return true;
+
+        }
         public void GetDualTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
         {
             string HT = "day";
@@ -621,7 +700,7 @@ namespace _15MCE
             {
                 List<StockData> sGap = new List<StockData>();
 
-                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
+                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
 
                 var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
                 var lastDate = getTradedStocks.OrderBy(a => a.Value.Date).Last();
@@ -643,22 +722,27 @@ namespace _15MCE
                             //.First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish
                             )
                         {
-                            sGap.Add(new StockData
+                            //changehere
+
+                            if (true)
                             {
-                                Symbol = a.Value.Stock,
-                                Open = 0,
-                                Vol = a.Value.Volume,
-                                //dHigh = tradingCandle.High,
-                                //dLow = tradi,
-                                High = a.Value.High,
-                                Low = a.Value.Low,
-                                Direction = "BM",
-                                stopLoss = a.Value.Low - 0.1,
-                                TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                dClose = 0,
-                                Close = a.Value.Close
-                            });
+                                sGap.Add(new StockData
+                                {
+                                    Symbol = a.Value.Stock,
+                                    Open = 0,
+                                    Vol = a.Value.Volume,
+                                    //dHigh = tradingCandle.High,
+                                    //dLow = tradi,
+                                    High = a.Value.High,
+                                    Low = a.Value.Low,
+                                    Direction = "BM",
+                                    stopLoss = a.Value.Low - 0.1,
+                                    TradingDate = a.Value.Date,
+                                    Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                    dClose = 0,
+                                    Close = a.Value.Close
+                                });
+                            }
 
                         }
                         else if (a.Value.Trade == Model.Trade.SELL
@@ -667,22 +751,25 @@ namespace _15MCE
                             //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
                             )
                         {
-                            sGap.Add(new StockData
+                            if (IsCanldeTouchedByReversal(a, false))
                             {
-                                Symbol = a.Value.Stock,
-                                Open = 0,
-                                Vol = a.Value.Volume,
-                                //dHigh = tradingCandle.High,
-                                //dLow = tradi,
-                                High = a.Value.High,
-                                Low = a.Value.Low,
-                                Direction = "SM",
-                                stopLoss = a.Value.High - 0.2,
-                                TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                dClose = 0,
-                                Close = a.Value.Close
-                            });
+                                sGap.Add(new StockData
+                                {
+                                    Symbol = a.Value.Stock,
+                                    Open = 0,
+                                    Vol = a.Value.Volume,
+                                    //dHigh = tradingCandle.High,
+                                    //dLow = tradi,
+                                    High = a.Value.High,
+                                    Low = a.Value.Low,
+                                    Direction = "SM",
+                                    stopLoss = a.Value.High - 0.2,
+                                    TradingDate = a.Value.Date,
+                                    Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                    dClose = 0,
+                                    Close = a.Value.Close
+                                });
+                            }
                         }
 
 
@@ -740,7 +827,11 @@ namespace _15MCE
                     if (!DONT_DELETE)
                     {
                         LoadDataDaily();
+                        LoadDataCommon(5);
+                        LoadDataCommon(15);
+                        //LoadDailyNPivotsDataZerodha();
                         LoadDataCommon(60);
+
                     }
                 }
 
@@ -748,7 +839,13 @@ namespace _15MCE
                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
                 {
                     if (!DONT_DELETE) LoadDataCommon(60);
-                    //GetDualTimeFrameStocks(100, 60);
+                    GetDualTimeFrameStocks(100, 60);
+
+                }
+                if (Convert.ToInt32(txtTam.Text) % 3 == 0)
+                {
+                    if (!DONT_DELETE) LoadDataCommon(15);
+                    GetDualTimeFrameStocks(100, 15);
 
                 }
                 if (!DONT_DELETE)
@@ -756,7 +853,9 @@ namespace _15MCE
                 if (Convert.ToInt16(txtTam.Text) >= -2)
                 {
                     //reason 1 to buy
+
                     GetDualTimeFrameStocks(60, 5);
+
                 }
 
 
@@ -3539,6 +3638,14 @@ Variety: Constants.VARIETY_CO//,,
                     x.SupportOrResistance = "S";
                     resultSet.Add(x);
                 }
+                else if (high >= srObje.price && low <= srObje.price)
+                {
+                    SR x = new SR();
+                    x.price = srObje.price;
+                    x.LevelName = srObje.LevelName;
+                    x.SupportOrResistance = "CROSS";
+                    resultSet.Add(x);
+                }
             }
             return resultSet;
 
@@ -3706,6 +3813,11 @@ Variety: Constants.VARIETY_CO//,,
                     ls = TokenChannel.ConvertToJason(File.ReadAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json"), SymbolName);
 
                 }
+
+                //var json = System.Text.Json.JsonSerializer.Serialize(ls);
+
+                //File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\RunningData\" + period + "\\" + SymbolName+interval.ToString( + ".json", json);
+
                 allData[interval].Add(SymbolName, ls);
 
             }
@@ -4009,57 +4121,81 @@ Variety: Constants.VARIETY_CO//,,
 
                 Parallel.ForEach(AllFNO, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
+                    try
+                    {
 
-                    var prevDayCandle = allData["day"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last();
+                        var prevDayCandle = allData["day"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last();
 
-                    var lastMonthData = allData["day"][s].Where(a => a.TimeStamp.Month == CurrentTradingDate.AddMonths(-1).Month && a.TimeStamp.Year == CurrentTradingDate.AddMonths(-1).Year);
-                    var monthlyCandle = MyCandle(lastMonthData.ToList());
+                        var lastMonthData = allData["day"][s].Where(a => a.TimeStamp.Month == CurrentTradingDate.AddMonths(-1).Month && a.TimeStamp.Year == CurrentTradingDate.AddMonths(-1).Year);
+                        var monthlyCandle = MyCandle(lastMonthData.ToList());
 
-                    var mPP = Math.Round((monthlyCandle.Close + monthlyCandle.High + monthlyCandle.Low) / 3, 2);
-                    var mR1 = Math.Round((2 * mPP) - monthlyCandle.Low, 2);
-                    var mS1 = Math.Round((2 * mPP) - monthlyCandle.High, 2);
-                    var mR2 = Math.Round(mPP + (monthlyCandle.High - monthlyCandle.Low), 2);
-                    var mS2 = Math.Round(mPP - (monthlyCandle.High - monthlyCandle.Low), 2);
-                    var mR3 = Math.Round(mPP + 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
-                    var mS3 = Math.Round(mPP - 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
+                        var mPP = Math.Round((monthlyCandle.Close + monthlyCandle.High + monthlyCandle.Low) / 3, 2);
+                        var mR1 = Math.Round((2 * mPP) - monthlyCandle.Low, 2);
+                        var mS1 = Math.Round((2 * mPP) - monthlyCandle.High, 2);
+                        var mR2 = Math.Round(mPP + (monthlyCandle.High - monthlyCandle.Low), 2);
+                        var mS2 = Math.Round(mPP - (monthlyCandle.High - monthlyCandle.Low), 2);
+                        var mR3 = Math.Round(mPP + 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
+                        var mS3 = Math.Round(mPP - 2 * (monthlyCandle.High - monthlyCandle.Low), 2);
 
-                    double prevDayClose = allData["5minute"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last().Close;
+                        double prevDayClose = allData["5minute"][s].Where(a => a.TimeStamp.Date < CurrentTradingDate.Date).Last().Close;
 
 
-                    double prevDayOpen = prevDayCandle.Open;
-                    double prevDayHigh = prevDayCandle.High;
-                    double prevDayLow = prevDayCandle.Low;
-                    double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
-                    var dPP = Math.Round(dailyPivot, 2);
-                    var dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
-                    var dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
-                    var dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
-                    var dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
-                    var dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
-                    var dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
-                    var dClose = prevDayClose;
-                    var dHigh = prevDayHigh;
-                    var dLow = prevDayLow;
-                    var dOpen = prevDayOpen;
 
-                    Parallel.ForEach(allData["5minute"][s].Where(a => a.TimeStamp.Date == CurrentTradingDate), (a) =>
-                         {
-                             a.dPP = dPP;
-                             a.dR1 = dR1;
-                             a.dS1 = dS1;
-                             a.dS2 = dS2;
-                             a.dS3 = dS3;
-                             a.dR2 = dR2;
-                             a.dR3 = dR3;
-                             a.mPP = mPP;
-                             a.mR1 = mR1;
-                             a.mR2 = mR2;
-                             a.mR3 = mR3;
-                             a.mS1 = mS1;
-                             a.mS2 = mS2;
-                             a.mS3 = mS3;
+                        double prevDayOpen = prevDayCandle.Open;
+                        double prevDayHigh = prevDayCandle.High;
+                        double prevDayLow = prevDayCandle.Low;
+                        double dailyPivot = (prevDayClose + prevDayHigh + prevDayLow) / 3;
+                        var dPP = Math.Round(dailyPivot, 2);
+                        var dR1 = Math.Round((2 * dailyPivot) - prevDayLow, 2);
+                        var dS1 = Math.Round((2 * dailyPivot) - prevDayHigh, 2);
+                        var dR2 = Math.Round(dailyPivot + (prevDayHigh - prevDayLow), 2);
+                        var dS2 = Math.Round(dailyPivot - (prevDayHigh - prevDayLow), 2);
+                        var dR3 = Math.Round(dailyPivot + 2 * (prevDayHigh - prevDayLow), 2);
+                        var dS3 = Math.Round(dailyPivot - 2 * (prevDayHigh - prevDayLow), 2);
+                        var dClose = prevDayClose;
+                        var dHigh = prevDayHigh;
+                        var dLow = prevDayLow;
+                        var dOpen = prevDayOpen;
 
-                         });
+                        Parallel.ForEach(allData["5minute"][s].Where(a => a.TimeStamp.Date == CurrentTradingDate), (a) =>
+                             {
+                                 a.dPP = dPP;
+                                 a.dR1 = dR1;
+                                 a.dS1 = dS1;
+                                 a.dS2 = dS2;
+                                 a.dS3 = dS3;
+                                 a.dR2 = dR2;
+                                 a.dR3 = dR3;
+                                 a.mPP = mPP;
+                                 a.mR1 = mR1;
+                                 a.mR2 = mR2;
+                                 a.mR3 = mR3;
+                                 a.mS1 = mS1;
+                                 a.mS2 = mS2;
+                                 a.mS3 = mS3;
+
+                             });
+
+                        prevDayCandle.dPP = dPP;
+                        prevDayCandle.dR1 = dR1;
+                        prevDayCandle.dS1 = dS1;
+                        prevDayCandle.dS2 = dS2;
+                        prevDayCandle.dS3 = dS3;
+                        prevDayCandle.dR2 = dR2;
+                        prevDayCandle.dR3 = dR3;
+                        prevDayCandle.mPP = mPP;
+                        prevDayCandle.mR1 = mR1;
+                        prevDayCandle.mR2 = mR2;
+                        prevDayCandle.mR3 = mR3;
+                        prevDayCandle.mS1 = mS1;
+                        prevDayCandle.mS2 = mS2;
+                        prevDayCandle.mS3 = mS3;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogStatus("Failed for stocks");
+
+                    }
 
                 });
 
@@ -4704,7 +4840,7 @@ Variety: Constants.VARIETY_CO//,,
 
             LoadDailyNPivotsDataZerodha();
             backTestStatus = false;
-            goLiveTimer.Interval = 5000;
+            goLiveTimer.Interval = 30000;
             DONT_DELETE = true;
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;
@@ -4727,6 +4863,7 @@ Variety: Constants.VARIETY_CO//,,
             radLabelElement1.Text = "Live Mode Started";
             //CloseOrder();
             LogStatus("Market is stared now...");
+
             RefreshData();
         }
 

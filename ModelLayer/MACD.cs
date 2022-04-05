@@ -19,14 +19,19 @@ namespace Model
         public double Middle { get; set; }
         public double Lower { get; set; }
     }
-    public enum OscillatorStatus
+    public enum OscillatorPriceRange
     {
         Overbought,
         Oversold,
+        NotIdentified
+
+    }
+
+    public enum OscillatorStatus
+    {
         Bullish,
         Bearish,
         NotIdentified
-
     }
 
     public enum OscillatorReversal
@@ -46,14 +51,14 @@ namespace Model
         {
             get
             {
-               if( this.fast >this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast<= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow )
+                if (this.fast > this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast <= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow)
                 {
                     return OscillatorReversal.BullishReversal;
                 }
-               else if   ( this.fast < this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast >= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow)
-                    {
-                        return OscillatorReversal.BearishReversal;
-                    }
+                else if (this.fast < this.slow && ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.fast >= ReferringCandle.PreviousCandle?.AllIndicators?.Stochastic?.slow)
+                {
+                    return OscillatorReversal.BearishReversal;
+                }
                 else
                 {
                     return OscillatorReversal.NotIdentified;
@@ -61,30 +66,45 @@ namespace Model
             }
         }
 
-        
+
         public OscillatorStatus OscillatorStatus
         {
             get
             {
-                if (this.fast >= OB)
-                {
-                    return OscillatorStatus.Overbought;
-                }
-                else if (this.fast <= OS)
-                {
-                    return OscillatorStatus.Oversold;
-                }
-                else if (this.fast < OB && this.slow < OB && this.fast > OS && this.slow > OS && this.fast > this.slow)
+
+                if (this.fast > this.slow)
                 {
                     return OscillatorStatus.Bullish;
                 }
-                else if (this.fast > OS && this.slow > OS && this.fast < OB && this.slow < OB && this.fast < this.slow)
+                
+                else if (this.fast < this.slow)
                 {
                     return OscillatorStatus.Bearish;
                 }
                 else
                 {
                     return OscillatorStatus.NotIdentified;
+                }
+            }
+
+
+        }
+        public OscillatorPriceRange OscillatorPriceRange
+        {
+            get
+            {
+
+                if (this.slow > OB )
+                {
+                    return OscillatorPriceRange.Overbought;
+                }
+                else if (this.slow < this.OS )
+                {
+                    return OscillatorPriceRange.Oversold;
+                }
+                else
+                {
+                    return OscillatorPriceRange.NotIdentified;
                 }
             }
 

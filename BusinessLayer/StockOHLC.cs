@@ -413,6 +413,7 @@ namespace BAL
                         {
 
                             lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold).LastOrDefault();
+                            var anyCorrection = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange != OscillatorPriceRange.Overbought && b.TimeStamp > lastHigherReversal.TimeStamp).LastOrDefault();
 
                             //var bbbb = higherTimeFrame.Where(a => a.TimeStamp.Day == 4 && a.TimeStamp.Month == 4 && a.TimeStamp.Hour==11).FirstOrDefault().AllIndicators.Stochastic.OscillatorPriceRange;
                             if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
@@ -433,8 +434,14 @@ namespace BAL
                               .BullishReversal);
                                 if (probableBReeversal.Count() >= 1)
                                 {
-                                    var trednStartValue = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp).Min(d => d.Low);
-                                    if (pointA > trednStartValue)
+                                    if (anyCorrection == null) anyCorrection = probableBReeversal.Last();
+                                    double trednStartValue = 0;
+                                    var trendstart = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp && d.TimeStamp < anyCorrection.TimeStamp);
+
+                                    if (trendstart.Count() > 0)
+                                        trednStartValue = trendstart.Min(d => d.Low);
+
+                                    if (pointA > trednStartValue && trednStartValue > 0)
                                     {
                                         if (probableOReeversal.Count() > 0)
                                         {
@@ -471,7 +478,7 @@ namespace BAL
                                             if (c.Close <= dif50 && /* changehere c.Close > first.Open && */ABC && pointCc > 0 && pointD > trednStartValue)
                                             {
                                                 c.Trade = Trade.BUY;
-                                                if (c.TimeStamp.Day == 4)
+                                                if (c.TimeStamp.Day == 7)
                                                 {
                                                     StringBuilder sb = new StringBuilder();
                                                     sb.Append("  Name : ");
@@ -534,6 +541,7 @@ namespace BAL
                         {
 
                             lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought).LastOrDefault();
+                            var anyCorrection = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange != OscillatorPriceRange.Oversold && b.TimeStamp > lastHigherReversal.TimeStamp).LastOrDefault();
                             if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
                             {
                                 var maxValue = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Max(b => b.High);
@@ -558,10 +566,14 @@ namespace BAL
                                 var probableOReeversal = lowerTimeFrame.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < probableBReeversal.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
                               .BearishReversal);
 
-                                if (probableBReeversal.Count() >= 1)
+                                if (probableBReeversal.Count() >= 4)
                                 {
-                                    var trednStartValue = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp).Max(d => d.High);
-                                    if (pointA < trednStartValue)
+                                    if (anyCorrection == null) anyCorrection = probableBReeversal.Last();
+                                    var trendStart = lowerTimeFrame.Where(d => d.TimeStamp >= proLow.TimeStamp && d.TimeStamp < probableBReeversal.Last().TimeStamp && d.TimeStamp < anyCorrection.TimeStamp);
+                                    double trednStartValue = 0;
+                                    if (trendStart.Count() > 0)
+                                        trednStartValue = trendStart.Max(d => d.High);
+                                    if (pointA < trednStartValue && trednStartValue > 0)
                                     {
                                         if (probableOReeversal.Count() > 0)
                                         {
@@ -599,7 +611,7 @@ namespace BAL
                                             {
 
                                                 c.Trade = Trade.SELL;
-                                                if (c.TimeStamp.Day == 4)
+                                                if (c.TimeStamp.Day == 7)
                                                 {
                                                     StringBuilder sb = new StringBuilder();
                                                     sb.Append("  Name : ");

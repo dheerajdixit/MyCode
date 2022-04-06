@@ -121,8 +121,8 @@ namespace _15MCE
         {
             get
             {
-                return Common.GetStocks().Select(a => a.StockName).ToArray().Where(a => a == "ICICIBANK").ToArray();
-                //return Common.GetStocks().Select(a => a.StockName).ToArray();
+                //return Common.GetStocks().Select(a => a.StockName).ToArray().Where(a => a == "EXIDEIND").ToArray();
+                return Common.GetStocks().Select(a => a.StockName).ToArray();
             }
         }
 
@@ -724,8 +724,6 @@ namespace _15MCE
                         {
                             //changehere
 
-                            if (true)
-                            {
                                 sGap.Add(new StockData
                                 {
                                     Symbol = a.Value.Stock,
@@ -742,7 +740,7 @@ namespace _15MCE
                                     dClose = 0,
                                     Close = a.Value.Close
                                 });
-                            }
+                            
 
                         }
                         else if (a.Value.Trade == Model.Trade.SELL
@@ -751,8 +749,7 @@ namespace _15MCE
                             //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
                             )
                         {
-                            if (IsCanldeTouchedByReversal(a, false))
-                            {
+                            
                                 sGap.Add(new StockData
                                 {
                                     Symbol = a.Value.Stock,
@@ -769,7 +766,7 @@ namespace _15MCE
                                     dClose = 0,
                                     Close = a.Value.Close
                                 });
-                            }
+                            
                         }
 
 
@@ -4840,7 +4837,7 @@ Variety: Constants.VARIETY_CO//,,
 
             LoadDailyNPivotsDataZerodha();
             backTestStatus = false;
-            goLiveTimer.Interval = 30000;
+            goLiveTimer.Interval = 20000;
             DONT_DELETE = true;
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;

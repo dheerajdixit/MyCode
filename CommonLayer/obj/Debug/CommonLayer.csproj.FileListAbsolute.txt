@@ -19,13 +19,13 @@ C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompi
 C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
 C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
 C:\Trading Tool Latest\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\CommonLayer.dll
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\CommonLayer.pdb
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\ModelLayer.dll
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\Newtonsoft.Json.dll
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\ModelLayer.pdb
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.AssemblyReference.cache
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
-C:\Users\thothabasant\source\repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\CommonLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\CommonLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\ModelLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\bin\Debug\ModelLayer.pdb
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.AssemblyReference.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
+C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb

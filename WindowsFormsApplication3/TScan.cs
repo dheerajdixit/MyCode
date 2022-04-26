@@ -123,6 +123,7 @@ namespace _15MCE
             {
                 //return Common.GetStocks().Select(a => a.StockName).ToArray().Where(a => a == "EXIDEIND").ToArray();
                 return Common.GetStocks().Select(a => a.StockName).ToArray();
+                //return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
         }
 
@@ -670,6 +671,136 @@ namespace _15MCE
             return true;
 
         }
+
+        public void GetSingleTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
+        {
+            string HT = "day";
+            string LT = "minute";
+            if (lowerTimeFrame < 100)
+            {
+                LT = lowerTimeFrame + "minute";
+            }
+            else if (lowerTimeFrame == 100)
+            {
+                LT = "day";
+
+            }
+            if (higherTimeFrame < 100)
+            {
+                HT = higherTimeFrame + "minute";
+            }
+            else if (higherTimeFrame == 100)
+            {
+                HT = "day";
+            }
+
+            else if (higherTimeFrame == 200)
+            {
+                HT = "week";
+            }
+            if (higherTimeFrame == 0)
+            {
+                HT = "day";
+            }
+            if (lowerTimeFrame == 200)
+            {
+                LT = "week";
+            }
+            if (Convert.ToInt32(txtTam.Text) >= -3)
+            {
+                List<StockData> sGap = new List<StockData>();
+
+                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplySingleMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
+
+                var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
+                var lastDate = getTradedStocks.OrderBy(a => a.Value.Date).Last();
+
+                if (LT == "day")
+                {
+                    finalStocks = getTradedStocks.Where(b => b.Value.Date == CurrentTradingDate.Date).ToList();
+                }
+
+
+                foreach (var a in finalStocks)
+                {
+                    try
+                    {
+
+                        if (a.Value.Trade == Model.Trade.BUY
+                            //&& allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
+                            //.OrderByDescending(c=>c.TimeStamp.Date)
+                            //.First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish
+                            )
+                        {
+                            //changehere
+
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "BM",
+                                stopLoss = a.Value.Low - 0.1,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
+
+
+                        }
+                        else if (a.Value.Trade == Model.Trade.SELL
+                            //&& allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
+                            //.OrderByDescending(c => c.TimeStamp.Date)
+                            //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
+                            )
+                        {
+
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "SM",
+                                stopLoss = a.Value.High - 0.2,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
+
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+
+                }
+
+                foreach (var s in sGap.OrderByDescending(a => a.Vol * a.Close))
+                {
+                    NSA.Order o = new NSA.Order() { EntryPrice = s.Direction == "SM" ? s.Low - 0.1 : s.High + 0.1, High = s.High, Low = s.Low, Quantity = s.Quantity, Scrip = s.Symbol, Stoploss = s.stopLoss, Strategy = $"DT_{HT}_{LT}", TimeStamp = s.TradingDate, TransactionType = s.Direction, Volume = s.Vol };
+
+                    if (o != null)
+                    {
+                        PlacePartialOrders(o);
+                    }
+
+                }
+
+
+            }
+        }
         public void GetDualTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
         {
             string HT = "day";
@@ -681,6 +812,7 @@ namespace _15MCE
             else if (lowerTimeFrame == 100)
             {
                 LT = "day";
+
             }
             if (higherTimeFrame < 100)
             {
@@ -724,23 +856,23 @@ namespace _15MCE
                         {
                             //changehere
 
-                                sGap.Add(new StockData
-                                {
-                                    Symbol = a.Value.Stock,
-                                    Open = 0,
-                                    Vol = a.Value.Volume,
-                                    //dHigh = tradingCandle.High,
-                                    //dLow = tradi,
-                                    High = a.Value.High,
-                                    Low = a.Value.Low,
-                                    Direction = "BM",
-                                    stopLoss = a.Value.Low - 0.1,
-                                    TradingDate = a.Value.Date,
-                                    Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                    dClose = 0,
-                                    Close = a.Value.Close
-                                });
-                            
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "BM",
+                                stopLoss = a.Value.Low - 0.1,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
+
 
                         }
                         else if (a.Value.Trade == Model.Trade.SELL
@@ -749,24 +881,24 @@ namespace _15MCE
                             //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
                             )
                         {
-                            
-                                sGap.Add(new StockData
-                                {
-                                    Symbol = a.Value.Stock,
-                                    Open = 0,
-                                    Vol = a.Value.Volume,
-                                    //dHigh = tradingCandle.High,
-                                    //dLow = tradi,
-                                    High = a.Value.High,
-                                    Low = a.Value.Low,
-                                    Direction = "SM",
-                                    stopLoss = a.Value.High - 0.2,
-                                    TradingDate = a.Value.Date,
-                                    Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
-                                    dClose = 0,
-                                    Close = a.Value.Close
-                                });
-                            
+
+                            sGap.Add(new StockData
+                            {
+                                Symbol = a.Value.Stock,
+                                Open = 0,
+                                Vol = a.Value.Volume,
+                                //dHigh = tradingCandle.High,
+                                //dLow = tradi,
+                                High = a.Value.High,
+                                Low = a.Value.Low,
+                                Direction = "SM",
+                                stopLoss = a.Value.High - 0.2,
+                                TradingDate = a.Value.Date,
+                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                dClose = 0,
+                                Close = a.Value.Close
+                            });
+
                         }
 
 
@@ -796,6 +928,7 @@ namespace _15MCE
         {
 
         }
+
         public void RefreshData()
         {
             try
@@ -816,7 +949,7 @@ namespace _15MCE
                 orderDetails.Clear();
 
 
-                //GetDualTimeFrameStocks(200, 100);
+
 
 
                 if (Convert.ToInt16(txtTam.Text) == -3)
@@ -825,9 +958,23 @@ namespace _15MCE
                     {
                         LoadDataDaily();
                         LoadDataCommon(5);
-                        LoadDataCommon(15);
+                        //LoadDataCommon(15);
                         //LoadDailyNPivotsDataZerodha();
                         LoadDataCommon(60);
+                        //LoadDataWeekly();
+                        // GetDualTimeFrameStocks(200, 100);
+                        //GetSingleTimeFrameStocks(0, 200);
+                        //foreach (var s in allData["day"])//.Values.Where(b => b.Where(g => g.TimeStamp.Date == CurrentTradingDate.Date && (((g.High - g.Close) < ((g.Close - g.Open) / 2.0)) || ((g.Close - g.Low) < ((g.Open - g.Close) / 2.0)))))
+                        //{
+                        //    if (s.Key != null)
+                        //    {
+                        //        var x = s.Value.Where(b => b.TimeStamp.Date == CurrentTradingDate.Date && (((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))));
+                        //        if (x.Count() > 0)
+                        //        {
+                        //            WriteToFileThreadSafe(x.First().Stock, @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyDailyFinidings.txt");
+                        //        }
+                        //    }
+                        //}
 
                     }
                 }
@@ -842,13 +989,14 @@ namespace _15MCE
                 if (Convert.ToInt32(txtTam.Text) % 3 == 0)
                 {
                     if (!DONT_DELETE) LoadDataCommon(15);
-                    GetDualTimeFrameStocks(100, 15);
+                    //GetDualTimeFrameStocks(100, 15);
 
                 }
                 if (!DONT_DELETE)
                     LoadDataCommon(5);
                 if (Convert.ToInt16(txtTam.Text) >= -2)
                 {
+
                     //reason 1 to buy
 
                     GetDualTimeFrameStocks(60, 5);
@@ -935,6 +1083,26 @@ namespace _15MCE
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message);
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.StackTrace);
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.InnerException);
+            }
+        }
+        private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+        public void WriteToFileThreadSafe(string text, string path)
+        {
+            // Set Status to Locked
+            _readWriteLock.EnterWriteLock();
+            try
+            {
+                // Append text to the file
+                using (StreamWriter sw = File.AppendText(path))
+                {
+                    sw.WriteLine(text);
+                    sw.Close();
+                }
+            }
+            finally
+            {
+                // Release lock
+                _readWriteLock.ExitWriteLock();
             }
         }
 
@@ -1360,10 +1528,7 @@ namespace _15MCE
                 {
                     CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-150).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "day", "daily");
 
-
                 });
-
-
             }
             catch
             {
@@ -1377,7 +1542,7 @@ namespace _15MCE
             try
             {
 
-                downlodableScrip = AllEQ.ToList();
+                downlodableScrip = AllFNO.ToList();
                 Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
                     CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-1050).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "week", "weekly");
@@ -1460,25 +1625,27 @@ namespace _15MCE
             {
                 noOfDaysMultiplier = 5;
             }
-
+            var enumerableTokens = instrToken.Tables[0].AsEnumerable();
             Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
             {
-                if (s != null)
+
+                var scripRow = enumerableTokens.Where(p => p.Field<string>("tradingsymbol").Equals(s)).FirstOrDefault();
+                if (s != null && scripRow != null)
                 {
                     if (load60)
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-400 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "60" + "minute", "60");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-400 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "60" + "minute", "60");
                     if (load10)
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "10" + "minute", "10");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "10" + "minute", "10");
                     if (load30)
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "30" + "minute", "30");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "30" + "minute", "30");
                     if (load15)
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-200 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "15" + "minute", "15");
                     if (load5)
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
                     if (loaddaily)
                     {
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
-                        CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
                     }
                 }
 
@@ -4835,7 +5002,7 @@ Variety: Constants.VARIETY_CO//,,
 
             LoadAllDateTillDate();
 
-            LoadDailyNPivotsDataZerodha();
+            //LoadDailyNPivotsDataZerodha();
             backTestStatus = false;
             goLiveTimer.Interval = 20000;
             DONT_DELETE = true;

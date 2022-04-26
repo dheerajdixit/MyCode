@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\BusinessLayer"
+    "\\BusinessLayer",
+    "\\WindowsFormsApplication3"
   ],
-  "SelectedNode": "\\BusinessLayer\\StockOHLC.cs",
+  "SelectedNode": "\\WindowsFormsApplication3\\TScan.cs",
   "PreviewInSolutionExplorer": false
 }

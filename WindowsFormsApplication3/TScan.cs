@@ -121,7 +121,7 @@ namespace _15MCE
         {
             get
             {
-                //return Common.GetStocks().Select(a => a.StockName).ToArray().Where(a => a == "EXIDEIND").ToArray();
+                //return Common.GetEQStocks().Select(a => a.StockName).ToArray().Where(a => a == "TCS").ToArray();
                 return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
@@ -706,11 +706,12 @@ namespace _15MCE
             {
                 LT = "week";
             }
+
             if (Convert.ToInt32(txtTam.Text) >= -3)
             {
                 List<StockData> sGap = new List<StockData>();
 
-                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplySingleMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
+                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplySingleMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null, lowerTimeFrame);
 
                 var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
                 var lastDate = getTradedStocks.OrderBy(a => a.Value.Date).Last();
@@ -814,6 +815,11 @@ namespace _15MCE
                 LT = "day";
 
             }
+            else if (lowerTimeFrame == 200)
+            {
+                LT = "week";
+
+            }
             if (higherTimeFrame < 100)
             {
                 HT = higherTimeFrame + "minute";
@@ -827,7 +833,11 @@ namespace _15MCE
             {
                 HT = "week";
             }
-
+            else if (higherTimeFrame == 300)
+            {
+                HT = "month";
+            }
+            
             if (Convert.ToInt32(txtTam.Text) >= -3)
             {
                 List<StockData> sGap = new List<StockData>();
@@ -842,16 +852,23 @@ namespace _15MCE
                     finalStocks = getTradedStocks.Where(b => b.Value.Date == CurrentTradingDate.Date).ToList();
                 }
 
+                //var currentCandle = allData["5minute"]["NIFTY 50"].Where(b => b.TimeStamp == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate)).FirstOrDefault();
+                //var prevCloseNifty50 = allData["5minute"]["NIFTY 50"].Where(b => b.TimeStamp.Date < currentCandle.TimeStamp.Date).Last().Close;
+                //var currentCloseNifty50 = currentCandle.Close;
+
+                //currentCloseNifty50
+
+
 
                 foreach (var a in finalStocks)
                 {
                     try
                     {
 
-                        if (a.Value.Trade == Model.Trade.BUY
-                            //&& allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
-                            //.OrderByDescending(c=>c.TimeStamp.Date)
-                            //.First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish
+                        if (a.Value.Trade == Model.Trade.BUY //&& currentCloseNifty50 > prevCloseNifty50
+                                                             //&& allData["day"][a.Value.Stock].Where(c=>c.TimeStamp.Date<a.Value.Date.Date)
+                                                             //.OrderByDescending(c=>c.TimeStamp.Date)
+                                                             //.First().AllIndicators.Stochastic?.OscillatorStatus== OscillatorStatus.Bullish
                             )
                         {
                             //changehere
@@ -875,12 +892,14 @@ namespace _15MCE
 
 
                         }
-                        else if (a.Value.Trade == Model.Trade.SELL
-                            //&& allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
-                            //.OrderByDescending(c => c.TimeStamp.Date)
-                            //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
+                        else if (a.Value.Trade == Model.Trade.SELL //&& currentCloseNifty50 < prevCloseNifty50
+                                                                   //&& allData["day"][a.Value.Stock].Where(c => c.TimeStamp.Date < a.Value.Date.Date)
+                                                                   //.OrderByDescending(c => c.TimeStamp.Date)
+                                                                   //.First().AllIndicators.Stochastic?.OscillatorStatus == OscillatorStatus.Bearish
                             )
                         {
+
+
 
                             sGap.Add(new StockData
                             {
@@ -951,13 +970,21 @@ namespace _15MCE
 
 
 
-
+                if (false)
+                {
+                    //GetDualTimeFrameStocks(300, 200);
+                    //GetDualTimeFrameStocks(200, 100);
+                    GetDualTimeFrameStocks(100, 60);
+                    GetDualTimeFrameStocks(200, 100);
+                    //GetSingleTimeFrameStocks(0, 100);
+                    //GetSingleTimeFrameStocks(0, 200);
+                }
                 if (Convert.ToInt16(txtTam.Text) == -3)
                 {
                     if (!DONT_DELETE)
                     {
                         LoadDataDaily();
-                        LoadDataCommon(5);
+                        //LoadDataCommon(5);
                         //LoadDataCommon(15);
                         //LoadDailyNPivotsDataZerodha();
                         LoadDataCommon(60);
@@ -999,7 +1026,7 @@ namespace _15MCE
 
                     //reason 1 to buy
 
-                    GetDualTimeFrameStocks(60, 5);
+                    //GetDualTimeFrameStocks(60, 5);
 
                 }
 
@@ -1645,7 +1672,8 @@ namespace _15MCE
                     if (loaddaily)
                     {
                         CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
-                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-4000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
+                        //CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-8000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "monthly");
                     }
                 }
 
@@ -3932,16 +3960,33 @@ Variety: Constants.VARIETY_CO//,,
 
             try
             {
-                if (allData.ContainsKey(interval))
+                if (period == "monthly")
                 {
-                    if (allData[interval].ContainsKey(SymbolName))
+                    if (allData.ContainsKey("month"))
                     {
-                        allData[interval].Remove(SymbolName);
+                        if (allData["month"].ContainsKey(SymbolName))
+                        {
+                            allData["month"].Remove(SymbolName);
+                        }
+                    }
+                    else
+                    {
+                        allData.Add("month", new Dictionary<string, List<Candle>>());
                     }
                 }
                 else
                 {
-                    allData.Add(interval, new Dictionary<string, List<Candle>>());
+                    if (allData.ContainsKey(interval))
+                    {
+                        if (allData[interval].ContainsKey(SymbolName))
+                        {
+                            allData[interval].Remove(SymbolName);
+                        }
+                    }
+                    else
+                    {
+                        allData.Add(interval, new Dictionary<string, List<Candle>>());
+                    }
                 }
                 List<Candle> ls = new List<Candle>();
 
@@ -3969,20 +4014,44 @@ Variety: Constants.VARIETY_CO//,,
                         result = reader.ReadToEnd();
                         reader.Close();
                     }
-                    File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json", result);
+                    if (period != "monthly")
+                    {
+                        File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json", result);
+                    }
                     ls = TokenChannel.ConvertToJason(result, SymbolName);
+                    if (period == "monthly")
+                    {
+                        var a = ls.GroupBy(b => new { b.TimeStamp.Month, b.TimeStamp.Year, b.Stock }).Select(c => new
+                        Candle
+                        {
+                            High = c.Max(d => d.High),
+                            Low = c.Min(d => d.Low),
+                            Open = c.First().Open,
+                            Close = c.Last().Close,
+                            TimeStamp = new DateTime(c.Key.Year, c.Key.Month, c.First().TimeStamp.Day),
+                            Volume = c.Sum(d => d.Volume)
+                        });
+                        string s = JsonConvert.SerializeObject(a);
+
+                        File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json", s);
+                        ls = TokenChannel.ConvertToJasonList(a.ToList(), SymbolName);
+                    }
                 }
                 else
                 {
-                    ls = TokenChannel.ConvertToJason(File.ReadAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json"), SymbolName);
-
+                    if (period != "monthly")
+                        ls = TokenChannel.ConvertToJason(File.ReadAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json"), SymbolName);
+                    else
+                        ls = TokenChannel.ConvertToJasonList(JsonConvert.DeserializeObject<List<Candle>>(File.ReadAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json")), SymbolName);
                 }
 
                 //var json = System.Text.Json.JsonSerializer.Serialize(ls);
 
                 //File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\RunningData\" + period + "\\" + SymbolName+interval.ToString( + ".json", json);
-
-                allData[interval].Add(SymbolName, ls);
+                if (period == "monthly")
+                    allData["month"].Add(SymbolName, ls);
+                else
+                    allData[interval].Add(SymbolName, ls);
 
             }
             catch (Exception ex)
@@ -5004,7 +5073,7 @@ Variety: Constants.VARIETY_CO//,,
 
             //LoadDailyNPivotsDataZerodha();
             backTestStatus = false;
-            goLiveTimer.Interval = 20000;
+            goLiveTimer.Interval = 5000;
             DONT_DELETE = true;
             goLiveTimer.Start();
             goLiveTimer.Enabled = true;

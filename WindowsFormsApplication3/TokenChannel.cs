@@ -716,6 +716,150 @@ public class TokenChannel : IDisposable
         return history;
     }
 
+    public static List<Candle> ConvertToJasonList(List<Candle> listOfCandles, string stockName = "", bool heikenAshi = false)
+    {
+        List<Candle> history = new List<Candle>();
+        List<Quote> quotes = new List<Quote>();
+
+        int ii = 0;
+        
+        Candle lastCandle = new Candle();
+        Candle secondLastCandle = new Candle();
+        Candle latestCandle = new Candle();
+        IMovingAverage avg20 = new SimpleMovingAverage(20);
+        IMovingAverage avg50 = new SimpleMovingAverage(50);
+        IMovingAverage avg200 = new SimpleMovingAverage(200);
+        double cClose = 0;
+        double cHigh = 0;
+        double cLow = 0;
+        double cOpen = 0;
+        string xHCandleType = string.Empty;
+        double xC = 0, xH = 0, xLow = 0, xO = 0, pxH = 0, pxO = 0, pxC = 0, pxL = 0;
+        foreach (var jCandle in listOfCandles)
+        {
+            ii++;
+            if (ii == 1)
+            {
+                continue;
+
+            }
+
+
+          
+
+            cClose = jCandle.Close;
+            cHigh = jCandle.High;
+            cLow = jCandle.Low;
+            cOpen = jCandle.Open;
+
+
+            if (ii == 2)
+            {
+                xC = cClose;
+                xH = cHigh;
+                xLow = cLow;
+                xO = cOpen;
+            }
+            else
+            {
+                pxH = lastCandle.Close;
+
+                xC = (cClose + cHigh + cLow + cOpen) / 4;
+                xO = (pxO + pxC) / 2;
+                xLow = Math.Min(Math.Min(xC, xO), cLow);
+                xH = Math.Max(Math.Max(xC, xO), cHigh);
+            }
+            if (xLow == xO)
+            {
+                xHCandleType = "G";
+            }
+            else if (xH == xO)
+            {
+                xHCandleType = "R";
+            }
+            else if (xC > xO)
+            {
+                xHCandleType = "GD";
+            }
+            else if (xC < xO)
+            {
+                xHCandleType = "RD";
+            }
+
+
+            pxC = xC;
+            pxH = xH;
+            pxL = xLow;
+            pxO = xO;
+
+            double cATR21 = 0;
+            double cATR7 = 0;
+            SuperTrendInd sObj = new SuperTrendInd();
+            if (!heikenAshi)
+            {
+                cATR21 = ATR(ii - 2, cHigh, cLow, cClose, lastCandle.ATRStopLoss, lastCandle.Close, 21);
+                avg20.AddSample((float)cClose);
+                avg50.AddSample((float)cClose);
+                avg200.AddSample((float)cClose);
+                cATR7 = ATR(ii - 2, cHigh, cLow, cClose, lastCandle.ATR7, lastCandle.Close, 7);
+                sObj = GetSuperTrend(ii - 2, cATR7, cHigh, cLow, cClose, lastCandle.Close, lastCandle.STrend, 7);
+            }
+            else
+            {
+                avg20.AddSample((float)xC);
+                avg50.AddSample((float)xC);
+                avg200.AddSample((float)xC);
+                cATR7 = ATR(ii - 2, xH, xLow, xC, lastCandle.ATR7, lastCandle.HClose, 7);
+                sObj = GetSuperTrend(ii - 2, cATR7, xH, xLow, xC, lastCandle.HClose, lastCandle.STrend, 7);
+            }
+
+
+            latestCandle = new Candle()
+            {
+                TimeStamp = Convert.ToDateTime(jCandle.TimeStamp),
+                Close = cClose,
+                High = cHigh,
+                Low = cLow,
+                Open = jCandle.Open,
+                Volume = jCandle.Volume,
+                SMA20 = avg20.Average,
+                SMA50 = avg50.Average,
+                SMA200 = avg200.Average,
+                ATR = ATR(ii - 2, cHigh, cLow, cClose, lastCandle.ATR, lastCandle.Close, 14),
+                ATR7 = cATR7,
+                STrend = sObj,
+                ATRStopLoss = cATR21,
+                HCandleType = xHCandleType,
+                HOpen = xO,
+                HClose = xC,
+                HLow = xLow,
+                HHigh = xH,
+                PreviousCandle = lastCandle,
+                AllIndicators = new Model.AllTechnicals { SuperTrend = new SuperTrend { Trend = (int)sObj.Trend } },
+                Stock = stockName
+
+
+            };
+            quotes.Add(new Quote { Close = (decimal)latestCandle.Close, High = (decimal)latestCandle.High, Open = (decimal)latestCandle.Open, Low = (decimal)latestCandle.Low, Date = latestCandle.TimeStamp, Volume = (decimal)latestCandle.Volume });
+            latestCandle.CP = CandlePattern(secondLastCandle, lastCandle, latestCandle);
+            latestCandle.Treding = Trending(latestCandle, lastCandle);
+            history.Add(latestCandle);
+
+
+            secondLastCandle = lastCandle;
+            lastCandle = latestCandle;
+        }
+
+        var result = Skender.Stock.Indicators.Indicator.GetStoch<Quote>(quotes.ToArray(), 14, 3, 3).ToArray();
+        for (int i = 0; i < result.Count(); i++)
+        {
+            history[i].AllIndicators.Stochastic = new Stochastic(80, 20, history[i]);
+            history[i].AllIndicators.Stochastic.fast = (double)(result[i].K ?? 0);
+            history[i].AllIndicators.Stochastic.slow = (double)(result[i].D ?? 0);
+        }
+        return history;
+    }
+
     public static double ATR(int rowIndex, double high, double low, double close, double prevAtr, double prevclose, int period)
     {
         double atrValue = 0;

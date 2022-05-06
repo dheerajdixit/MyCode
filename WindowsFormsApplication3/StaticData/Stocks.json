@@ -1,5 +1,10 @@
 [
   {
+    "StockName": "NIFTY 50",
+    "IsSelected": 1,
+    "Use": "TRUE"
+  },
+  {
     "StockName": "MOTHERSUMI",
     "IsSelected": 1,
     "Use": "TRUE"

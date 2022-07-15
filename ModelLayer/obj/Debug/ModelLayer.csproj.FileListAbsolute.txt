@@ -16,3 +16,9 @@ C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\Mode
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb
+C:\Source\MyCode\ModelLayer\bin\Debug\ModelLayer.dll
+C:\Source\MyCode\ModelLayer\bin\Debug\ModelLayer.pdb
+C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyReference.cache
+C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
+C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
+C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb

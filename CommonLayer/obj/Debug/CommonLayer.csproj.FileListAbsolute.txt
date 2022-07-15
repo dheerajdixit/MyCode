@@ -29,3 +29,13 @@ C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\Com
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb
+C:\Source\MyCode\CommonLayer\bin\Debug\CommonLayer.dll
+C:\Source\MyCode\CommonLayer\bin\Debug\CommonLayer.pdb
+C:\Source\MyCode\CommonLayer\bin\Debug\ModelLayer.dll
+C:\Source\MyCode\CommonLayer\bin\Debug\Newtonsoft.Json.dll
+C:\Source\MyCode\CommonLayer\bin\Debug\ModelLayer.pdb
+C:\Source\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.AssemblyReference.cache
+C:\Source\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
+C:\Source\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
+C:\Source\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
+C:\Source\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb

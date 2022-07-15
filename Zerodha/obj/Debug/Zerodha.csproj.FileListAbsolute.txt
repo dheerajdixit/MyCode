@@ -49,3 +49,16 @@ C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.dll
 C:\Users\thothabasant\Source\Repos\dheerajdixit\MyCode\Zerodha\obj\Debug\Zerodha.pdb
+C:\Source\MyCode\Zerodha\bin\Debug\Zerodha.dll
+C:\Source\MyCode\Zerodha\bin\Debug\Zerodha.pdb
+C:\Source\MyCode\Zerodha\bin\Debug\CommonLayer.dll
+C:\Source\MyCode\Zerodha\bin\Debug\ModelLayer.dll
+C:\Source\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.dll
+C:\Source\MyCode\Zerodha\bin\Debug\CommonLayer.pdb
+C:\Source\MyCode\Zerodha\bin\Debug\ModelLayer.pdb
+C:\Source\MyCode\Zerodha\bin\Debug\Newtonsoft.Json.xml
+C:\Source\MyCode\Zerodha\obj\Debug\Zerodha.csproj.AssemblyReference.cache
+C:\Source\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CoreCompileInputs.cache
+C:\Source\MyCode\Zerodha\obj\Debug\Zerodha.csproj.CopyComplete
+C:\Source\MyCode\Zerodha\obj\Debug\Zerodha.dll
+C:\Source\MyCode\Zerodha\obj\Debug\Zerodha.pdb

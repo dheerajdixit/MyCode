@@ -505,6 +505,8 @@ namespace BAL
 
                                             if (trendstart.Count() > 0)
                                                 trednStartValue = trendstart.Min(d => d.Low);
+                                            if (trednStartValue == 0)
+                                                continue;
                                             var xxx = higherTimeFrame.Where(a => a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal
 
                                              && a.TimeStamp > trendstart.Where(b => b.Low == trednStartValue).FirstOrDefault().TimeStamp);
@@ -672,6 +674,8 @@ namespace BAL
                                             double trednStartValue = 0;
                                             if (trendStart.Count() > 0)
                                                 trednStartValue = trendStart.Max(d => d.High);
+                                            if (trednStartValue == 0)
+                                                continue;
                                             var xxx = higherTimeFrame.Where(a => a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal
 
                                              && a.TimeStamp > trendStart.Where(b => b.High == trednStartValue).FirstOrDefault().TimeStamp);
@@ -809,15 +813,18 @@ namespace BAL
         {
 
             IEnumerable<Candle> enumerable = lowerTimeFrame;
-            enumerable = from b in enumerable
-                         where (((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))) && b.CandleType == "G"
-                         select b;
-            var lastWeek = enumerable.Max(a => a.TimeStamp.Date);
-
+            //enumerable = from b in enumerable
+            //             where (((b.High - b.Close) < ((b.Close - b.Open) / 2.0)) || ((b.Close - b.Low) < ((b.Open - b.Close) / 2.0))) && b.CandleType == "G"
+            //             select b;
+            
             if (lt == 100)
                 enumerable = from b in enumerable
                              where
-                             ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold))
+                             (((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold))
+                             ||
+                             ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought))
+                             )
+
                              && b.TimeStamp.Date == tradingDate.Date
                              select b;
             if (lt == 200)
@@ -825,19 +832,41 @@ namespace BAL
                 enumerable = from b in enumerable
                              where
                              ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold))
-                             && b.TimeStamp.Month == tradingDate.Month
+                             && b.TimeStamp.Date == tradingDate.Date
                              select b;
-                if (enumerable.Count() > 0)
-                {
-                    //var lastWeek = enumerable.Max(a => a.TimeStamp.Date);
-                    enumerable = enumerable.Where(a => a.TimeStamp.Date == lastWeek.Date);
-                }
+                
 
             }
+            if(lt==60)
+            {
+                enumerable = from b in enumerable
+                where
+                (((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold))
+                ||
+                ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought))
+                )
+
+                 && b.TimeStamp.Date == tradingDate.Date
+                             select b;
+            }
+            if (lt == 5)
+            {
+                enumerable = from b in enumerable
+                             where
+                             (((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold))
+                             ||
+                             ((b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought))
+                             )
+
+                              && b.TimeStamp.Date == tradingDate.Date
+                             select b;
+            }
+
 
 
             foreach (var c in enumerable)
             {
+                
                 if (c.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BullishReversal)
                     c.Trade = Trade.BUY;
                 else
@@ -854,6 +883,8 @@ namespace BAL
                     WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MomentumReversal_Daily.txt");
                 if (lt == 200)
                     WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MomentumReversal_weekly.txt");
+                if (lt == 60)
+                    WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MomentumReversal_hourly.txt");
 
                 // File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt", sb.ToString());
 

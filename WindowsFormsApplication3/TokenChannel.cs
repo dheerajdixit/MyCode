@@ -417,9 +417,20 @@ public class TokenChannel : IDisposable
         return tradingDate.AddHours(9).AddMinutes(15).AddMinutes((tam + 3) * 5).AddMinutes(-30);
     }
 
-    public static DateTime GetTimeStamp60(int tam, DateTime tradingDate)
+    public static DateTime GetTimeStamp60(int tam, DateTime tradingDate, DateTime? prevDateTime = null)
     {
-        return tradingDate.AddHours(9).AddMinutes(15).AddMinutes((tam + 3) * 5).AddMinutes(-60);
+        if (!prevDateTime.HasValue)
+        {
+            prevDateTime = tradingDate.AddDays(-1);
+        }
+        if (tam <= 8)
+        {
+            return prevDateTime.Value.Date.AddHours(15).AddMinutes(15);
+        }
+        else
+        {
+            return tradingDate.AddHours(9).AddMinutes(15).AddMinutes((tam + 3) * 5).AddMinutes(-60);
+        }
     }
 
     public static DateTime GetTimeStamp15(int tam, DateTime tradingDate)
@@ -429,11 +440,11 @@ public class TokenChannel : IDisposable
 
 
 
-    
 
-  
 
-    
+
+
+
 
 
 
@@ -571,9 +582,10 @@ public class TokenChannel : IDisposable
         return toRound - toRound % 10;
     }
 
-   
+
     public static List<Candle> ConvertToJason(string jSon, string stockName = "", bool heikenAshi = false)
     {
+        return new List<Candle>();
         List<Candle> history = new List<Candle>();
         List<Quote> quotes = new List<Quote>();
 
@@ -707,11 +719,11 @@ public class TokenChannel : IDisposable
         }
 
         var result = Skender.Stock.Indicators.Indicator.GetStoch<Quote>(quotes.ToArray(), 14, 3, 3).ToArray();
-        for(int i =0;i<result.Count();i++)
+        for (int i = 0; i < result.Count(); i++)
         {
             history[i].AllIndicators.Stochastic = new Stochastic(80, 20, history[i]);
-            history[i].AllIndicators.Stochastic.fast =(double)( result[i].K??0);
-            history[i].AllIndicators.Stochastic.slow = (double)(result[i].D??0);
+            history[i].AllIndicators.Stochastic.fast = (double)(result[i].K ?? 0);
+            history[i].AllIndicators.Stochastic.slow = (double)(result[i].D ?? 0);
         }
         return history;
     }
@@ -722,7 +734,7 @@ public class TokenChannel : IDisposable
         List<Quote> quotes = new List<Quote>();
 
         int ii = 0;
-        
+
         Candle lastCandle = new Candle();
         Candle secondLastCandle = new Candle();
         Candle latestCandle = new Candle();
@@ -745,7 +757,7 @@ public class TokenChannel : IDisposable
             }
 
 
-          
+
 
             cClose = jCandle.Close;
             cHigh = jCandle.High;

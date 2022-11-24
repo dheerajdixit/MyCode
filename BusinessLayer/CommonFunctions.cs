@@ -234,8 +234,8 @@ namespace NSA
 
                                     Console.WriteLine($"HitCount {debugHitCount}");
                                     debugHitCount++;
-                                    var minBetweenBC = allData.Where(d => d.TimeStamp > pointBTimestamp && d.TimeStamp < pointCTimestamp)?.Min(d => d?.Low) ?? 0;
-                                    if (pointB <= minBetweenBC)
+                                    var minBetweenAC = allData.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp)?.Min(d => d?.Low) ?? 0;
+                                    if (pointB <= minBetweenAC)
                                         allAbcd.Add(new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.Low, DTime = pointDCandle.TimeStamp });
 
                                 }
@@ -287,8 +287,8 @@ namespace NSA
                                 bool ABC = Math.Abs(pointACandle.Low) - pointB <= Math.Abs(pointCc - pointDCandle.Low);
                                 if (ABC)
                                 {
-                                    var maxBetweenBC = allData.Where(d => d.TimeStamp > pointBTimestamp && d.TimeStamp < pointCTimestamp)?.Max(d => d?.High) ?? double.MaxValue;
-                                    if (maxBetweenBC <= pointB)
+                                    var maxBetweenAC = allData.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp)?.Max(d => d?.High) ?? double.MaxValue;
+                                    if (maxBetweenAC <= pointB)
                                         allAbcd.Add(new ABCD { A = pointACandle.Low, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.High, DTime = pointDCandle.TimeStamp });
                                 }
                             }

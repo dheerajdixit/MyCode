@@ -121,9 +121,9 @@ namespace _15MCE
         {
             get
             {
-                return Common.GetStocks().Where(a => a.StockName == "UPL").Select(a => a.StockName).ToArray();
+                return Common.GetStocks().Where(a => a.StockName == "TATASTEEL").Select(a => a.StockName).ToArray();
 
-                //   return Common.GetStocks().Select(a => a.StockName).ToArray();
+                //return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
                 // return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
@@ -5198,7 +5198,7 @@ namespace _15MCE
                         stoploss = entryCandle.Leg2Stoploss;
                     }
 
-                    
+
                     dr["Aentry"] = highestPNL;
                     dr["exlevel"] = string.Empty;
                     dr["stoploss"] = stoploss;
@@ -5430,8 +5430,17 @@ namespace _15MCE
                 {
                     if (direction == "SM")
                     {
+                        var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
+                        var retLandmark = Math.Round(candle.AbCd.D - ret618, 1);
+
                         var pointDCandle = data.Where(a => a.TimeStamp.Date == candle.AbCd.DTime).OrderBy(b => b.High).LastOrDefault();
-                        var abcds = _cf.GetAllABCDBearTrend(data, pointDCandle, drCurrent);
+
+                        List<ABCD> abcds = new List<ABCD>();
+                        if (drCurrent.Low <= retLandmark)
+                        {
+                            abcds = _cf.GetAllABCDBearTrend(data, pointDCandle, drCurrent);
+                        }
+
                         if (abcds.Count() >= 1 && candle.Stoploss > abcds.FirstOrDefault().C + 0.1)
                         {
                             candle.Stoploss = abcds.FirstOrDefault().C + 0.1;
@@ -5458,8 +5467,6 @@ namespace _15MCE
                             }
                             return ltpObj;
                         }
-                        var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
-                        var retLandmark = Math.Round(candle.AbCd.D - ret618, 1);
 
                         if ((drCurrent.Low < retLandmark && abcds.Count() >= 1) || candle.Trail)
                         {
@@ -5469,7 +5476,6 @@ namespace _15MCE
                                 candle.Trail = true;
                             }
                         }
-
                     }
                     ltpObj.LtpClose = drCurrent.Close;
                     ltpObj.LtpHigh = drCurrent.High;
@@ -5519,7 +5525,7 @@ namespace _15MCE
                         }
 
                     }
-                    
+
                 }
                 ltpObj.LtpClose = drCurrent.Close;
                 ltpObj.LtpHigh = drCurrent.High;

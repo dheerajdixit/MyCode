@@ -18,9 +18,11 @@ namespace Model
     }
     public class Candle
     {
+
         public bool IsLeg1Open { get; set; }
         public bool Trail { get; set; }
         public double Stoploss { get; set; }
+        public double Leg2Stoploss { get; set; }
         public ABCD AbCd { get; set; }
         public double Token { get; set; }
 

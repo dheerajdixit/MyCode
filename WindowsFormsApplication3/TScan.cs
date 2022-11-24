@@ -122,8 +122,8 @@ namespace _15MCE
             get
             {
                 return Common.GetStocks().Where(a => a.StockName == "UPL").Select(a => a.StockName).ToArray();
-               
-                 //   return Common.GetStocks().Select(a => a.StockName).ToArray();
+
+                //   return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
                 // return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
@@ -5164,8 +5164,8 @@ namespace _15MCE
                                     && !entryCandle.IsLeg1Open)
                                 {
                                     orders.Rows[counter]["stoploss"] = entryCandle.Stoploss;
-                                    
-                                    
+
+
                                 }
 
                             }
@@ -5176,24 +5176,35 @@ namespace _15MCE
 
                 }
 
-                List<string> s = new List<string>();
-                s = orders.AsEnumerable().Select(a => a.Field<string>("scrip")).Distinct().ToList();
-                foreach (string scrip in s)
+                foreach (DataRow dr in orders.Rows)
                 {
-                    string d = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).First().Field<string>("Direction");
-                    double AEntry = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Max(b => b.Field<double>("Aentry"));
-                    //double stoploss = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Max(b => b.Field<double>("stoploss"));
-                    double sl = 0;
-                    if (d == "BM")
+                    var strategy = Convert.ToString(dr["strategy"]);
+                    var name = Convert.ToString(dr["scrip"]);
+                    var direction = Convert.ToString(dr["direction"]);
+                    var timestamp = Convert.ToDateTime(dr["candle"]);
+                    var close = Convert.ToDouble(dr["ltp"]);
+                    var highestPNL = Convert.ToDouble(dr["AEntry"]);
+                    var leg1 = _cf.IsLeg(strategy, 1);
+
+
+                    double stoploss = 0;
+                    var entryCandle = allData["60minute"][name].Where(a => a.TimeStamp == timestamp).FirstOrDefault();
+                    if (leg1)
                     {
-                        sl = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Min(a => a.Field<double>("stoploss"));
+                        stoploss = entryCandle.Stoploss;
                     }
                     else
                     {
-                        sl = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Max(a => a.Field<double>("stoploss"));
+                        stoploss = entryCandle.Leg2Stoploss;
                     }
-                    double ltpClose = orders.AsEnumerable().Where(b => b.Field<double>("Aexit") == 0).First().Field<double>("ltp");
-                    UpdateStopLossOrder(scrip, d, sl, string.Empty, AEntry, ltpClose);
+
+                    
+                    dr["Aentry"] = highestPNL;
+                    dr["exlevel"] = string.Empty;
+                    dr["stoploss"] = stoploss;
+                    dr["target"] = direction == "BM" ? ((close - Convert.ToDouble(dr["entry"])) * Convert.ToDouble(dr["quantity"])) : ((Convert.ToDouble(dr["entry"]) - close) * Convert.ToDouble(dr["quantity"]));
+
+
                 }
 
             }
@@ -5317,7 +5328,7 @@ namespace _15MCE
 
 
 
-        public void UpdateStopLossOrder(string scrip, string direction, double trailingStoploss, string exitlevels, double highestPNL, double close)
+        public void UpdateStopLossOrder(string scrip, string direction, double trailingStoploss, string exitlevels, double highestPNL, double close, bool isLeg1)
         {
             try
             {
@@ -5369,6 +5380,8 @@ namespace _15MCE
                 double directionBreakout = direction == "BM" ? bHigh : bLow;
                 if (candle.Stoploss == 0)
                     candle.Stoploss = candle.AbCd.D;
+                if (candle.Leg2Stoploss == 0)
+                    candle.Leg2Stoploss = candle.AbCd.D;
 
                 double target = risk;
                 double swingValue = direction == "BM" ? 99999 : 0;
@@ -5422,13 +5435,14 @@ namespace _15MCE
                         if (abcds.Count() >= 1 && candle.Stoploss > abcds.FirstOrDefault().C + 0.1)
                         {
                             candle.Stoploss = abcds.FirstOrDefault().C + 0.1;
+                            candle.Leg2Stoploss = candle.Stoploss;
                         }
                         if ((drCurrent.High > candle.Stoploss && abcds.Count() >= 1) || ((drCurrent.High > candle.Stoploss && pnl < 0)))
                         {
                             ltpObj.IsExit = true;
                             comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
                             pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
-                            ltpObj.LtpClose = candle.Stoploss;
+                            ltpObj.LtpClose = drCurrent.Close;
                             ltpObj.LtpHigh = drCurrent.High;
                             ltpObj.LtpLow = drCurrent.Low;
                             ltpObj.LtpOpen = drCurrent.Open;
@@ -5439,7 +5453,9 @@ namespace _15MCE
                             ltpObj.HighestPNL = currentValue;
                             candle.IsLeg1Open = false;
                             if (abcds.Count() >= 1)
-                                candle.Stoploss = abcds.FirstOrDefault().B + 0.1;
+                            {
+                                candle.Leg2Stoploss = abcds.FirstOrDefault().B + 0.1;
+                            }
                             return ltpObj;
                         }
                         var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
@@ -5459,22 +5475,20 @@ namespace _15MCE
                     ltpObj.LtpHigh = drCurrent.High;
                     ltpObj.LtpLow = drCurrent.Low;
                     ltpObj.LtpOpen = drCurrent.Open;
-                    ltpObj.trailingStopLoss = candle.Stoploss;
                     ltpObj.PNL = pnl;
                     ltpObj.HighestPNL = currentValue;
                 }
                 if (_cf.IsLeg(strat, 2) && candle.IsLeg1Open)
                 {
-                    if (drCurrent.High > candle.Stoploss && pnl < 0)
+                    if (drCurrent.High > candle.Leg2Stoploss && pnl < 0)
                     {
                         ltpObj.IsExit = true;
                         comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
                         pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
-                        ltpObj.LtpClose = candle.Stoploss;
+                        ltpObj.LtpClose = drCurrent.Close;
                         ltpObj.LtpHigh = drCurrent.High;
                         ltpObj.LtpLow = drCurrent.Low;
                         ltpObj.LtpOpen = drCurrent.Open;
-                        ltpObj.trailingStopLoss = candle.Stoploss;
                         ltpObj.PNL = pnl;
                         ltpObj.ExitCandle = testAtMinute + 3;
                         ltpObj.ExitLevels = comment;
@@ -5487,16 +5501,15 @@ namespace _15MCE
                 {
                     if (direction == "SM")
                     {
-                        if (drCurrent.High > candle.Stoploss)
+                        if (drCurrent.High > candle.Leg2Stoploss)
                         {
                             ltpObj.IsExit = true;
                             comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
                             pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
-                            ltpObj.LtpClose = candle.Stoploss;
+                            ltpObj.LtpClose = drCurrent.Close;
                             ltpObj.LtpHigh = drCurrent.High;
                             ltpObj.LtpLow = drCurrent.Low;
                             ltpObj.LtpOpen = drCurrent.Open;
-                            ltpObj.trailingStopLoss = candle.Stoploss;
                             ltpObj.PNL = pnl;
                             ltpObj.ExitCandle = testAtMinute + 3;
                             ltpObj.ExitLevels = comment;
@@ -5506,14 +5519,14 @@ namespace _15MCE
                         }
 
                     }
-                    ltpObj.LtpClose = drCurrent.Close;
-                    ltpObj.LtpHigh = drCurrent.High;
-                    ltpObj.LtpLow = drCurrent.Low;
-                    ltpObj.LtpOpen = drCurrent.Open;
-                    ltpObj.trailingStopLoss = candle.Stoploss;
-                    ltpObj.PNL = pnl;
-                    ltpObj.HighestPNL = currentValue;
+                    
                 }
+                ltpObj.LtpClose = drCurrent.Close;
+                ltpObj.LtpHigh = drCurrent.High;
+                ltpObj.LtpLow = drCurrent.Low;
+                ltpObj.LtpOpen = drCurrent.Open;
+                ltpObj.PNL = pnl;
+                ltpObj.HighestPNL = currentValue;
 
                 return ltpObj;
             }

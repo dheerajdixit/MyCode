@@ -5,9 +5,23 @@ using System.Xml.Serialization;
 namespace Model
 {
 
-
+    public class ABCD
+    {
+        public double A { get; set; }
+        public DateTime ATime { get; set; }
+        public double B { get; set; }
+        public DateTime BTime { get; set; }
+        public double C { get; set; }
+        public DateTime CTime { get; set; }
+        public double D { get; set; }
+        public DateTime DTime { get; set; }
+    }
     public class Candle
     {
+        public bool IsLeg1Open { get; set; }
+        public bool Trail { get; set; }
+        public double Stoploss { get; set; }
+        public ABCD AbCd { get; set; }
         public double Token { get; set; }
 
         public double ATRStopLoss { get; set; }

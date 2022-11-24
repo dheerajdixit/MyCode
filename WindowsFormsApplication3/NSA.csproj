@@ -255,6 +255,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonFunctions.cs" />
     <Compile Include="DialogBoxes\TechnicalParameters.cs">
       <SubType>Form</SubType>
     </Compile>

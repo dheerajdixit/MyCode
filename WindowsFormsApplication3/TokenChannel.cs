@@ -585,7 +585,7 @@ public class TokenChannel : IDisposable
 
     public static List<Candle> ConvertToJason(string jSon, string stockName = "", bool heikenAshi = false)
     {
-        return new List<Candle>();
+        //return new List<Candle>();
         List<Candle> history = new List<Candle>();
         List<Quote> quotes = new List<Quote>();
 

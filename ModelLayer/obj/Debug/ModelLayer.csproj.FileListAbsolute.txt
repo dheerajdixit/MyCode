@@ -22,3 +22,9 @@ C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyReference.cache
 C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
 C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
 C:\Source\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb
+C:\h0\MyCode\ModelLayer\bin\Debug\ModelLayer.dll
+C:\h0\MyCode\ModelLayer\bin\Debug\ModelLayer.pdb
+C:\h0\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.AssemblyReference.cache
+C:\h0\MyCode\ModelLayer\obj\Debug\ModelLayer.csproj.CoreCompileInputs.cache
+C:\h0\MyCode\ModelLayer\obj\Debug\ModelLayer.dll
+C:\h0\MyCode\ModelLayer\obj\Debug\ModelLayer.pdb

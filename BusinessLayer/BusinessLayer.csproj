@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AllTechnicals.cs" />
     <Compile Include="CircularList!1.cs" />
+    <Compile Include="CommonFunctions.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IMovingAverage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

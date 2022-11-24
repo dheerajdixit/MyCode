@@ -7,6 +7,9 @@ namespace Model
 
     public class Idea
     {
+        public string HigherTimeFrame { get; set; }
+
+        public string LowerTimeFrame { get; set; }
         public string Name { get; set; }
 
         public int Interval { get; set; }

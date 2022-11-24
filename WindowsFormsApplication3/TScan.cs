@@ -121,9 +121,11 @@ namespace _15MCE
         {
             get
             {
-                //return Common.GetEQStocks().Select(a => a.StockName).ToArray().Where(a => a == "TCS").ToArray();
+                return Common.GetStocks().Where(a => a.StockName == "UPL").Select(a => a.StockName).ToArray();
+               
+                 //   return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
-                return Common.GetEQStocks().Select(a => a.StockName).ToArray();
+                // return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
         }
 
@@ -191,7 +193,7 @@ namespace _15MCE
                 }
             }
         }
-
+        public DateTime DefaultStartDate { get; set; }
         public int SuperTrendQuanaity
         {
             get
@@ -291,15 +293,24 @@ namespace _15MCE
         int sma = 0;
         bool DONT_DELETE = false;
         bool takeBackupOfFiles = false;
+        CommonFunctions _cf;
         public TScan(Dictionary<string, string> setting)
         {
+            _cf = new CommonFunctions();
             mySettings = setting;
             InitializeComponent();
             rgvStocks.TableElement.RowHeight = 50;
             LogStatus("Application Started !!");
             psa = Convert.ToInt16(mySettings["PSA"]);
             sma = Convert.ToInt16(mySettings["SMA"]);
+
             DONT_DELETE = Convert.ToBoolean(mySettings["DoNotRemove"]);
+            if (DONT_DELETE)
+            {
+                DefaultStartDate = GetAvailalbeDatesForTest(Convert.ToInt16(mySettings["BTD"]));
+
+
+            }
             takeBackupOfFiles = Convert.ToBoolean(mySettings["TakeBackupOfFilesAfterPlacingOrders"]);
             MaxRisk = Convert.ToDouble(mySettings["Capital"]) * Convert.ToDouble(mySettings["RiskPercent"]) / 100;
         }
@@ -332,7 +343,7 @@ namespace _15MCE
         List<string> reportColumns = new List<string>();
         private void TScan_Load(object sender, EventArgs e)
         {
-
+            txtSwitchMode.Enabled = true;
             try
             {
 
@@ -362,11 +373,22 @@ namespace _15MCE
 
                 dadapter.Fill(dateMapping);
 
+                DataRow dr = dateMapping.Tables[0].NewRow();
+                var b = dr.ItemArray.ToList();
+                object[] obj = new object[b.Count];
+                b.CopyTo(obj);
+                obj[2] = DateTime.Today;
+                dr.ItemArray = obj;
+                dateMapping.Tables[0].Rows.Add(dr);
+
                 dconn.Close();
 
                 CurrentTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 1 - BTD]["Date"]).Date;
                 PreviousTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 2 - BTD]["Date"]).Date;
+                int diff = (CurrentTradingDate - DefaultStartDate.Date).Days;
 
+                txtBTD.Text = diff.ToString();
+                CurrentTradingDate = DefaultStartDate.Date;
                 radLabel9.Text = CurrentTradingDate.ToString("dd-MMM-yyyy");
 
                 if (!DONT_DELETE)
@@ -375,7 +397,7 @@ namespace _15MCE
                 rgvStocks.TableElement.RowHeight = 20;
 
 
-                panel1.Visible = false;
+
                 risk = Convert.ToDouble(mySettings["risk"]);
                 myAPIKey = Convert.ToString(mySettings["myAPIKey"]);
                 mySecret = Convert.ToString(mySettings["mySecret"]);
@@ -427,12 +449,12 @@ namespace _15MCE
                 // Restore();
                 try
                 {
-                    kite = new Kite(myAPIKey, Debug: true);
-                    if (!DONT_DELETE)
-                        radButton2_Click(this, EventArgs.Empty);
+                    //kite = new Kite(myAPIKey, Debug: true);
+                    //if (!DONT_DELETE)
+                    //    radButton2_Click(this, EventArgs.Empty);
 
-                    string loginURL = kite.GetLoginURL();
-                    string html = string.Empty;
+                    //string loginURL = kite.GetLoginURL();
+                    //string html = string.Empty;
                     //  txtloginURL.Text = loginURL;
 
                 }
@@ -445,20 +467,7 @@ namespace _15MCE
                 tmr_News.Enabled = true;
 
 
-                //string FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\fo_mktlots.csv";
-                //OleDbConnection conn = new OleDbConnection
-                //       ("Provider=Microsoft.Jet.OleDb.4.0; Data Source = " +
-                //         Path.GetDirectoryName(FileName) +
-                //         "; Extended Properties = \"Text;HDR=YES;FMT=Delimited\"");
 
-                //conn.Open();
-
-                //OleDbDataAdapter adapter = new OleDbDataAdapter
-                //       ("SELECT * FROM " + Path.GetFileName(FileName), conn);
-
-
-                //adapter.Fill(dsLots);
-                //dsLots.Tables[0].Columns[1].ColumnName = "SYMBOL";
 
 
             }
@@ -965,7 +974,7 @@ namespace _15MCE
         }
         public void GetDualTimeFrameStocks(int higherTimeFrame, int lowerTimeFrame)
         {
-            
+
             string HT = "day";
             string LT = "minute";
             if (lowerTimeFrame < 100)
@@ -1048,7 +1057,7 @@ namespace _15MCE
                                 Direction = "BM",
                                 stopLoss = a.Value.Low - 0.1,
                                 TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                Quantity = _cf.GetFnOQantity(a.Value.Stock, a.Value.Close),
                                 dClose = 0,
                                 Close = a.Value.Close
                             });
@@ -1074,9 +1083,9 @@ namespace _15MCE
                                 High = a.Value.High,
                                 Low = a.Value.Low,
                                 Direction = "SM",
-                                stopLoss = a.Value.High - 0.2,
+                                stopLoss = a.Value.High + 0.2,
                                 TradingDate = a.Value.Date,
-                                Quantity = Convert.ToInt32(MaxRisk / (a.Value.High - a.Value.Low + 0.2)),
+                                Quantity = _cf.GetFnOQantity(a.Value.Stock, a.Value.Close),
                                 dClose = 0,
                                 Close = a.Value.Close
                             });
@@ -1133,28 +1142,9 @@ namespace _15MCE
 
 
 
-                if (true)
+                if (false)
                 {
-                    //if (Convert.ToInt16(txtTam.Text) > 0)
-                    //{
-                    //    GetIntraDayStocks(0, 5);
-                    //}
-                    //GetSingleTimeFrameStocks(0, 60);
-                    GetSingleTimeFrameStocks(0, 100);
-                    GetSingleTimeFrameStocks(0, 60);
-                    //String b = new String('a', 'b');
-                    //GetSingleTimeFrameStocks(0, 100);
-                    //GetDualTimeFrameStocks(60, 5);
-                    //GetDualTimeFrameStocks(60, 15);
-                    //GetDualTimeFrameStocks(100, 30);
-                    //GetDualTimeFrameStocks(200, 100);
-                    //GetDualTimeFrameStocks(100, 60);    
-                    goLiveTimer.Stop();
-                    return;
-                    //GetDualTimeFrameStocks(200, 100);
-                    //GetSingleTimeFrameStocks(0, 100);
-
-
+                    GetDualTimeFrameStocks(100, 60);
 
                 }
                 if (Convert.ToInt16(txtTam.Text) == -3)
@@ -1187,72 +1177,14 @@ namespace _15MCE
 
                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
                 {
-                    if (!DONT_DELETE) LoadDataCommon(60);
-                    GetDualTimeFrameStocks(100, 60);
+                    if (orders.Rows.Count == 0)
+                    {
+                        if (!DONT_DELETE) LoadDataCommon(60);
+                        GetDualTimeFrameStocks(100, 60);
+                    }
 
                 }
-                if (Convert.ToInt32(txtTam.Text) % 3 == 0)
-                {
-                    if (!DONT_DELETE) LoadDataCommon(15);
-                    GetDualTimeFrameStocks(60, 15);
-
-                }
-                if (!DONT_DELETE)
-                    LoadDataCommon(5);
-                if (Convert.ToInt16(txtTam.Text) >= -2)
-                {
-
-                    //reason 1 to buy
-                    GetIntraDayStocks(0, 5);
-                    //GetDualTimeFrameStocks(60, 5);
-
-                }
-
-
-
-
-
-
-
-                //GetHighProbabiltyLowRiskStock(TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate));
-                /// GetDualTimeFrameStocks(60, 5);
-                //GetDualTimeFrameStocks(30, 5);
-
-                //if (Convert.ToInt16(txtTam.Text) % 2 != 0)
-                //{
-                //    if (!DONT_DELETE) LoadDataCommon(10);
-                //    GetDualTimeFrameStocks(60, 10);
-                //    GetDualTimeFrameStocks(100, 10);
-                //}
-                /*
-                 if ((txtTam.Text == "0" || txtTam.Text == "3" || txtTam.Text == "6" || txtTam.Text == "9" || txtTam.Text == "12" || txtTam.Text == "15" || txtTam.Text == "12"
-                         || txtTam.Text == "15" || txtTam.Text == "18" || txtTam.Text == "21" || txtTam.Text == "24" || txtTam.Text == "27" || txtTam.Text == "30" || txtTam.Text == "33"
-                         || txtTam.Text == "36" || txtTam.Text == "39" || txtTam.Text == "42" || txtTam.Text == "45" || txtTam.Text == "48" || txtTam.Text == "51" || txtTam.Text == "54"
-                         || txtTam.Text == "57" || txtTam.Text == "60" || txtTam.Text == "63" || txtTam.Text == "66" || txtTam.Text == "69" || txtTam.Text == "72" || txtTam.Text == "75"))
-                 {
-                     if (!DONT_DELETE)
-                     {
-                         LoadDataCommon(15);
-                         LoadDataCommon(60);
-                     }
-                     //GetDualTimeFrameStocks(100, 15);
-                     //GetDualTimeFrameStocks(60, 15);
-                 }
-                 if ((txtTam.Text == "3" || txtTam.Text == "9" || txtTam.Text == "15" || txtTam.Text == "21" || txtTam.Text == "27" || txtTam.Text == "33" || txtTam.Text == "39" || txtTam.Text == "45" || txtTam.Text == "51" || txtTam.Text == "57" || txtTam.Text == "63" || txtTam.Text == "69" || txtTam.Text == "75"))
-                 {
-                     if (!DONT_DELETE) LoadDataCommon(30);
-                     // GetDualTimeFrameStocks(100, 30);
-
-                 }
-
-                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
-                 {
-                     if (!DONT_DELETE) LoadDataCommon(60);
-                     //GetDualTimeFrameStocks(100, 60);
-
-                 }
-                 //UpdateOrders(30);
-                 */
+                UpdateOrders(60);
                 foreach (var xx in orderDetails)
                 {
                     stocksIdentified.Add(xx);
@@ -1709,7 +1641,7 @@ namespace _15MCE
                 downlodableScrip = AllFNO.ToList();
                 Parallel.ForEach(downlodableScrip, new ParallelOptions { MaxDegreeOfParallelism = 2 }, (s) =>
                 {
-                    if (instrToken.Tables[0].Select("tradingsymbol='" + s + "'").Length >0)
+                    if (instrToken.Tables[0].Select("tradingsymbol='" + s + "'").Length > 0)
                         CallWebServiceZerodha(instrToken.Tables[0].Select("tradingsymbol='" + s + "'")[0][0].ToString(), s, CurrentTradingDate.AddDays(-7 * period / 5).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, period.ToString() + "minute", period.ToString());
 
                 });
@@ -1802,7 +1734,7 @@ namespace _15MCE
 
         public void LoadAllDateTillDate()
         {
-
+            LoadInstruments();
             if (txtSwitchMode.Text == string.Empty)
             {
                 downlodableScrip = AllFNO.ToList();
@@ -1849,7 +1781,7 @@ namespace _15MCE
                         CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-100 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "5" + "minute", "5");
                     if (loaddaily)
                     {
-                        //CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
+                        CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "daily");
                         CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-2000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "week", "weekly");
                         //CallWebServiceZerodha(scripRow["instrument_token"].ToString(), s, CurrentTradingDate.AddDays(-8000 / noOfDaysMultiplier).ToString("yyyy-MM-dd"), CurrentTradingDate.ToString("yyyy-MM-dd"), APIKEY, ACCESSTOKEN, "" + "day", "monthly");
                     }
@@ -3072,204 +3004,139 @@ namespace _15MCE
         public bool PlacePartialOrders(NSA.Order o)
         {
 
-
             bool orderplaced = false;
-
-
-            //return false;
-            lock (orderPlacement)
+            if (orders.Rows.Count == 0)
             {
-
-                string direction = o.TransactionType;
-                double close = o.EntryPrice;
-                double high = o.High;
-                double low = o.Low;
-                string scrip = o.Scrip;
-                int quantity = o.Quantity;
-                double stopLoss = o.Stoploss;
-                string desc = o.Strategy;
-
-                double dayDiff = 0;
-
-
-                DataRow drOrderLeg1 = orders.NewRow();
-                DataRow drOrderLeg2 = orders.NewRow();
-                DataRow drOrderLeg3 = orders.NewRow();
-
-                int lotSize = quantity;
-                double stoplossOrder = direction == "BM" ? stopLoss - (stopLoss * 0.11 / 100) : stopLoss + (stopLoss * 0.11 / 100);
-
-
-                decimal stopLossValue = Convert.ToDecimal(direction == "BM" ? Math.Round(close - stoplossOrder, 1) : Math.Round(stoplossOrder - close, 1));
-                decimal squareOffValue1 = stopLossValue;
-                decimal squareOffValue2 = stopLossValue * 2;
-                decimal squareOffValue3 = stopLossValue * 10;
-
-                double stopLossCoverOrder = Convert.ToDouble(direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1));
-                double diffBS = 0;
-
-
-                drOrderLeg1.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue1, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 1", close, (double)0.0, "Leg 1", (double)0.0, lotSize, "" };
-                orderDetails.Add(drOrderLeg1);
-
-
-
-                //drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
-                //orderDetails.Add(drOrderLeg2);
-
-
-                //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
-                //orderDetails.Add(drOrderLeg3);
-
-
-                orderplaced = true;
-                IncrementDecrement(o.Strategy, -1);
-                /*
-                if (txtSwitchMode.Text != string.Empty)
+                //return false;
+                lock (orderPlacement)
                 {
-                    //return orderplaced;
-                    if (!backLiveTest)
+
+                    string direction = o.TransactionType;
+                    double close = o.EntryPrice;
+                    double high = o.High;
+                    double low = o.Low;
+                    string scrip = o.Scrip;
+                    int quantity = o.Quantity;
+                    double stopLoss = o.Stoploss;
+                    string desc = o.Strategy;
+
+                    double dayDiff = 0;
+
+
+                    DataRow drOrderLeg1 = orders.NewRow();
+                    DataRow drOrderLeg2 = orders.NewRow();
+                    DataRow drOrderLeg3 = orders.NewRow();
+
+                    int lotSize = quantity;
+                    double stoplossOrder = direction == "BM" ? stopLoss - (stopLoss * 0.11 / 100) : stopLoss + (stopLoss * 0.11 / 100);
+
+
+                    decimal stopLossValue = Convert.ToDecimal(direction == "BM" ? Math.Round(close - stoplossOrder, 1) : Math.Round(stoplossOrder - close, 1));
+                    decimal squareOffValue1 = stopLossValue;
+                    decimal squareOffValue2 = stopLossValue * 2;
+                    decimal squareOffValue3 = stopLossValue * 10;
+
+                    double stopLossCoverOrder = Convert.ToDouble(direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1));
+                    double diffBS = 0;
+
+                    var entryCandle = allData["60minute"][o.Scrip].Where(a => a.TimeStamp == o.TimeStamp).FirstOrDefault();
+                    entryCandle.IsLeg1Open = true;
+
+                    drOrderLeg1.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue1, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 1", close, (double)0.0, "Leg 1", (double)0.0, lotSize, "" };
+                    orderDetails.Add(drOrderLeg1);
+                    //entryCandle.IsLeg1Open = true;
+
+
+                    drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
+                    orderDetails.Add(drOrderLeg2);
+
+
+                    //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
+                    //orderDetails.Add(drOrderLeg3);
+
+
+                    orderplaced = true;
+                    IncrementDecrement(o.Strategy, -1);
+                    /*
+                    if (txtSwitchMode.Text != string.Empty)
                     {
-                        foreach (Kite kiteUser in kUsers)
+                        //return orderplaced;
+                        if (!backLiveTest)
                         {
-                            try
+                            foreach (Kite kiteUser in kUsers)
                             {
-                                OrderPlacingMode = Constants.VARIETY_BO;
-                                Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-           Exchange: Constants.EXCHANGE_NSE,
-           TradingSymbol: scrip,
-           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-           Quantity: lotSize,
-           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-           OrderType: Constants.ORDER_TYPE_LIMIT,
-           Product: Constants.PRODUCT_MIS,
-           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-           //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-           StoplossValue: stopLossValue,
-           SquareOffValue: squareOffValue1,
-           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-           //        SquareOffValue: squareOffValue,
-           Validity: Constants.VALIDITY_DAY,
-           Variety: Constants.VARIETY_BO//,,
-
-
-           );
-                                response = kiteUser.PlaceOrder(
-          Exchange: Constants.EXCHANGE_NSE,
-          TradingSymbol: scrip,
-          TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-          Quantity: lotSize,
-          //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-          OrderType: Constants.ORDER_TYPE_LIMIT,
-          Product: Constants.PRODUCT_MIS,
-          //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-          //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-          StoplossValue: stopLossValue,
-          SquareOffValue: squareOffValue2,
-          Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-          //        SquareOffValue: squareOffValue,
-          Validity: Constants.VALIDITY_DAY,
-          Variety: Constants.VARIETY_BO//,,
-
-
-          );
-                                response = kiteUser.PlaceOrder(
-           Exchange: Constants.EXCHANGE_NSE,
-           TradingSymbol: scrip,
-           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-           Quantity: lotSize,
-           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-           OrderType: Constants.ORDER_TYPE_LIMIT,
-           Product: Constants.PRODUCT_MIS,
-           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-           //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
-           StoplossValue: stopLossValue,
-           SquareOffValue: squareOffValue3,
-           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-           //        SquareOffValue: squareOffValue,
-           Validity: Constants.VALIDITY_DAY,
-           Variety: Constants.VARIETY_BO//,,
-
-
-           );
-                            }
-                            catch (Exception ex)
-                            {
-                                //  MessageBox.Show(ex.Message);
-                                if (true)//MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                                try
                                 {
-                                    try
-                                    {
-                                        OrderPlacingMode = Constants.VARIETY_CO;
-                                        Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
-Exchange: Constants.EXCHANGE_NSE,
-TradingSymbol: scrip,
-TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-Quantity: lotSize,
-//Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-OrderType: Constants.ORDER_TYPE_LIMIT,
-Product: Constants.PRODUCT_MIS,
-//StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
-//StoplossValue: stopLossValue,
-//SquareOffValue: squareOffValue1,
-Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+                                    OrderPlacingMode = Constants.VARIETY_BO;
+                                    Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
+               Exchange: Constants.EXCHANGE_NSE,
+               TradingSymbol: scrip,
+               TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+               Quantity: lotSize,
+               //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+               OrderType: Constants.ORDER_TYPE_LIMIT,
+               Product: Constants.PRODUCT_MIS,
+               //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+               //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+               StoplossValue: stopLossValue,
+               SquareOffValue: squareOffValue1,
+               Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-//        SquareOffValue: squareOffValue,
-Validity: Constants.VALIDITY_DAY,
-Variety: Constants.VARIETY_CO//,,
+               //        SquareOffValue: squareOffValue,
+               Validity: Constants.VALIDITY_DAY,
+               Variety: Constants.VARIETY_BO//,,
 
 
-);
-                                        response = kiteUser.PlaceOrder(
-                  Exchange: Constants.EXCHANGE_NSE,
-                  TradingSymbol: scrip,
-                  TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                  Quantity: lotSize,
-                  //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                  OrderType: Constants.ORDER_TYPE_LIMIT,
-                  Product: Constants.PRODUCT_MIS,
-                  //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                  TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                                                                      //StoplossValue: stopLossValue,
-                                                                      //SquareOffValue: squareOffValue2,
-                  Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+               );
+                                    response = kiteUser.PlaceOrder(
+              Exchange: Constants.EXCHANGE_NSE,
+              TradingSymbol: scrip,
+              TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+              Quantity: lotSize,
+              //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+              OrderType: Constants.ORDER_TYPE_LIMIT,
+              Product: Constants.PRODUCT_MIS,
+              //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+              //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+              StoplossValue: stopLossValue,
+              SquareOffValue: squareOffValue2,
+              Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
-                  //        SquareOffValue: squareOffValue,
-                  Validity: Constants.VALIDITY_DAY,
-                  Variety: Constants.VARIETY_CO//,,
-
-
-                  );
-                                        response = kiteUser.PlaceOrder(
-                   Exchange: Constants.EXCHANGE_NSE,
-                   TradingSymbol: scrip,
-                   TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
-                   Quantity: lotSize,
-                   //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                   OrderType: Constants.ORDER_TYPE_LIMIT,
-                   Product: Constants.PRODUCT_MIS,
-                   //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                   TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                                                                       //StoplossValue: stopLossValue,
-                                                                       //SquareOffValue: squareOffValue3,
-                   Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
-
-                   //        SquareOffValue: squareOffValue,
-                   Validity: Constants.VALIDITY_DAY,
-                   Variety: Constants.VARIETY_CO//,,
+              //        SquareOffValue: squareOffValue,
+              Validity: Constants.VALIDITY_DAY,
+              Variety: Constants.VARIETY_BO//,,
 
 
-                   );
-                                    }
-                                    catch (Exception exCo)
+              );
+                                    response = kiteUser.PlaceOrder(
+               Exchange: Constants.EXCHANGE_NSE,
+               TradingSymbol: scrip,
+               TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+               Quantity: lotSize,
+               //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+               OrderType: Constants.ORDER_TYPE_LIMIT,
+               Product: Constants.PRODUCT_MIS,
+               //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+               //TriggerPrice: direction == "BM" ? Math.Round((decimal)close - stopLossValue, 1) : Math.Round((decimal)close + stopLossValue, 1),//
+               StoplossValue: stopLossValue,
+               SquareOffValue: squareOffValue3,
+               Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+               //        SquareOffValue: squareOffValue,
+               Validity: Constants.VALIDITY_DAY,
+               Variety: Constants.VARIETY_BO//,,
+
+
+               );
+                                }
+                                catch (Exception ex)
+                                {
+                                    //  MessageBox.Show(ex.Message);
+                                    if (true)//MessageBox.Show("Do you want to place CO order?", "BO- Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                                     {
                                         try
                                         {
-                                            OrderPlacingMode = Constants.VARIETY_REGULAR;
+                                            OrderPlacingMode = Constants.VARIETY_CO;
                                             Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
     Exchange: Constants.EXCHANGE_NSE,
     TradingSymbol: scrip,
@@ -3279,14 +3146,15 @@ Variety: Constants.VARIETY_CO//,,
     OrderType: Constants.ORDER_TYPE_LIMIT,
     Product: Constants.PRODUCT_MIS,
     //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-    //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+    TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
     //StoplossValue: stopLossValue,
     //SquareOffValue: squareOffValue1,
     Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
     //        SquareOffValue: squareOffValue,
     Validity: Constants.VALIDITY_DAY,
-    Variety: Constants.VARIETY_REGULAR//,,
+    Variety: Constants.VARIETY_CO//,,
+
 
     );
                                             response = kiteUser.PlaceOrder(
@@ -3298,14 +3166,14 @@ Variety: Constants.VARIETY_CO//,,
                       OrderType: Constants.ORDER_TYPE_LIMIT,
                       Product: Constants.PRODUCT_MIS,
                       //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                      //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                      //StoplossValue: stopLossValue,
-                      //SquareOffValue: squareOffValue2,
+                      TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                                                                          //StoplossValue: stopLossValue,
+                                                                          //SquareOffValue: squareOffValue2,
                       Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
                       //        SquareOffValue: squareOffValue,
                       Validity: Constants.VALIDITY_DAY,
-                      Variety: Constants.VARIETY_REGULAR//,,
+                      Variety: Constants.VARIETY_CO//,,
 
 
                       );
@@ -3318,37 +3186,98 @@ Variety: Constants.VARIETY_CO//,,
                        OrderType: Constants.ORDER_TYPE_LIMIT,
                        Product: Constants.PRODUCT_MIS,
                        //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
-                       //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
-                       //StoplossValue: stopLossValue,
-                       //SquareOffValue: squareOffValue3,
+                       TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                                                                           //StoplossValue: stopLossValue,
+                                                                           //SquareOffValue: squareOffValue3,
                        Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
 
                        //        SquareOffValue: squareOffValue,
                        Validity: Constants.VALIDITY_DAY,
-                       Variety: Constants.VARIETY_REGULAR//,,
+                       Variety: Constants.VARIETY_CO//,,
 
 
                        );
                                         }
-                                        catch (Exception exMIS)
+                                        catch (Exception exCo)
                                         {
-                                            MessageBox.Show(exMIS.Message);
+                                            try
+                                            {
+                                                OrderPlacingMode = Constants.VARIETY_REGULAR;
+                                                Dictionary<string, dynamic> response = kiteUser.PlaceOrder(
+        Exchange: Constants.EXCHANGE_NSE,
+        TradingSymbol: scrip,
+        TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+        Quantity: lotSize,
+        //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+        OrderType: Constants.ORDER_TYPE_LIMIT,
+        Product: Constants.PRODUCT_MIS,
+        //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+        //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),
+        //StoplossValue: stopLossValue,
+        //SquareOffValue: squareOffValue1,
+        Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+        //        SquareOffValue: squareOffValue,
+        Validity: Constants.VALIDITY_DAY,
+        Variety: Constants.VARIETY_REGULAR//,,
+
+        );
+                                                response = kiteUser.PlaceOrder(
+                          Exchange: Constants.EXCHANGE_NSE,
+                          TradingSymbol: scrip,
+                          TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                          Quantity: lotSize,
+                          //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                          OrderType: Constants.ORDER_TYPE_LIMIT,
+                          Product: Constants.PRODUCT_MIS,
+                          //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                          //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                          //StoplossValue: stopLossValue,
+                          //SquareOffValue: squareOffValue2,
+                          Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+                          //        SquareOffValue: squareOffValue,
+                          Validity: Constants.VALIDITY_DAY,
+                          Variety: Constants.VARIETY_REGULAR//,,
+
+
+                          );
+                                                response = kiteUser.PlaceOrder(
+                           Exchange: Constants.EXCHANGE_NSE,
+                           TradingSymbol: scrip,
+                           TransactionType: direction == "BM" ? Constants.TRANSACTION_TYPE_BUY : Constants.TRANSACTION_TYPE_SELL,
+                           Quantity: lotSize,
+                           //Price: Convert.ToDecimal(Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                           OrderType: Constants.ORDER_TYPE_LIMIT,
+                           Product: Constants.PRODUCT_MIS,
+                           //StoplossValue: Convert.ToDecimal(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["BS"].ToString() == "BM" ? Math.Round(Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]) - low.Min(), 1) : Math.Round(high.Max() - Convert.ToDouble(ds.Tables[0].Rows[ds.Tables[0].Rows.Count - 1]["f2"]), 1)),
+                           //TriggerPrice: Math.Round((decimal)stoplossOrder, 1),//
+                           //StoplossValue: stopLossValue,
+                           //SquareOffValue: squareOffValue3,
+                           Price: (decimal)(direction == "BM" ? Math.Round(close + close * 0.0011, 1) : Math.Round(close - close * 0.0011, 1)),
+
+                           //        SquareOffValue: squareOffValue,
+                           Validity: Constants.VALIDITY_DAY,
+                           Variety: Constants.VARIETY_REGULAR//,,
+
+
+                           );
+                                            }
+                                            catch (Exception exMIS)
+                                            {
+                                                MessageBox.Show(exMIS.Message);
+                                            }
                                         }
                                     }
+
+
                                 }
-
-
                             }
                         }
                     }
+                    */
                 }
-                */
             }
-
-
-
-
-
             return orderplaced;
         }
 
@@ -3774,215 +3703,6 @@ Variety: Constants.VARIETY_CO//,,
 
         }
         Receipt rXs = new Receipt();
-        public void CalculateIndicators15(string scrip)
-        {
-            try
-            {
-                DataTable dt = null;
-                string FileName = string.Empty;
-                if (backLiveTest)
-                {
-                    FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\15MCE\Data\15\" + scrip.Replace("-", string.Empty) + ".csv";
-                }
-                else
-                {
-                    FileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\15MCE\Data\15\" + scrip.Replace("-", string.Empty) + ".csv";
-                }
-
-                List<StockData> allLevels = DeSerializeObject<List<StockData>>(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Anti\" + scrip + ".xml");
-                DateTime currentTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 1 - BTD]["Date"]);
-                StockData todaysLevel = null;
-
-                if (allLevels.Where(a => a.TradingDate == currentTradingDate).Count() > 0)
-                {
-                    todaysLevel = allLevels.Where(a => a.TradingDate == currentTradingDate).First();
-                }
-                else
-                {
-                    todaysLevel = allLevels[allLevels.Count - 1];
-                }
-
-                OleDbConnection conn = new OleDbConnection
-                       ("Provider=Microsoft.Jet.OleDb.4.0; Data Source = " +
-                         Path.GetDirectoryName(FileName) +
-                         "; Extended Properties = \"Text;HDR=YES;FMT=Delimited\"");
-
-                conn.Open();
-
-                OleDbDataAdapter adapter = new OleDbDataAdapter
-                       ("SELECT * FROM " + Path.GetFileName(FileName), conn);
-
-                DataSet ds = new DataSet("Temp");
-                adapter.Fill(ds);
-
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Rows.RemoveAt(0);
-                ds.Tables[0].Columns[0].ColumnName = "Period";
-                ds.Tables[0].Columns[0].Caption = "Period";
-                ds.Tables[0].AcceptChanges();
-                ds.Tables[0].Columns.Add("Candle", typeof(string), "IIF([f2] > [f5],'G',IIF([f2] = [f5],'D','R'))");
-                conn.Close();
-
-                var rows1 = ds.Tables[0].Select("f2 = f3 and f2=f4 and f2= f5");
-                int count = rows1.Count();
-                foreach (var row in rows1)
-                    row.Delete();
-
-                ds.Tables[0].AcceptChanges();
-
-
-                int backTestDay = BTD;
-                dt = ds.Tables[0];
-                ds.Tables[0].AcceptChanges();
-
-                Indicator ind1 = new Indicator();
-                ind1.IndicatorName = "SuperTrend";
-                List<Indicator> xInd = new List<Indicator>();
-                xInd.Add(ind1);
-                Indicators.AddIndicators(ref ds, xInd);
-
-
-                int startOfTheWeekIndex = 0;
-
-                //need to commented while running
-
-                int cont = 0;
-
-                for (int i = ds.Tables[0].Rows.Count - 1; i > ds.Tables[0].Rows.Count - 10000; i--)
-                {
-                    if (string.IsNullOrEmpty(Convert.ToString(ds.Tables[0].Rows[i][0])))
-                    {
-                        startOfTheWeekIndex = i;
-                        if (backTestDay == cont)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            cont++;
-                        }
-                    }
-                    else if (string.IsNullOrEmpty(Convert.ToString(ds.Tables[0].Rows[i - 1][0])))
-                    {
-                        startOfTheWeekIndex = i - 1;
-                        if (backTestDay == cont)
-                        {
-
-                            break;
-                        }
-                        else
-                        {
-                            cont++;
-                            i = i - 1;
-                        }
-
-                    }
-                    else if (Math.Abs(Convert.ToInt32(ds.Tables[0].Rows[i]["period"]) - Convert.ToInt32(ds.Tables[0].Rows[i - 1]["period"])) > 5)
-                    {
-                        startOfTheWeekIndex = i;
-                        if (backTestDay == cont)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            cont++;
-                        }
-                    }
-                }
-
-
-                //if (mySettings["BackLiveTest"] == "True")
-                //{
-                //    int xL = startOfTheWeekIndex - 1;
-                //    for (int deleteIndex = xL + goTimeCount; deleteIndex < ds.Tables[0].Rows.Count; deleteIndex++)
-                //    {
-                //        ds.Tables[0].Rows[deleteIndex].Delete();
-                //    }
-                //    ds.Tables[0].AcceptChanges();
-                //}
-
-                //list.Add(new SR { price = 0, LevelName = "D20MA" });
-                startOfTheWeekIndex = startOfTheWeekIndex + Convert.ToInt32(txtTam.Text) / 3;
-
-                var pObj = pList.Where(a => a.scrip == scrip).ToList().FirstOrDefault();
-                todaysLevel.dR2 = pObj.r2;
-                todaysLevel.dR3 = pObj.r3;
-                todaysLevel.dR1 = pObj.r1;
-                todaysLevel.dPP = pObj.pivot;
-                todaysLevel.dS2 = pObj.s2;
-                todaysLevel.dS1 = pObj.s1;
-                todaysLevel.dS3 = pObj.s3;
-
-
-                List<SR> list = new List<SR>();
-
-                list.Add(new SR { price = Math.Round(todaysLevel.dPP, 1), LevelName = "dPP" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dR1, 1), LevelName = "dR1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dR2, 1), LevelName = "dR2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dR3, 1), LevelName = "dR3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dS1, 1), LevelName = "dS1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dS2, 1), LevelName = "dS2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.dS3, 1), LevelName = "dS3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wPP, 1), LevelName = "wPP" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wR1, 1), LevelName = "wR1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wR2, 1), LevelName = "wR2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wR3, 1), LevelName = "wR3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wS1, 1), LevelName = "wS1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wS2, 1), LevelName = "wS2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.wS3, 1), LevelName = "wS3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mPP, 1), LevelName = "mPP" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mR1, 1), LevelName = "mR1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mR2, 1), LevelName = "mR2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mR3, 1), LevelName = "mR3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mS1, 1), LevelName = "mS1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mS2, 1), LevelName = "mS2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.mS3, 1), LevelName = "mS3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yPP, 1), LevelName = "yPP" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yR1, 1), LevelName = "yR1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yR2, 1), LevelName = "yR2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yR3, 1), LevelName = "yR3" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yS1, 1), LevelName = "yS1" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yS2, 1), LevelName = "yS2" });
-                list.Add(new SR { price = Math.Round(todaysLevel.yS3, 1), LevelName = "yS3" });
-                list.Add(new SR { price = Math.Round(Convert.ToDouble(ds.Tables[0].Rows[startOfTheWeekIndex]["SuperTrend"]), 2), LevelName = "ST15" });
-
-                double low = Convert.ToDouble(ds.Tables[0].Rows[startOfTheWeekIndex]["f4"]);
-                double high = Convert.ToDouble(ds.Tables[0].Rows[startOfTheWeekIndex]["f3"]);
-                double close = Convert.ToDouble(ds.Tables[0].Rows[startOfTheWeekIndex]["f2"]);
-                double open = Convert.ToDouble(ds.Tables[0].Rows[startOfTheWeekIndex]["f5"]);
-
-                list = WildAnalysis(Math.Round(low, 1), Math.Round(high, 1), Math.Round(close, 1), 0, list);
-
-
-                if (list.Where(a => a.LevelName.Contains("ST15")).Count() > 0 && close > list.Where(a => a.LevelName.Contains("ST15")).First().price && close > open)
-                {
-                    int numberOfStocks = Convert.ToInt32(MaxTurnOver / close);
-                    double risk = numberOfStocks * (close - low);
-                    if (!Stocks15.ContainsKey(scrip))
-                    {
-                        Stocks15.Add(scrip, new StockData() { Direction = "BM", Quantity = Convert.ToInt32(numberOfStocks), Risk = risk, Low = low, High = high, Close = close, Open = open, stopLoss = list.Where(a => a.LevelName.Contains("ST15")).First().price });
-                    }
-                }
-                else if (list.Where(a => a.LevelName.Contains("ST15")).Count() > 0 && close < list.Where(a => a.LevelName.Contains("ST15")).First().price && open > close)
-                {
-                    int numberOfStocks = Convert.ToInt32(MaxTurnOver / close);
-                    double risk = numberOfStocks * (high - close);
-                    if (!Stocks15.ContainsKey(scrip))
-                    {
-                        Stocks15.Add(scrip, new StockData() { Direction = "SM", Quantity = Convert.ToInt32(numberOfStocks), Risk = risk, Low = low, High = high, Close = close, Open = open, stopLoss = list.Where(a => a.LevelName.Contains("ST15")).First().price });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message);
-            }
-        }
 
         public List<SR> WildAnalysis(double low, double high, double close, double open, List<SR> fullList)
         {
@@ -4132,6 +3852,27 @@ Variety: Constants.VARIETY_CO//,,
 
         }
         StockOHLC ohlcObj = new StockOHLC();
+        private DateTime GetAvailalbeDatesForTest(int btd)
+        {
+            // File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\Instr.txt", InstrumentToken.ToString() + ",");
+
+            try
+            {
+
+                var f = Directory.GetFiles(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\daily\").First();
+                //var ls = TokenChannel.ConvertToJasonList(JsonConvert.DeserializeObject<List<Candle>>(File.ReadAllText(f)));
+                var ls = TokenChannel.ConvertToJason(File.ReadAllText(f));
+
+                var startDate = ls.OrderBy(a => a.TimeStamp).First().TimeStamp;
+                var endDate = ls.OrderByDescending(a => a.TimeStamp).Skip(btd).First().TimeStamp;
+                return endDate;
+            }
+            catch (Exception ex)
+            {
+                throw ex;  // MessageBox.Show(ex.Message + " Download error!!");
+            }
+
+        }
         private void CallWebServiceZerodha(string InstrumentToken, string SymbolName, string dateFrom, string dateTo, string apiKey, string accessToken, string interval, string period = "30")
         {
             // File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Zerodha\Instr.txt", InstrumentToken.ToString() + ",");
@@ -4154,7 +3895,7 @@ Variety: Constants.VARIETY_CO//,,
                 }
                 else
                 {
-                    
+
                     if (allData.ContainsKey(interval))
                     {
                         if (allData[interval].ContainsKey(SymbolName))
@@ -4198,7 +3939,7 @@ Variety: Constants.VARIETY_CO//,,
                         File.WriteAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\ZERODHA\" + period + "\\" + SymbolName + ".json", result);
                     }
                     ls = TokenChannel.ConvertToJason(result, SymbolName);
-                     ls.Clear();
+                    ls.Clear();
                     if (period == "monthly")
                     {
                         var a = ls.GroupBy(b => new { b.TimeStamp.Month, b.TimeStamp.Year, b.Stock }).Select(c => new
@@ -5032,8 +4773,8 @@ Variety: Constants.VARIETY_CO//,,
         {
             //goLiveTimer.Stop();
             RefreshData();
-            radLabelElement1.Text = $"Last 5 minute tick :{ TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate).ToString()}";
-            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 1);
+            radLabelElement1.Text = $"Last 5 minute tick :{TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate).ToString()}";
+            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 12);
 
 
         }
@@ -5218,7 +4959,7 @@ Variety: Constants.VARIETY_CO//,,
                 }
                 else
                 {
-                    panel1.Visible = false;
+
                     txtSwitchMode.Enabled = true;
 
                 }
@@ -5397,85 +5138,37 @@ Variety: Constants.VARIETY_CO//,,
                             double pnl = 0;
                             LTPValues ltpObj = null;
 
+                            var entryCandle = allData["60minute"][orders.Rows[counter]["scrip"].ToString()].Where(a => a.TimeStamp == Convert.ToDateTime(orders.Rows[counter]["candle"])).FirstOrDefault();
+                            ltpObj = CalculateExit(orders.Rows[counter]["scrip"].ToString(), orders.Rows[counter]["direction"].ToString(), Convert.ToInt16(txtTam.Text), BTD, Convert.ToInt16(txtTam.Text) + 2, Convert.ToDouble(orders.Rows[counter]["high"]), Convert.ToDouble(orders.Rows[counter]["low"]), out pnl, Convert.ToDouble(orders.Rows[counter]["entry"]), Convert.ToInt32(orders.Rows[counter]["quantity"]), Convert.ToDouble(orders.Rows[counter]["stoploss"]), Convert.ToDateTime(orders.Rows[counter]["candle"]), period, Convert.ToDouble(orders.Rows[counter]["Aentry"].ToString()), orders.Rows[counter]["strategy"].ToString(), entryCandle);
 
-                            ltpObj = CalculateExit(orders.Rows[counter]["scrip"].ToString(), orders.Rows[counter]["direction"].ToString(), Convert.ToInt16(txtTam.Text), BTD, Convert.ToInt16(txtTam.Text) + 2, Convert.ToDouble(orders.Rows[counter]["high"]), Convert.ToDouble(orders.Rows[counter]["low"]), out pnl, Convert.ToDouble(orders.Rows[counter]["entry"]), Convert.ToInt32(orders.Rows[counter]["quantity"]), Convert.ToDouble(orders.Rows[counter]["stoploss"]), Convert.ToDateTime(orders.Rows[counter]["candle"]), period, Convert.ToDouble(orders.Rows[counter]["Aentry"].ToString()), orders.Rows[counter]["strategy"].ToString());
-
-                            if (!ltpObj.IsExit && pnl >= MaxRisk / 3)
-                            {
-                                foreach (DataRow dr in orders.Select("Scrip='" + orders.Rows[counter]["scrip"].ToString() + "'"))
-                                {
-                                    if (Convert.ToInt16(dr["AExit"]) == 0)
-                                    {
-                                        if (dr["strategy"].ToString().Contains("LEG 2"))
-                                        {
-
-
-                                            BookPartialProfit(100, dr, ltpObj.LtpClose, ltpObj.TimeStamp, MaxRisk / 3);
-                                            //orders.Select("scrip = '" + orders.Rows[counter]["scrip"] + "' and (strategy like '%LEG 1%')")[0]["stoploss"] = dr["entry"];
-                                            //orders.Select("scrip = '" + orders.Rows[counter]["scrip"] + "' and (strategy like '%LEG 3%')")[0]["stoploss"] = dr["entry"];
-                                            ltpObj.trailingStopLoss = Convert.ToDouble(dr["entry"]);
-                                            dr["stoploss"] = Convert.ToDouble(dr["entry"]);
-
-
-                                        }
-                                        else if (dr["strategy"].ToString().Contains("Strength") && pnl >= MaxRisk)
-                                        {
-
-
-                                            //  BookPartialProfit(100, dr, ltpObj.LtpClose, ltpObj.TimeStamp, MaxRisk);
-                                            //IncrementDecrement(orders.Rows[counter]["strategy"].ToString(), 1);
-
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-                            if (!ltpObj.IsExit && pnl >= (MaxRisk * 2) / 3)
-                            {
-                                foreach (DataRow dr in orders.Select("Scrip='" + orders.Rows[counter]["scrip"].ToString() + "'"))
-                                {
-                                    if (dr["strategy"].ToString().Contains("LEG 1"))
-                                    {
-                                        if (Convert.ToInt16(dr["AExit"]) == 0)
-                                        {
-                                            BookPartialProfit(100, dr, ltpObj.LtpClose, ltpObj.TimeStamp, (MaxRisk * 2) / 3);
-                                        }
-                                    }
-                                }
-
-                            }
-                            else if (ltpObj.IsExit)
+                            if (ltpObj != null && ltpObj.IsExit)
                             {
                                 BookPartialProfit(100, orders.Rows[counter], ltpObj.trailingStopLoss, ltpObj.TimeStamp, 0);
-                                //if (!orders.Rows[counter]["strategy"].ToString().Contains("Strength"))
-                                //IncrementDecrement(orders.Rows[counter]["strategy"].ToString(), 1);
 
-                                if (orders.Rows[counter]["strategy"].ToString().Contains("LEG 1"))
+                            }
+                            else if (ltpObj != null)
+                            {
+                                orders.Rows[counter]["exlevel"] = ltpObj.ExitLevels;
+
+                            }
+
+                            if (ltpObj != null)
+                            {
+                                orders.Rows[counter]["ltp"] = ltpObj.LtpClose;
+                                if (_cf.IsLeg(orders.Rows[counter]["strategy"].ToString(), 1)
+                                    && entryCandle.IsLeg1Open)
                                 {
-                                    foreach (DataRow dr in orders.Select("scrip = '" + orders.Rows[counter]["scrip"] + "' and (strategy like '%LEG 2%' or strategy like '%LEG 3%')"))
-                                    {
-                                        if (Convert.ToInt16(dr["AExit"]) == 0)
-                                        {
-                                            BookPartialProfit(100, dr, ltpObj.trailingStopLoss, ltpObj.TimeStamp, 0);
-                                        }
-                                    }
+                                    orders.Rows[counter]["stoploss"] = entryCandle.Stoploss;
+                                }
+                                else if (_cf.IsLeg(orders.Rows[counter]["strategy"].ToString(), 2)
+                                    && !entryCandle.IsLeg1Open)
+                                {
+                                    orders.Rows[counter]["stoploss"] = entryCandle.Stoploss;
+                                    
+                                    
                                 }
 
                             }
-                            if (!ltpObj.IsExit)
-                            {
-
-
-                            }
-                            else
-                            {
-                                orders.Rows[counter]["exlevel"] = ltpObj.ExitLevels;
-                            }
-
-                            orders.Rows[counter]["ltp"] = ltpObj.LtpClose;
-                            //orders.Rows[counter]["target"] = ltpObj.PNL;
                         }
 
                     }
@@ -5489,6 +5182,7 @@ Variety: Constants.VARIETY_CO//,,
                 {
                     string d = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).First().Field<string>("Direction");
                     double AEntry = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Max(b => b.Field<double>("Aentry"));
+                    //double stoploss = orders.AsEnumerable().Where(b => b.Field<string>("scrip") == scrip).Max(b => b.Field<double>("stoploss"));
                     double sl = 0;
                     if (d == "BM")
                     {
@@ -5664,40 +5358,35 @@ Variety: Constants.VARIETY_CO//,,
         }
 
 
-        public LTPValues CalculateExit(string scrip, string direction, int testAtMinute, int backTestDay, int goTimeCount, double bHigh, double bLow, out double pnl, double avgPrice, int quantity, double stopLossValue, DateTime entryCandle, int period, double exitingPNL, string strat)
+        public LTPValues CalculateExit(string scrip, string direction, int testAtMinute, int backTestDay, int goTimeCount, double bHigh, double bLow, out double pnl, double avgPrice, int quantity, double stopLossValue, DateTime entryCandle, int period, double exitingPNL, string strat, Candle candle)
         {
             try
             {
 
                 string comment = "";
-
                 string FileName = string.Empty;
-
-
                 List<Candle> data = allData[period.ToString() + "minute"][scrip];
-
-                int exitCheck = 0;
-                bool wasInProfit = false;
-                double profit = 0, stoploss = 0;
                 double directionBreakout = direction == "BM" ? bHigh : bLow;
-                double trailingStoploss = stopLossValue;
+                if (candle.Stoploss == 0)
+                    candle.Stoploss = candle.AbCd.D;
 
                 double target = risk;
-                double swingLow = 999999;
                 double swingValue = direction == "BM" ? 99999 : 0;
-
-                double lowest = 99999;
-                double highest = 0;
-
-
                 Candle drCurrent = null;
-                Candle drCurrentPrev = null;
                 switch (period)
                 {
 
                     case 60:
-                        drCurrent = data.Where(a => a.TimeStamp == TokenChannel.GetTimeStamp60(testAtMinute, CurrentTradingDate)).First();
+                        var time = TokenChannel.GetTimeStamp60(testAtMinute, CurrentTradingDate);
 
+                        drCurrent = data.Where(a => a.TimeStamp == TokenChannel.GetTimeStamp60(testAtMinute, CurrentTradingDate)).First();
+                        if (time.Hour == 15)
+                        {
+                            txtTam.Text = "-3";
+                            var nextDate = data.Where(a => a.TimeStamp.Date > time.Date).First().TimeStamp.Date;
+                            CurrentTradingDate = nextDate;
+                            radLabel9.Text = CurrentTradingDate.ToString("dd-MMM-yyyy");
+                        }
                         break;
                     case 15:
                         drCurrent = data.Where(a => a.TimeStamp == TokenChannel.GetTimeStamp15(testAtMinute, CurrentTradingDate)).First();
@@ -5709,8 +5398,7 @@ Variety: Constants.VARIETY_CO//,,
                         drCurrent = data.Where(a => a.TimeStamp == TokenChannel.GetTimeStamp(testAtMinute, CurrentTradingDate)).First();
                         break;
                 }
-                //drCurrent.Low = Math.Min(drCurrent.Low, drCurrentPrev.Low);
-                //drCurrent.High = Math.Max(drCurrent.High, drCurrentPrev.High);
+
                 LTPValues ltpObj = new LTPValues();
                 ltpObj.TimeStamp = TokenChannel.GetTimeStamp60(testAtMinute, CurrentTradingDate);
                 pnl = direction == "BM" ? (drCurrent.High - avgPrice) * quantity : (avgPrice - drCurrent.Low) * quantity;
@@ -5725,70 +5413,108 @@ Variety: Constants.VARIETY_CO//,,
                 {
                     currentValue = exitingPNL;
                 }
-
-                #region "PRIORITY 1 : TRAILING STOP LOSS HIT CHECK"
-                if (direction == "BM")
+                if (_cf.IsLeg(strat, 1))
                 {
+                    if (direction == "SM")
+                    {
+                        var pointDCandle = data.Where(a => a.TimeStamp.Date == candle.AbCd.DTime).OrderBy(b => b.High).LastOrDefault();
+                        var abcds = _cf.GetAllABCDBearTrend(data, pointDCandle, drCurrent);
+                        if (abcds.Count() >= 1 && candle.Stoploss > abcds.FirstOrDefault().C + 0.1)
+                        {
+                            candle.Stoploss = abcds.FirstOrDefault().C + 0.1;
+                        }
+                        if ((drCurrent.High > candle.Stoploss && abcds.Count() >= 1) || ((drCurrent.High > candle.Stoploss && pnl < 0)))
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+                            ltpObj.LtpClose = candle.Stoploss;
+                            ltpObj.LtpHigh = drCurrent.High;
+                            ltpObj.LtpLow = drCurrent.Low;
+                            ltpObj.LtpOpen = drCurrent.Open;
+                            ltpObj.trailingStopLoss = candle.Stoploss;
+                            ltpObj.PNL = pnl;
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+                            ltpObj.HighestPNL = currentValue;
+                            candle.IsLeg1Open = false;
+                            if (abcds.Count() >= 1)
+                                candle.Stoploss = abcds.FirstOrDefault().B + 0.1;
+                            return ltpObj;
+                        }
+                        var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
+                        var retLandmark = Math.Round(candle.AbCd.D - ret618, 1);
 
+                        if ((drCurrent.Low < retLandmark && abcds.Count() >= 1) || candle.Trail)
+                        {
+                            if (candle.Stoploss >= drCurrent.High + 0.1)
+                            {
+                                candle.Stoploss = drCurrent.High + 0.1;
+                                candle.Trail = true;
+                            }
+                        }
 
-                    if (drCurrent.Low < trailingStoploss)
+                    }
+                    ltpObj.LtpClose = drCurrent.Close;
+                    ltpObj.LtpHigh = drCurrent.High;
+                    ltpObj.LtpLow = drCurrent.Low;
+                    ltpObj.LtpOpen = drCurrent.Open;
+                    ltpObj.trailingStopLoss = candle.Stoploss;
+                    ltpObj.PNL = pnl;
+                    ltpObj.HighestPNL = currentValue;
+                }
+                if (_cf.IsLeg(strat, 2) && candle.IsLeg1Open)
+                {
+                    if (drCurrent.High > candle.Stoploss && pnl < 0)
                     {
                         ltpObj.IsExit = true;
-                        comment = "Exited - Trailing Stoploss hit - " + trailingStoploss.ToString();
-                        pnl = direction == "BM" ? (trailingStoploss - avgPrice) * quantity : (avgPrice - trailingStoploss) * quantity;
-                        ltpObj.LtpClose = trailingStoploss;
+                        comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                        pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+                        ltpObj.LtpClose = candle.Stoploss;
                         ltpObj.LtpHigh = drCurrent.High;
                         ltpObj.LtpLow = drCurrent.Low;
                         ltpObj.LtpOpen = drCurrent.Open;
-                        ltpObj.trailingStopLoss = trailingStoploss;
+                        ltpObj.trailingStopLoss = candle.Stoploss;
                         ltpObj.PNL = pnl;
                         ltpObj.ExitCandle = testAtMinute + 3;
                         ltpObj.ExitLevels = comment;
                         ltpObj.HighestPNL = currentValue;
+                        candle.IsLeg1Open = false;
                         return ltpObj;
                     }
-
-
                 }
-                else if (direction == "SM")
+                else if (_cf.IsLeg(strat, 2) && !candle.IsLeg1Open)
                 {
-                    if (drCurrent.High > trailingStoploss)
+                    if (direction == "SM")
                     {
-                        ltpObj.IsExit = true;
-                        comment = "Exited - Trailing Stoploss hit - " + trailingStoploss.ToString();
-                        pnl = direction == "BM" ? (trailingStoploss - avgPrice) * quantity : (avgPrice - trailingStoploss) * quantity;
-                        ltpObj.LtpClose = trailingStoploss;
-                        ltpObj.LtpHigh = drCurrent.High;
-                        ltpObj.LtpLow = drCurrent.Low;
-                        ltpObj.LtpOpen = drCurrent.Open;
-                        ltpObj.trailingStopLoss = trailingStoploss;
-                        ltpObj.PNL = pnl;
-                        ltpObj.ExitCandle = testAtMinute + 3;
-                        ltpObj.ExitLevels = comment;
-                        ltpObj.HighestPNL = currentValue;
-                        return ltpObj;
-                    }
+                        if (drCurrent.High > candle.Stoploss)
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+                            ltpObj.LtpClose = candle.Stoploss;
+                            ltpObj.LtpHigh = drCurrent.High;
+                            ltpObj.LtpLow = drCurrent.Low;
+                            ltpObj.LtpOpen = drCurrent.Open;
+                            ltpObj.trailingStopLoss = candle.Stoploss;
+                            ltpObj.PNL = pnl;
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+                            ltpObj.HighestPNL = currentValue;
+                            candle.IsLeg1Open = false;
+                            return ltpObj;
+                        }
 
+                    }
+                    ltpObj.LtpClose = drCurrent.Close;
+                    ltpObj.LtpHigh = drCurrent.High;
+                    ltpObj.LtpLow = drCurrent.Low;
+                    ltpObj.LtpOpen = drCurrent.Open;
+                    ltpObj.trailingStopLoss = candle.Stoploss;
+                    ltpObj.PNL = pnl;
+                    ltpObj.HighestPNL = currentValue;
                 }
 
-
-                #endregion
-
-                ltpObj.LtpClose = drCurrent.Close;
-                ltpObj.LtpHigh = drCurrent.High;
-                ltpObj.LtpLow = drCurrent.Low;
-                ltpObj.LtpOpen = drCurrent.Open;
-                ltpObj.trailingStopLoss = trailingStoploss;
-                ltpObj.PNL = pnl;
-                ltpObj.HighestPNL = currentValue;
-                //if (pnl < MaxRisk / 2 && pnl > 200 && pnl1 > exitingPNL)
-                //{
-                //    ltpObj.trailingStopLoss = direction == "BM" ? ltpObj.LtpHigh - (MaxRisk / quantity) : ltpObj.LtpLow + (MaxRisk / quantity);
-                //}
-                //else if (pnl >= MaxRisk / 2 && pnl > 200 && pnl1 > exitingPNL)
-                //{
-                //    ltpObj.trailingStopLoss = direction == "BM" ? ltpObj.LtpHigh - ((MaxRisk / 3) / quantity) : ltpObj.LtpLow + ((MaxRisk / 3) / quantity);
-                //}
                 return ltpObj;
             }
             catch (Exception ex)
@@ -6046,9 +5772,7 @@ Variety: Constants.VARIETY_CO//,,
             if (rdoLive.IsChecked)
             {
                 backLiveTest = false;
-                //  panel1.Visible = true;
-                panel1.Height = 700;
-                panel1.Refresh();
+
                 LogStatus("Application Mode is changed from Simulation to Live.");
             }
             else if (rdoSimulation.IsChecked)
@@ -6137,112 +5861,7 @@ Variety: Constants.VARIETY_CO//,,
             doLogin = true;
         }
 
-        public void checkLogin()
-        {
 
-            if (panel1.Visible)
-            {
-                int remainingLogins = 0;
-                for (int i = 0; i < panel1.Controls.Count; i++)
-                {
-                    if (panel1.Controls[i].Visible)
-                    {
-                        remainingLogins = remainingLogins + 1;
-                    }
-
-                }
-                isLogin = true;
-                if (remainingLogins == 0)
-                {
-                    panel1.Visible = false;
-                    LogStatus("Logged in Successfully to Zerodha.");
-
-                    if (string.IsNullOrEmpty(txtSwitchMode.Text))
-                    {
-                        backTestStatus = false;
-                        goLiveTimer.Interval = 2500;
-                        goLiveTimer.Start();
-                        goLiveTimer.Enabled = true;
-                        LogStatus("Market is stared now...");
-                    }
-                    radButton2_Click(this, EventArgs.Empty);
-                    return;
-                }
-
-                /* foreach (Control c in panel1.Controls)
-                 {
-                     XDocument doc = XDocument.Load(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
-                     var Users = doc.Descendants("user");
-
-                     try
-                     {
-                         bool detailsfilled = true;
-                         System.Windows.Forms.WebBrowser x = (System.Windows.Forms.WebBrowser)c;
-                         string param1 = HttpUtility.ParseQueryString(x.Url.Query).Get("request_token");
-
-                         XElement user = (from el in doc.Root.Elements("user")
-                                          where (string)el.Attribute("id") == c.Name.ToString()
-                                          select el).First();
-
-                         if (!string.IsNullOrEmpty(param1) && x.Visible)
-                         {
-
-                             user.Descendants("requestToken").First().Value = param1;
-                             doc.Save(@"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\users.xml");
-                             x.Visible = false;
-                         }
-                         else if (x.Visible)
-                         {
-
-                             foreach (HtmlElement he in x.Document.GetElementsByTagName("input"))
-                             {
-                                 if (he.GetAttribute("value") == "")
-                                     detailsfilled = false;
-
-                                 if (he.GetAttribute("type") == "text" && he.GetAttribute("maxlength") == "6" && he.GetAttribute("value") == "")
-                                 {
-                                     he.SetAttribute("value", x.Name);
-                                     he.SetAttribute("innerText", x.Name);
-                                 }
-
-                                 if (he.GetAttribute("type") == "password" && he.GetAttribute("maxlength") == "30" && he.GetAttribute("value") == "" && he.GetAttribute("label") == "")
-                                 {
-                                     he.SetAttribute("value", userLoginValues[x.Name]);
-                                     he.SetAttribute("innerText", userLoginValues[x.Name]);
-                                 }
-
-                                 if (he.GetAttribute("type") == "password" && he.GetAttribute("label") == "PIN")
-                                 {
-                                     string ques = he.GetAttribute("label");
-                                     try
-                                     {
-                                         he.SetAttribute("value", userLoginValues.Last().Value);
-                                         he.SetAttribute("innerText", userLoginValues.Last().Value);
-                                     }
-
-                                     catch
-                                     {
-
-                                     }
-
-                                 }
-
-                             }
-
-
-                             if (detailsfilled)
-                             {
-                                 x.Document.GetElementsByTagName("button")[0].InvokeMember("click");
-                             }
-                         }
-                     }
-                     catch
-                     {
-                     }
-                 }*/
-            }
-
-        }
 
         private void rdoLive_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
@@ -6285,6 +5904,7 @@ Variety: Constants.VARIETY_CO//,,
 
         private void txtBTD_TextChanged(object sender, EventArgs e)
         {
+            return;
             DataSet dateMapping = new DataSet();
             string currentFileName = @"C:\Jai Sri Thakur Ji\Nifty Analysis\Users\Dates.csv";
             OleDbConnection dconn = new OleDbConnection

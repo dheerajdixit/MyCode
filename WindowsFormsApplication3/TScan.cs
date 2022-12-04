@@ -121,7 +121,7 @@ namespace _15MCE
         {
             get
             {
-                return Common.GetStocks().Where(a => a.StockName == "TATASTEEL").Select(a => a.StockName).ToArray();
+                return Common.GetStocks().Where(a => a.StockName == "NESTLEIND").Select(a => a.StockName).ToArray();
 
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
@@ -1177,15 +1177,17 @@ namespace _15MCE
 
                 if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
                 {
-                    if (orders.Rows.Count == 0)
-                    {
-                        if (!DONT_DELETE) LoadDataCommon(60);
-                        GetDualTimeFrameStocks(100, 60);
-                    }
+                    //if (orders.Rows.Count == 0)
+                    //{
+                    if (!DONT_DELETE) LoadDataCommon(60);
+                    GetDualTimeFrameStocks(100, 60);
+                    //} 
+
 
                 }
                 UpdateOrders(60);
                 foreach (var xx in orderDetails)
+
                 {
                     stocksIdentified.Add(xx);
                     orders.Rows.Add(xx);
@@ -3005,7 +3007,7 @@ namespace _15MCE
         {
 
             bool orderplaced = false;
-            if (orders.Rows.Count == 0)
+            if (true)
             {
                 //return false;
                 lock (orderPlacement)
@@ -3048,7 +3050,7 @@ namespace _15MCE
 
 
                     drOrderLeg2.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue2, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 2", close, (double)0.0, "Leg 2", (double)0.0, lotSize, "" };
-                    orderDetails.Add(drOrderLeg2);
+                    //orderDetails.Add(drOrderLeg2);
 
 
                     //drOrderLeg3.ItemArray = new object[] { scrip, close, high, low, lotSize, squareOffValue3, stopLossCoverOrder, o.TimeStamp, direction, (double)0.0, (double)0.0, o.Strategy + "LEG 3", close, (double)0.0, "Leg 3", (double)0.0, lotSize, "" };
@@ -4771,6 +4773,20 @@ namespace _15MCE
         List<VolumeFilter> vList = new List<VolumeFilter>();
         private void goLiveTimer_Tick(object sender, EventArgs e)
         {
+            var time = TokenChannel.GetTimeStamp60(Convert.ToInt32(txtTam.Text), CurrentTradingDate);
+            if (time.Hour == 15)
+            {
+                var availableDates = allData.First().Value.First().Value.Where(a => a.TimeStamp.Date > time.Date);
+
+                if (availableDates.Count() >= 1)
+                {
+                    txtTam.Text = "-3";
+
+                    var nextDate = allData.First().Value.First().Value.Where(a => a.TimeStamp.Date > time.Date).First().TimeStamp.Date;
+                    CurrentTradingDate = nextDate;
+                    radLabel9.Text = CurrentTradingDate.ToString("dd-MMM-yyyy");
+                }
+            }
             //goLiveTimer.Stop();
             RefreshData();
             radLabelElement1.Text = $"Last 5 minute tick :{TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate).ToString()}";
@@ -5477,30 +5493,90 @@ namespace _15MCE
                             }
                         }
                     }
-                    ltpObj.LtpClose = drCurrent.Close;
-                    ltpObj.LtpHigh = drCurrent.High;
-                    ltpObj.LtpLow = drCurrent.Low;
-                    ltpObj.LtpOpen = drCurrent.Open;
-                    ltpObj.PNL = pnl;
-                    ltpObj.HighestPNL = currentValue;
+                    else if (direction == "BM")
+                    {
+
+                        var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
+                        var retLandmark = Math.Round(candle.AbCd.D + ret618, 1);
+
+                        var pointDCandle = data.Where(a => a.TimeStamp.Date == candle.AbCd.DTime).OrderBy(b => b.Low).FirstOrDefault();
+
+                        List<ABCD> abcds = new List<ABCD>();
+                        if (drCurrent.High >= retLandmark)
+                        {
+                            abcds = _cf.GetAllABCDBullTrend(data, pointDCandle, drCurrent);
+                        }
+
+                        if (abcds.Count() >= 1 && candle.Stoploss < abcds.FirstOrDefault().C - 0.1)
+                        {
+                            candle.Stoploss = abcds.FirstOrDefault().C - 0.1;
+                            candle.Leg2Stoploss = candle.Stoploss;
+                        }
+                        if ((drCurrent.Low < candle.Stoploss && abcds.Count() >= 1) || ((drCurrent.Low < candle.Stoploss && pnl < 0)))
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+                            ltpObj.LtpClose = drCurrent.Close;
+                            ltpObj.LtpHigh = drCurrent.High;
+                            ltpObj.LtpLow = drCurrent.Low;
+                            ltpObj.LtpOpen = drCurrent.Open;
+                            ltpObj.trailingStopLoss = candle.Stoploss;
+                            ltpObj.PNL = pnl;
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+                            ltpObj.HighestPNL = currentValue;
+                            candle.IsLeg1Open = false;
+                            if (abcds.Count() >= 1)
+                            {
+                                candle.Leg2Stoploss = abcds.FirstOrDefault().B - 0.1;
+                            }
+                            return ltpObj;
+                        }
+
+                        if ((drCurrent.High >= retLandmark && abcds.Count() >= 1) || candle.Trail)
+                        {
+                            if (candle.Stoploss <= drCurrent.Low - 0.1)
+                            {
+                                candle.Stoploss = drCurrent.Low - 0.1;
+                                candle.Trail = true;
+                            }
+
+                        }
+                    }
+
                 }
                 if (_cf.IsLeg(strat, 2) && candle.IsLeg1Open)
                 {
-                    if (drCurrent.High > candle.Leg2Stoploss && pnl < 0)
+                    if (direction == "SM")
                     {
-                        ltpObj.IsExit = true;
-                        comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
-                        pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
-                        ltpObj.LtpClose = drCurrent.Close;
-                        ltpObj.LtpHigh = drCurrent.High;
-                        ltpObj.LtpLow = drCurrent.Low;
-                        ltpObj.LtpOpen = drCurrent.Open;
-                        ltpObj.PNL = pnl;
-                        ltpObj.ExitCandle = testAtMinute + 3;
-                        ltpObj.ExitLevels = comment;
-                        ltpObj.HighestPNL = currentValue;
-                        candle.IsLeg1Open = false;
-                        return ltpObj;
+                        if (drCurrent.High > candle.Leg2Stoploss && pnl < 0)
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+
+                            candle.IsLeg1Open = false;
+                            return ltpObj;
+                        }
+                    }
+                    else if (direction == "BM")
+                    {
+                        if (drCurrent.Low < candle.Leg2Stoploss && pnl < 0)
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+
+                            candle.IsLeg1Open = false;
+                            return ltpObj;
+                        }
                     }
                 }
                 else if (_cf.IsLeg(strat, 2) && !candle.IsLeg1Open)
@@ -5512,14 +5588,26 @@ namespace _15MCE
                             ltpObj.IsExit = true;
                             comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
                             pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
-                            ltpObj.LtpClose = drCurrent.Close;
-                            ltpObj.LtpHigh = drCurrent.High;
-                            ltpObj.LtpLow = drCurrent.Low;
-                            ltpObj.LtpOpen = drCurrent.Open;
-                            ltpObj.PNL = pnl;
+
                             ltpObj.ExitCandle = testAtMinute + 3;
                             ltpObj.ExitLevels = comment;
-                            ltpObj.HighestPNL = currentValue;
+
+                            candle.IsLeg1Open = false;
+                            return ltpObj;
+                        }
+
+                    }
+                    else if (direction == "BM")
+                    {
+                        if (drCurrent.Low < candle.Leg2Stoploss)
+                        {
+                            ltpObj.IsExit = true;
+                            comment = "Exited - Trailing Stoploss hit - " + candle.Stoploss.ToString();
+                            pnl = direction == "BM" ? (candle.Stoploss - avgPrice) * quantity : (avgPrice - candle.Stoploss) * quantity;
+
+                            ltpObj.ExitCandle = testAtMinute + 3;
+                            ltpObj.ExitLevels = comment;
+
                             candle.IsLeg1Open = false;
                             return ltpObj;
                         }
@@ -6277,6 +6365,155 @@ namespace _15MCE
 
             double finalProfit = profitList.Sum();
 
+        }
+
+        private void rgvStocks_CellDoubleClick(object sender, GridViewCellEventArgs e)
+        {
+
+            //return;
+            //var  cd = (rgvStocks.DataSource as DataTable];
+
+            var stock = (rgvStocks.DataSource as DataTable).Rows[e.RowIndex].ItemArray.First().ToString();
+            var entryTime = Convert.ToDateTime((rgvStocks.DataSource as DataTable).Rows[e.RowIndex].ItemArray[7]);
+            var entryCandle = allData["60minute"][stock].Where(a => a.TimeStamp == entryTime).FirstOrDefault();
+            List<DateTime> dateTimes = new List<DateTime>();
+            dateTimes.Add(entryCandle.ReversalCandle.TimeStamp);
+            dateTimes.Add(entryCandle.ReversalCandle.TimeStamp.AddDays(50));
+            dateTimes.Add(entryCandle.TimeCycle.Cycle1618);
+            var cd = allData["day"][stock].Where(a => a.TimeStamp >= entryCandle.TrendStartCandle.TimeStamp && a.TimeStamp <= dateTimes.Max());
+            double low = cd.Min(a => a.Low);
+            double high = cd.Max(a => a.High);
+            //jsfidler
+            StringBuilder cdTransformation = new StringBuilder();
+            StringBuilder newData = new StringBuilder();
+            foreach (var c in cd)
+            {
+                cdTransformation = new StringBuilder();
+                cdTransformation.Append("[");
+                cdTransformation.Append("'");
+                cdTransformation.Append(c.TimeStamp);
+                cdTransformation.Append("'");
+                cdTransformation.Append(",");
+                cdTransformation.Append(entryCandle.InRet);
+                cdTransformation.Append(",");
+                cdTransformation.Append(entryCandle.App);
+                cdTransformation.Append(",");
+                cdTransformation.Append(entryCandle.ExRet);
+                cdTransformation.Append(",");
+                if (c.TimeStamp.Date == entryCandle.TrendStartCandle.TimeStamp)
+                {
+                    cdTransformation.Append(entryCandle.TrendStartCandle.Low);
+                    cdTransformation.Append(",");
+                }
+                else if (c.TimeStamp.Date == entryCandle.AbCd.ATime)
+                {
+                    cdTransformation.Append(entryCandle.AbCd.A);
+                    cdTransformation.Append(",");
+                }
+                else if (c.TimeStamp.Date == entryCandle.AbCd.BTime)
+                {
+                    cdTransformation.Append(entryCandle.AbCd.B);
+                    cdTransformation.Append(",");
+                }
+                else if (c.TimeStamp.Date == entryCandle.AbCd.CTime)
+                {
+                    cdTransformation.Append(entryCandle.AbCd.C);
+                    cdTransformation.Append(",");
+                }
+                else if (c.TimeStamp.Date == entryCandle.AbCd.DTime)
+                {
+                    cdTransformation.Append(entryCandle.AbCd.D);
+                    cdTransformation.Append(",");
+                }
+                else
+                {
+                    cdTransformation.Append("null");
+                    cdTransformation.Append(",");
+                }
+
+                #region "App Time cycle for Major Trend"
+                if ((
+                    entryCandle.TimeCycle.AppCycle618 == c.TimeStamp
+                    || entryCandle.TimeCycle.AppCycle1000 == c.TimeStamp
+                    || entryCandle.TimeCycle.AppCycle1618 == c.TimeStamp)
+                     && c.TimeStamp >= entryCandle.AbCd.DTime)
+                {
+                    StringBuilder newCopy = new StringBuilder();
+                    newCopy.Append(cdTransformation.ToString());
+                    newCopy.Append(high);
+                    newCopy.Append(",");
+                    newCopy.Append(high);
+                    newCopy.Append(",");
+                    newCopy.Append(low);
+                    newCopy.Append(",");
+                    newCopy.Append(low);
+                    newCopy.Append("]");
+                    newCopy.Append(",");
+                    newData.Append(newCopy);
+
+                }
+
+                #endregion
+                #region "Time cycle for Major Trend"
+                if ((entryCandle.TimeCycle.Cycle382 == c.TimeStamp
+                    || entryCandle.TimeCycle.Cycle500 == c.TimeStamp
+                    || entryCandle.TimeCycle.Cycle618 == c.TimeStamp
+                    || entryCandle.TimeCycle.Cycle1000 == c.TimeStamp
+                    || entryCandle.TimeCycle.Cycle1618 == c.TimeStamp
+                    ) && c.TimeStamp >= entryCandle.AbCd.DTime)
+                {
+                    StringBuilder newCopy = new StringBuilder();
+                    newCopy.Append(cdTransformation.ToString());
+                    newCopy.Append(low);
+                    newCopy.Append(",");
+                    newCopy.Append(c.Open);
+                    newCopy.Append(",");
+                    newCopy.Append(c.Close);
+                    newCopy.Append(",");
+                    newCopy.Append(high);
+                    newCopy.Append("]");
+                    newCopy.Append(",");
+                    newData.Append(newCopy);
+
+                }
+
+                #endregion
+
+                if (c.CandleType == "G")
+                {
+                    cdTransformation.Append(c.Low);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Open);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Close);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.High);
+                    cdTransformation.Append("]");
+                    cdTransformation.Append(",");
+                }
+                else
+                {
+                    cdTransformation.Append(c.High);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Open);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Close);
+                    cdTransformation.Append(",");
+                    cdTransformation.Append(c.Low);
+                    cdTransformation.Append("]");
+                    cdTransformation.Append(",");
+                }
+                newData.Append(cdTransformation);
+
+
+            }
+
+            string s = File.ReadAllText(@"C:\Jai Sri Thakur Ji\Chart.html");
+            s = s.Replace("__chartdata", newData.ToString());
+            string fileName = Guid.NewGuid().ToString();
+
+            File.WriteAllText(@"C:\Jai Sri Thakur Ji\" + fileName + ".html", s);
+            System.Diagnostics.Process.Start(@"file:///C:/Jai%20Sri%20Thakur%20Ji/" + fileName + ".html");
         }
     }
 

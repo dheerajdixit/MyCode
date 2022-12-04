@@ -857,6 +857,7 @@ namespace _15MCE
             this.rgvStocks.ThemeName = "TelerikMetroBlue";
             this.rgvStocks.CellFormatting += new Telerik.WinControls.UI.CellFormattingEventHandler(this.rgvStocks_CellFormatting);
             this.rgvStocks.CellClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.rgvStocks_CellClick);
+            this.rgvStocks.CellDoubleClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.rgvStocks_CellDoubleClick);
             this.rgvStocks.GroupSummaryEvaluate += new Telerik.WinControls.UI.GroupSummaryEvaluateEventHandler(this.rgvStocks_GroupSummaryEvaluate);
             this.rgvStocks.Click += new System.EventHandler(this.rgvStocks_Click);
             // 

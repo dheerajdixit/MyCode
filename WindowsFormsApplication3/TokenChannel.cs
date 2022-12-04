@@ -708,6 +708,7 @@ public class TokenChannel : IDisposable
 
 
             };
+            latestCandle.PreviousCandle.NextCandle = latestCandle;
             quotes.Add(new Quote { Close = (decimal)latestCandle.Close, High = (decimal)latestCandle.High, Open = (decimal)latestCandle.Open, Low = (decimal)latestCandle.Low, Date = latestCandle.TimeStamp, Volume = (decimal)latestCandle.Volume });
             latestCandle.CP = CandlePattern(secondLastCandle, lastCandle, latestCandle);
             latestCandle.Treding = Trending(latestCandle, lastCandle);

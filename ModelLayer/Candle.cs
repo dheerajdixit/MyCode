@@ -2,11 +2,28 @@
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 
+
 namespace Model
 {
 
+    public class TrendBasedFibTime
+    {
+
+
+        public DateTime Cycle382 { get; set; }
+        public DateTime Cycle500 { get; set; }
+        public DateTime Cycle618 { get; set; }
+        public DateTime Cycle1000 { get; set; }
+        public DateTime Cycle1618 { get; set; }
+
+        public DateTime AppCycle618 { get; set; }
+        public DateTime AppCycle1000 { get; set; }
+        public DateTime AppCycle1618 { get; set; }
+    }
+
     public class ABCD
     {
+        public TrendBasedFibTime TimeCycles { get; set; }
         public double A { get; set; }
         public DateTime ATime { get; set; }
         public double B { get; set; }
@@ -18,12 +35,17 @@ namespace Model
     }
     public class Candle
     {
-
+        public double InRet { get; set; }
+        public double App { get; set; }
+        public double ExRet { get; set; }
+        public Candle TrendStartCandle { get; set; }
+        public Candle ReversalCandle { get; set; }
         public bool IsLeg1Open { get; set; }
         public bool Trail { get; set; }
         public double Stoploss { get; set; }
         public double Leg2Stoploss { get; set; }
         public ABCD AbCd { get; set; }
+        public TrendBasedFibTime TimeCycle { get; set; }
         public double Token { get; set; }
 
         public double ATRStopLoss { get; set; }
@@ -38,7 +60,8 @@ namespace Model
 
         [XmlIgnore]
         public Candle PreviousCandle { get; set; }
-
+        [XmlIgnore]
+        public Candle NextCandle { get; set; }
         public AllTechnicals AllIndicators { get; set; }
 
         public string Treding { get; set; }

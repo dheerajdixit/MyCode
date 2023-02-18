@@ -33,7 +33,8 @@ namespace NSA
     {
         InApp,
         InAppEx,
-        None
+        None,
+        InEx
     };
     public class InternalRetracement
     {
@@ -75,32 +76,46 @@ namespace NSA
 
         }
     }
+    public class Cloud
+    {
+        public double Max { get; set; }
+        public double Min { get; set; }
+
+        public double Diff { get; set; }
+
+    }
     public class PriceRetracement
     {
         public InternalRetracement InternalRetracement { get; set; }
         public AlternatePriceProjection AlternatePriceProjection { get; set; }
         public ExternalRetracement ExternalRetracement { get; set; }
-        public double CloudDifference(SupportType supportType)
+        public Cloud CloudDifference(SupportType supportType)
         {
-            double diff = 0;
-            double max, min;
+            Cloud c = new Cloud();
+
             switch (supportType)
             {
                 case SupportType.InApp:
-                    max = Math.Max(this.InternalRetracement._internalRetracementValue, this.AlternatePriceProjection._alternatePriceProjectionValue);
-                    min = Math.Min(this.InternalRetracement._internalRetracementValue, this.AlternatePriceProjection._alternatePriceProjectionValue);
-                    diff = max - min;
+                    c.Max = Math.Max(this.InternalRetracement._internalRetracementValue, this.AlternatePriceProjection._alternatePriceProjectionValue);
+                    c.Min = Math.Min(this.InternalRetracement._internalRetracementValue, this.AlternatePriceProjection._alternatePriceProjectionValue);
+                    c.Diff = c.Max - c.Min;
                     break;
 
                 case SupportType.InAppEx:
-                    max = Math.Max(Math.Max(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue), this.AlternatePriceProjection._alternatePriceProjectionValue);
-                    min = Math.Min(Math.Min(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue), this.AlternatePriceProjection._alternatePriceProjectionValue);
-                    diff = max - min;
+                    c.Max = Math.Max(Math.Max(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue), this.AlternatePriceProjection._alternatePriceProjectionValue);
+                    c.Min = Math.Min(Math.Min(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue), this.AlternatePriceProjection._alternatePriceProjectionValue);
+                    c.Diff = c.Max - c.Min;
+                    break;
+
+                case SupportType.InEx:
+                    c.Max = Math.Max(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue);
+                    c.Min = Math.Min(this.InternalRetracement._internalRetracementValue, this.ExternalRetracement._externalRetracementValue);
+                    c.Diff = c.Max - c.Min;
                     break;
             }
 
 
-            return diff;
+            return c;
 
         }
         public SupportType SupportType { get; set; }
@@ -171,6 +186,68 @@ namespace NSA
                 return false;
             }
         }
+
+        public List<Trend> GetProbableBullTrends(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
+        {
+
+            List<Trend> allPossibleTrends = new List<Trend>();
+            Trend bullTrend;
+            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date &&
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal)).OrderBy(a => a.TimeStamp).LastOrDefault();
+
+            if (tradingPoint != null)
+            {
+                var listofTradingpoints = higherTimeFrame.Where(b => b.Low < tradingPoint.Low && b.TimeStamp < reversalTimeStamp.Date &&
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal)).OrderByDescending(b => b.TimeStamp);
+                var l = double.MaxValue;
+                foreach (var tp in listofTradingpoints)
+                {
+                    if (tp.Low < l)
+                    {
+                        bullTrend = new Trend();
+
+                        bullTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp.Date && c.TimeStamp.Date >= tradingPoint.TimeStamp.Date.AddDays(-4)).OrderBy(b => b.Low).FirstOrDefault();
+
+                        bullTrend.TrendStartCandle = higherTimeFrame.Where(a => a.TimeStamp >= tp.TimeStamp.AddDays(-4)
+                        && a.TimeStamp <= tp.TimeStamp.AddDays(4) && a.TimeStamp.Date < reversalTimeStamp.Date).OrderBy(a => a.Low).FirstOrDefault();
+                        var currentlow = bullTrend.TrendStartCandle.Low;
+
+                        var trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
+                        var trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
+                       && a.TimeStamp <= trendFinishtimestamp).Count();
+                        trendTimeFrame = Convert.ToInt32(trendTimeFrame + (trendTimeFrame * 61.8) / 100);
+                        trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
+                        trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
+                      && a.TimeStamp <= trendFinishtimestamp).Count();
+                        var tbfb = new TrendBasedFibTime();
+
+                        var checkIndex2 = higherTimeFrame.IndexOf(higherTimeFrame.Where(a => a.TimeStamp == trendFinishtimestamp).FirstOrDefault());
+                        var candleCount = higherTimeFrame.Count();
+                        var idxCycle382 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 38.2 / 100));
+                        var idxCycle500 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 50.0 / 100));
+                        var idxCycle618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 61.8 / 100));
+                        var idxCycle1000 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 100.0 / 100));
+                        var idxCycle1618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 161.8 / 100));
+                        if (candleCount > idxCycle382)
+                            tbfb.Cycle382 = higherTimeFrame[idxCycle382].TimeStamp;
+                        if (candleCount > idxCycle618)
+                            tbfb.Cycle618 = higherTimeFrame[idxCycle618].TimeStamp;
+                        if (candleCount > idxCycle500)
+                            tbfb.Cycle500 = higherTimeFrame[idxCycle500].TimeStamp;
+                        if (candleCount > idxCycle1000)
+                            tbfb.Cycle1000 = higherTimeFrame[idxCycle1000].TimeStamp;
+                        if (candleCount > idxCycle1618)
+                            tbfb.Cycle1618 = higherTimeFrame[idxCycle1618].TimeStamp;
+                        bullTrend.TimeCycle = tbfb;
+
+                        allPossibleTrends.Add(bullTrend);
+                        l = bullTrend.TrendStartCandle.Low;
+                    }
+                }
+            }
+            return allPossibleTrends;
+
+        }
         public Trend GetMajorBullTrend(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
         {
             Trend bullTrend = new Trend();
@@ -211,9 +288,6 @@ namespace NSA
                             var trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
                            && a.TimeStamp <= trendFinishtimestamp).Count();
                             trendTimeFrame = Convert.ToInt32(trendTimeFrame + (trendTimeFrame * 61.8) / 100);
-
-
-
 
                             var checkIndex1 = higherTimeFrame.IndexOf(bullTrend.TrendStartCandle);
 
@@ -282,19 +356,19 @@ namespace NSA
 
         }
 
-        public AlternatePriceProjection APPVerificaiton(APP app, Candle c)
+        public AlternatePriceProjection APPVerificaiton(APP app, Candle c, double inRetValue)
         {
             double close = c.Close;
 
-            if (close > app.R618)
+            if (Math.Abs(app.R618 - inRetValue) <= c.ATR * 1.5)
             {
                 return new AlternatePriceProjection(AlternatePriceProjectionType.R618, app.R618);
             }
-            else if (close > app.R100)
+            else if (Math.Abs(app.R100 - inRetValue) <= c.ATR * 1.5)
             {
                 return new AlternatePriceProjection(AlternatePriceProjectionType.R100, app.R100);
             }
-            else if (close > app.R162)
+            else if (Math.Abs(app.R162 - inRetValue) <= c.ATR * 1.5)
             {
                 return new AlternatePriceProjection(AlternatePriceProjectionType.R162, app.R162);
             }
@@ -302,19 +376,42 @@ namespace NSA
             return null;
         }
 
-        public ExternalRetracement ExRetVerification(ExRet exRet, Candle c)
+        public ExternalRetracement ExRetVerification(ExRet exRet, Candle c, double inRetValue)
         {
             double close = c.Close;
 
-            if (close > exRet.R127)
+            if (Math.Abs(exRet.R127 - inRetValue) <= c.ATR * 1.5)
             {
                 return new ExternalRetracement(ExternalRetracementType.R127, exRet.R127);
             }
-            else if (close > exRet.R162)
+            else if (Math.Abs(exRet.R162 - inRetValue) <= c.ATR * 1.5)
             {
                 return new ExternalRetracement(ExternalRetracementType.R162, exRet.R162);
             }
-            else if (close > exRet.R262)
+            else if (Math.Abs(exRet.R262 - inRetValue) <= c.ATR * 1.5)
+            {
+                return new ExternalRetracement(ExternalRetracementType.R262, exRet.R262);
+            }
+
+            return null;
+        }
+
+        public ExternalRetracement ExRetVerification(ExRet exRet, Candle c, double inRet, double app)
+        {
+            double close = c.Close;
+
+            if (Math.Abs(inRet - exRet.R127) <= c.ATR * 1.5
+                || Math.Abs(app - exRet.R127) <= c.ATR * 1.5)
+            {
+                return new ExternalRetracement(ExternalRetracementType.R127, exRet.R127);
+            }
+            else if (Math.Abs(inRet - exRet.R162) <= c.ATR * 1.5
+                || Math.Abs(app - exRet.R162) <= c.ATR * 1.5)
+            {
+                return new ExternalRetracement(ExternalRetracementType.R162, exRet.R162);
+            }
+            else if (Math.Abs(inRet - exRet.R262) <= c.ATR * 1.5
+                || Math.Abs(app - exRet.R262) <= c.ATR * 1.5)
             {
                 return new ExternalRetracement(ExternalRetracementType.R262, exRet.R262);
             }
@@ -343,6 +440,22 @@ namespace NSA
             {
                 return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
             }
+            else if (c.High > inRet.R382 && c.Low < inRet.R382)
+            {
+                return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+            }
+            else if (c.High > inRet.R500 && c.Low < inRet.R500)
+            {
+                return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+            }
+            else if (c.High > inRet.R618 && c.Low < inRet.R618)
+            {
+                return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
+            }
+            else if (c.High > inRet.R786 && c.Low < inRet.R786)
+            {
+                return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
+            }
 
             return null;
         }
@@ -356,27 +469,45 @@ namespace NSA
             priceRetracement.InternalRetracement = InRetVerificaiton(inRet, c);
 
             //priority -2 APP
-            priceRetracement.AlternatePriceProjection = APPVerificaiton(app, c);
+            if (priceRetracement.InternalRetracement != null)
+                priceRetracement.AlternatePriceProjection = APPVerificaiton(app, c, priceRetracement.InternalRetracement._internalRetracementValue);
 
             //priority -3 Ex-Ret
-            priceRetracement.ExternalRetracement = ExRetVerification(exRet, c);
+            if (priceRetracement.AlternatePriceProjection == null && priceRetracement.InternalRetracement != null)
+                priceRetracement.ExternalRetracement = ExRetVerification(exRet, c, priceRetracement.InternalRetracement._internalRetracementValue);
+
+            else if (priceRetracement.AlternatePriceProjection != null)
+                priceRetracement.ExternalRetracement = ExRetVerification(exRet, c, priceRetracement.InternalRetracement._internalRetracementValue, priceRetracement.AlternatePriceProjection._alternatePriceProjectionValue);
 
             if ((priceRetracement.InternalRetracement != null && priceRetracement.AlternatePriceProjection != null) && priceRetracement.ExternalRetracement != null)
             {
-                double diff = priceRetracement.CloudDifference(SupportType.InAppEx);
-                if (diff <= c.ATR)
+                var cloud = priceRetracement.CloudDifference(SupportType.InAppEx);
+                double diff = cloud.Diff;
+                if (diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
                 {
                     priceRetracement.SupportType = SupportType.InAppEx;
                 }
             }
-            else if (priceRetracement.InternalRetracement != null && priceRetracement.AlternatePriceProjection != null)
+
+            if (priceRetracement.SupportType == SupportType.None && priceRetracement.InternalRetracement != null && priceRetracement.AlternatePriceProjection != null)
             {
-                double diff = priceRetracement.CloudDifference(SupportType.InApp);
-                if (diff <= c.ATR)
+                var cloud = priceRetracement.CloudDifference(SupportType.InApp);
+                if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
                 {
                     priceRetracement.SupportType = SupportType.InApp;
                 }
             }
+
+            if (priceRetracement.SupportType == SupportType.None && priceRetracement.InternalRetracement != null && priceRetracement.ExternalRetracement != null)
+            {
+                var cloud = priceRetracement.CloudDifference(SupportType.InEx);
+                if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                {
+                    priceRetracement.SupportType = SupportType.InEx;
+                }
+            }
+
+
             return priceRetracement;
         }
 
@@ -526,26 +657,28 @@ namespace NSA
 
                         var big31 = new List<Candle> { bB, bB.PreviousCandle, bB.PreviousCandle.PreviousCandle, bB.NextCandle, bB.NextCandle.NextCandle, bB.NextCandle.NextCandle.NextCandle };
                         var finalCandle1 = big31.Where(a => a.TimeStamp > pointACandle.TimeStamp).OrderBy(p => p.Low).FirstOrDefault();
-                        pointB = finalCandle1.Low;
-                        pointBTimestamp = finalCandle1.TimeStamp;
-
-                        foreach (var xx in cBearishReversals.Where(tm => tm.TimeStamp > pointBTimestamp))
+                        if (finalCandle1 != null)
                         {
-                            var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle, xx.NextCandle, xx.NextCandle.NextCandle, xx.NextCandle.NextCandle.NextCandle };
-                            if (big3 != null && big3.Count() > 0 && big3.All(a => a != null && a.TimeStamp != null))
+                            pointB = finalCandle1.Low;
+                            pointBTimestamp = finalCandle1.TimeStamp;
+
+
+                            foreach (var xx in cBearishReversals.Where(tm => tm.TimeStamp > pointBTimestamp))
                             {
-                                var finalCandle = big3.Where(a => a.TimeStamp > pointBTimestamp).OrderBy(p => p.High).LastOrDefault();
-                                if (finalCandle.High < pointA)
+                                var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle, xx.NextCandle, xx.NextCandle.NextCandle, xx.NextCandle.NextCandle.NextCandle };
+                                if (big3 != null && big3.Count() > 0 && big3.All(a => a != null && a.TimeStamp != null))
                                 {
-                                    pointCc = finalCandle.High;
-                                    pointCTimestamp = finalCandle.TimeStamp;
+                                    var finalCandle = big3.Where(a => a.TimeStamp > pointBTimestamp).OrderBy(p => p.High).LastOrDefault();
+                                    if (finalCandle.High < pointA)
+                                    {
+                                        pointCc = finalCandle.High;
+                                        pointCTimestamp = finalCandle.TimeStamp;
+                                    }
                                 }
-                            }
-                            if (pointA > 0 && pointB > 0 && pointCc > 0)
-                            {
-                                bool ABC = pointA - pointB <= pointCc - pointDCandle.Low;
-                                if (ABC)
+                                if (pointA > 0 && pointB > 0 && pointCc > 0 && pointDCandle.Low < pointB)
                                 {
+                                    // bool ABC = pointA - pointB <= pointCc - pointDCandle.Low;
+
 
                                     Console.WriteLine($"HitCount {debugHitCount}");
                                     debugHitCount++;
@@ -554,6 +687,7 @@ namespace NSA
                                     var maxBetweenBC = allData.Where(d => d.TimeStamp <= pointCTimestamp && d.TimeStamp >= pointBTimestamp)?.Max(d => d?.High) ?? Double.MaxValue;
                                     if (pointB <= minBetweenAC && pointCc >= maxBetweenCD && pointCc >= maxBetweenBC)
                                         allAbcd.Add(new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.Low, DTime = pointDCandle.TimeStamp });
+
 
                                 }
                             }
@@ -610,8 +744,13 @@ namespace NSA
                                 if (ABC)
                                 {
                                     var maxBetweenAC = allData.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp)?.Max(d => d?.High) ?? double.MaxValue;
-                                    if (maxBetweenAC <= pointB)
+
+                                    var minBetweenCD = allData.Where(d => d.TimeStamp > pointCTimestamp && d.TimeStamp < pointDCandle.TimeStamp)?.Min(d => d?.Low) ?? 0;
+                                    var minBetweenBC = allData.Where(d => d.TimeStamp <= pointCTimestamp && d.TimeStamp >= pointBTimestamp)?.Min(d => d?.Low) ?? 0;
+                                    if (maxBetweenAC <= pointB && pointCc <= minBetweenCD && pointCc <= minBetweenBC)
+                                    {
                                         allAbcd.Add(new ABCD { A = pointACandle.Low, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.High, DTime = pointDCandle.TimeStamp });
+                                    }
                                 }
                             }
                         }

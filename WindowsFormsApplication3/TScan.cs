@@ -1,39 +1,31 @@
+using BAL;
+using CommonFeatures;
+using KiteConnect;
 using Microsoft.Win32;
+using Model;
+using MongoDB.Driver;
+using Newtonsoft.Json;
+using NSA;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Media;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
-using BAL;
-using NSA;
-using System.Linq;
-using HtmlAgilityPack;
-
-using System.Threading.Tasks;
-using KiteConnect;
-using System.Xml.Linq;
-using System.Web;
-using System.Xml.Serialization;
-using System.Reflection;
-using Newtonsoft.Json;
-using System.Collections;
-using NetTrader.Indicator;
-using CommonFeatures;
-using System.Diagnostics;
-using Model;
-using MongoDB.Driver;
-using DAL;
-using System.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace _15MCE
 {
@@ -121,9 +113,9 @@ namespace _15MCE
         {
             get
             {
-                return Common.GetStocks().Where(a => a.StockName == "NESTLEIND").Select(a => a.StockName).ToArray();
+                //return Common.GetStocks().Where(a => a.StockName == "FSL").Select(a => a.StockName).ToArray();
 
-                //return Common.GetStocks().Select(a => a.StockName).ToArray();
+                return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
                 // return Common.GetEQStocks().Select(a => a.StockName).ToArray();
             }
@@ -384,11 +376,15 @@ namespace _15MCE
                 dconn.Close();
 
                 CurrentTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 1 - BTD]["Date"]).Date;
-                PreviousTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 2 - BTD]["Date"]).Date;
-                int diff = (CurrentTradingDate - DefaultStartDate.Date).Days;
 
-                txtBTD.Text = diff.ToString();
-                CurrentTradingDate = DefaultStartDate.Date;
+                PreviousTradingDate = Convert.ToDateTime(dateMapping.Tables[0].Rows[dateMapping.Tables[0].Rows.Count - 2 - BTD]["Date"]).Date;
+                if (DONT_DELETE)
+                {
+                    int diff = (CurrentTradingDate - DefaultStartDate.Date).Days;
+
+                    txtBTD.Text = diff.ToString();
+                    CurrentTradingDate = DefaultStartDate.Date;
+                }
                 radLabel9.Text = CurrentTradingDate.ToString("dd-MMM-yyyy");
 
                 if (!DONT_DELETE)
@@ -449,9 +445,9 @@ namespace _15MCE
                 // Restore();
                 try
                 {
-                    //kite = new Kite(myAPIKey, Debug: true);
-                    //if (!DONT_DELETE)
-                    //    radButton2_Click(this, EventArgs.Empty);
+                    kite = new Kite(myAPIKey, Debug: true);
+                    if (!DONT_DELETE)
+                        radButton2_Click(this, EventArgs.Empty);
 
                     //string loginURL = kite.GetLoginURL();
                     //string html = string.Empty;
@@ -1124,6 +1120,7 @@ namespace _15MCE
         {
             try
             {
+                int candleTime = Convert.ToInt16(txtTam.Text);
                 //topBSTrades();
                 DateTime f1 = DateTime.Now;
                 finalList.Columns.Clear();
@@ -1136,18 +1133,15 @@ namespace _15MCE
                 finalList.Columns.Add("isBreakOut", typeof(bool));
                 finalList.Columns.Add("Type", typeof(string));
 
-
                 orderDetails.Clear();
 
+                //if (true)
+                //{
+                //    GetDualTimeFrameStocks(100, 60);
 
 
-
-                if (false)
-                {
-                    GetDualTimeFrameStocks(100, 60);
-
-                }
-                if (Convert.ToInt16(txtTam.Text) == -3)
+                //}
+                if (candleTime == -3)
                 {
                     if (!DONT_DELETE)
                     {
@@ -1173,19 +1167,52 @@ namespace _15MCE
 
                     }
                 }
+                if (candleTime >= -2)
+                {
+                    //if (orders.Rows.Count == 0)
+                    //{
+                    if (!DONT_DELETE) LoadDataCommon(5);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
 
 
-                if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69"))
+                    GetDualTimeFrameStocks(60, 5);
+                    stopwatch.Stop();
+                    LogStatus(Environment.NewLine + "Refreshed in :" + stopwatch.ElapsedMilliseconds / 1000 + Environment.NewLine);
+                    //}
+                }
+                if (candleTime > -2 && candleTime % 3 == 0)
+                {
+                    //if (orders.Rows.Count == 0)
+                    //{
+                    if (!DONT_DELETE) LoadDataCommon(15);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
+
+                    GetDualTimeFrameStocks(60, 15);
+                    stopwatch.Stop();
+                    LogStatus(Environment.NewLine + "Refreshed in :" + stopwatch.ElapsedMilliseconds / 1000 + Environment.NewLine);
+                    //}
+                }
+
+                /*
+                if ((txtTam.Text == "9" || txtTam.Text == "21" || txtTam.Text == "33" || txtTam.Text == "45" || txtTam.Text == "57" || txtTam.Text == "69" || txtTam.Text == "81"))
                 {
                     //if (orders.Rows.Count == 0)
                     //{
                     if (!DONT_DELETE) LoadDataCommon(60);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
+
                     GetDualTimeFrameStocks(100, 60);
-                    //} 
-
-
+                    stopwatch.Stop();
+                    LogStatus(Environment.NewLine + "Refreshed in :" + stopwatch.ElapsedMilliseconds / 1000 + Environment.NewLine);
+                    //}
                 }
                 UpdateOrders(60);
+                */
                 foreach (var xx in orderDetails)
 
                 {
@@ -1196,8 +1223,6 @@ namespace _15MCE
                         SoundPlayer snd = new SoundPlayer(NSA.Properties.Resources.ALARM);
                         snd.Play();
                     }
-
-
                 }
                 LogStatus("All orders placed within  " + (DateTime.Now - f1).Seconds);
                 orders.AcceptChanges();
@@ -4774,7 +4799,7 @@ namespace _15MCE
         private void goLiveTimer_Tick(object sender, EventArgs e)
         {
             var time = TokenChannel.GetTimeStamp60(Convert.ToInt32(txtTam.Text), CurrentTradingDate);
-            if (time.Hour == 15)
+            if (time.Hour == 16)
             {
                 var availableDates = allData.First().Value.First().Value.Where(a => a.TimeStamp.Date > time.Date);
 
@@ -4790,7 +4815,7 @@ namespace _15MCE
             //goLiveTimer.Stop();
             RefreshData();
             radLabelElement1.Text = $"Last 5 minute tick :{TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate).ToString()}";
-            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 12);
+            txtTam.Text = Convert.ToString(Convert.ToInt32(txtTam.Text) + 1);
 
 
         }
@@ -5128,7 +5153,7 @@ namespace _15MCE
         {
             try
             {
-                txtLog.Text += logText + Environment.NewLine;
+                txtLog.Text = Environment.NewLine + logText + txtLog.Text;
             }
             catch (Exception ex)
             {
@@ -5218,7 +5243,14 @@ namespace _15MCE
                     dr["Aentry"] = highestPNL;
                     dr["exlevel"] = string.Empty;
                     dr["stoploss"] = stoploss;
-                    dr["target"] = direction == "BM" ? ((close - Convert.ToDouble(dr["entry"])) * Convert.ToDouble(dr["quantity"])) : ((Convert.ToDouble(dr["entry"]) - close) * Convert.ToDouble(dr["quantity"]));
+                    var currentTareget = double.Parse(dr["Aentry"].ToString());
+
+                    var MTMvalue = CalMTM(dr);
+                    dr["target"] = MTMvalue;
+                    if (MTMvalue > currentTareget)
+                        dr["Aentry"] = MTMvalue;
+
+
 
 
                 }
@@ -5229,7 +5261,11 @@ namespace _15MCE
                 File.AppendAllText(@"C:\Jai Sri Thakur Ji\Nifty Analysis\errors.txt", System.Reflection.MethodBase.GetCurrentMethod() + " :- " + ex.Message);
             }
         }
-
+        public double CalMTM(DataRow dr)
+        {
+            double close = double.Parse(dr["ltp"].ToString());
+            return dr["direction"].ToString() == "BM" ? ((close - Convert.ToDouble(dr["entry"])) * Convert.ToDouble(dr["quantity"])) : ((Convert.ToDouble(dr["entry"]) - close) * Convert.ToDouble(dr["quantity"]));
+        }
         public void IncrementDecrement(string strategy, int value)
         {
             if (strategy.Contains("Continuation"))
@@ -5395,7 +5431,11 @@ namespace _15MCE
                 List<Candle> data = allData[period.ToString() + "minute"][scrip];
                 double directionBreakout = direction == "BM" ? bHigh : bLow;
                 if (candle.Stoploss == 0)
-                    candle.Stoploss = candle.AbCd.D;
+                    if (direction == "BM")
+                        candle.Stoploss = Math.Min(candle.AbCd.D, stopLossValue);
+                    else
+                        candle.Stoploss = Math.Max(candle.AbCd.D, stopLossValue);
+                else
                 if (candle.Leg2Stoploss == 0)
                     candle.Leg2Stoploss = candle.AbCd.D;
 
@@ -5447,7 +5487,7 @@ namespace _15MCE
                     if (direction == "SM")
                     {
                         var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
-                        var retLandmark = Math.Round(candle.AbCd.D - ret618, 1);
+                        var retLandmark = Math.Round(Math.Max(candle.AbCd.D, candle.High) - ret618, 1);
 
                         var pointDCandle = data.Where(a => a.TimeStamp.Date == candle.AbCd.DTime).OrderBy(b => b.High).LastOrDefault();
 
@@ -5496,13 +5536,14 @@ namespace _15MCE
                     else if (direction == "BM")
                     {
 
-                        var ret618 = Math.Abs(candle.AbCd.A - candle.AbCd.D) * 61.8 / 100;
-                        var retLandmark = Math.Round(candle.AbCd.D + ret618, 1);
+                        var ret618 = Math.Abs(candle.AbCd.C - candle.AbCd.D) * 61.8 / 100;
+                        var retLandmark = Math.Round(Math.Min(candle.AbCd.D, candle.Low) + ret618, 1);
 
                         var pointDCandle = data.Where(a => a.TimeStamp.Date == candle.AbCd.DTime).OrderBy(b => b.Low).FirstOrDefault();
-
+                        var top = data.Where(a => a.TimeStamp >= entryCandle
+                        && a.TimeStamp <= drCurrent.TimeStamp).OrderByDescending(b => b.High).FirstOrDefault().High;
                         List<ABCD> abcds = new List<ABCD>();
-                        if (drCurrent.High >= retLandmark)
+                        if (top >= retLandmark)
                         {
                             abcds = _cf.GetAllABCDBullTrend(data, pointDCandle, drCurrent);
                         }
@@ -6436,7 +6477,7 @@ namespace _15MCE
                     entryCandle.TimeCycle.AppCycle618 == c.TimeStamp
                     || entryCandle.TimeCycle.AppCycle1000 == c.TimeStamp
                     || entryCandle.TimeCycle.AppCycle1618 == c.TimeStamp)
-                     && c.TimeStamp >= entryCandle.AbCd.DTime)
+                     )
                 {
                     StringBuilder newCopy = new StringBuilder();
                     newCopy.Append(cdTransformation.ToString());
@@ -6459,8 +6500,8 @@ namespace _15MCE
                     || entryCandle.TimeCycle.Cycle500 == c.TimeStamp
                     || entryCandle.TimeCycle.Cycle618 == c.TimeStamp
                     || entryCandle.TimeCycle.Cycle1000 == c.TimeStamp
-                    || entryCandle.TimeCycle.Cycle1618 == c.TimeStamp
-                    ) && c.TimeStamp >= entryCandle.AbCd.DTime)
+                    //|| entryCandle.TimeCycle.Cycle1618 == c.TimeStamp
+                    ))
                 {
                     StringBuilder newCopy = new StringBuilder();
                     newCopy.Append(cdTransformation.ToString());

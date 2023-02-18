@@ -76,7 +76,7 @@ namespace Model
                 {
                     return OscillatorStatus.Bullish;
                 }
-                
+
                 else if (this.fast < this.slow)
                 {
                     return OscillatorStatus.Bearish;
@@ -94,11 +94,11 @@ namespace Model
             get
             {
 
-                if (this.slow > OB )
+                if (this.slow > OB || this.fast > OB)
                 {
                     return OscillatorPriceRange.Overbought;
                 }
-                else if (this.slow < this.OS )
+                else if (this.slow < this.OS || this.fast < this.OS)
                 {
                     return OscillatorPriceRange.Oversold;
                 }

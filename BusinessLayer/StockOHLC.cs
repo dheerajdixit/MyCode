@@ -24,6 +24,7 @@ namespace BAL
         CommonFunctions _cf;
         public StockOHLC()
         {
+
             _cf = new CommonFunctions();
         }
         public Dictionary<string, List<Candle>> GetOHLC(DateTime startDate, DateTime endDate, int period, ProgressDelegate myProgres)
@@ -46,6 +47,7 @@ namespace BAL
                     lowest.Enqueue(candle2.Low);
                     highest.Enqueue(candle2.High);
                     candle2.PreviousCandle = candle;
+                    candle2.PreviousCandle.NextCandle = candle2;
                     candle = candle2;
                     candle2.Lowest = ((IEnumerable<double>)lowest).Min();
                     candle2.Highest = ((IEnumerable<double>)highest).Max();
@@ -81,6 +83,7 @@ namespace BAL
                     lowest.Enqueue(candle2.Low);
                     highest.Enqueue(candle2.High);
                     candle2.PreviousCandle = candle;
+                    candle2.PreviousCandle.NextCandle = candle2;
                     candle = candle2;
                     candle2.Lowest = ((IEnumerable<double>)lowest).Min();
                     candle2.Highest = ((IEnumerable<double>)highest).Max();
@@ -457,7 +460,10 @@ namespace BAL
 
             enumerable = from b in enumerable
                          where
-                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified)) && b.TimeStamp.Year == tradingDate.Year
+                         ((b.AllIndicators.Stochastic?.OscillatorReversal != OscillatorReversal.NotIdentified))
+                         //&& b.TimeStamp.Date==tradingDate.Date
+                         //&& b.TimeStamp.Year == 2021 && b.TimeStamp.Month == 8
+                         //&& b.TimeStamp.Day == 27
                          select b;
 
 
@@ -467,7 +473,8 @@ namespace BAL
                 DateTime reverstalTimeStmap = c.TimeStamp;
 
                 //Candle lastCandleOnLargeTimeFrame =
-                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && c.AllIndicators.Stochastic?.OscillatorPriceRange != OscillatorPriceRange.Overbought)
+                if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal
+                    && c.PreviousCandle.AllIndicators.Stochastic?.OscillatorPriceRange== OscillatorPriceRange.Oversold)
                 {
 
                     var higherTimestamp = reverstalTimeStmap;
@@ -475,123 +482,127 @@ namespace BAL
 
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-
-
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bullish /*&& g.AllIndicators.Stochastic.OscillatorPriceRange != OscillatorPriceRange.Overbought*/)
+                        if (g.AllIndicators.Stochastic.OscillatorPriceRange == OscillatorPriceRange.Oversold)
                         {
-                            var trend = _cf.GetMajorBullTrend(higherTimeFrame, reverstalTimeStmap, c);
-                            var lastHigherReversal = trend?.TrendStartCandle;
-                            //lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold).LastOrDefault();
-                            if (lastHigherReversal != null)
+                            foreach (var trend in _cf.GetProbableBullTrends(higherTimeFrame, reverstalTimeStmap, c))
                             {
-                                if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
+                                var lastHigherReversal = trend?.TrendStartCandle;
+                                //lastHigherReversal = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap && b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold).LastOrDefault();
+                                if (lastHigherReversal != null)
                                 {
-                                    //var maxValue = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).OrderBy(b=>b.High).LastOrDefault();
-                                    var pointACandle = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).OrderBy(b => b.High).LastOrDefault();
-
-                                    var minValue = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
-                                    var first = lastHigherReversal;
-                                    //var pointA = maxValue;
-                                    var pointC = minValue;
-                                    var proLow = lastHigherReversal.Low;
-
-                                    var pointA = pointACandle.High;
-                                    foreach (var bc in _cf.GetAllABCDBearTrend(higherTimeFrame, pointACandle, trend.TrendContinuationCandle))
+                                    if ((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes >= 5)
                                     {
+                                        //var maxValue = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).OrderBy(b=>b.High).LastOrDefault();
+                                        var pointACandle = higherTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).OrderBy(b => b.High).LastOrDefault();
 
-                                        //retracement
-                                        var trend1 = (pointA - trend.TrendStartCandle.Low);
-                                        var ret50 = trend1 * 50 / 100;
-                                        var ret618 = trend1 * 61.8 / 100;
-                                        var ret786 = trend1 * 78.6 / 100;
-
-
+                                        var minValue = lowerTimeFrame.Where(a => a.TimeStamp >= lastHigherReversal.TimeStamp && a.TimeStamp <= reverstalTimeStmap).Min(b => b.Low);
+                                        var first = lastHigherReversal;
+                                        //var pointA = maxValue;
+                                        var pointC = minValue;
+                                        var proLow = lastHigherReversal.Low;
                                         var pointD = trend.TrendContinuationCandle.Low;
-                                        double diffThreshold = _cf.GetThreshold(selctedIdea.Interval);
-
-                                        double App100 = bc.C - (pointA - bc.B);
-                                        double App1618 = bc.C - ((pointA - bc.B) + (pointA - bc.B) * 0.618);
-                                        double App2618 = bc.C - (2 * (pointA - bc.B) + (pointA - bc.B) * 0.618);
-                                        double priceAtRet786 = (pointA - ret786);
-                                        double priceAtRet618 = (pointA - ret618);
-                                        double priceAtRet50 = (pointA - ret50);
-
-                                        var diffApp100Ret786 = (Math.Abs(priceAtRet786 - App100) / App100) * 100;
-                                        var diffApp100Ret618 = (Math.Abs(priceAtRet618 - App100) / App100) * 100;
-                                        var diffApp100Ret50 = (Math.Abs(priceAtRet50 - App100) / App100) * 100;
-
-                                        var diffApp161Ret786 = (Math.Abs(priceAtRet786 - App1618) / App1618) * 100;
-                                        var diffApp161Ret618 = (Math.Abs(priceAtRet618 - App1618) / App1618) * 100;
-                                        var diffApp161Ret50 = (Math.Abs(priceAtRet50 - App1618) / App1618) * 100;
-
-                                        var diffApp261Ret786 = (Math.Abs(priceAtRet786 - App2618) / App2618) * 100;
-                                        var diffApp261Ret618 = (Math.Abs(priceAtRet618 - App2618) / App2618) * 100;
-                                        var diffApp261Ret50 = (Math.Abs(priceAtRet50 - App2618) / App2618) * 100;
-
-
-
-                                        bool hitRet50 = trend.TrendContinuationCandle.Low <= pointA - ret50 && c.Close > (pointACandle.High - ret50);
-                                        bool hitRet62 = trend.TrendContinuationCandle.Low <= pointA - ret618 && c.Close > (pointACandle.High - ret618);
-                                        bool hitRet78 = trend.TrendContinuationCandle.Low <= pointA - ret786 && c.Close > (pointACandle.High - ret786);
-                                        bool doubleSupport = ((diffApp100Ret50 < diffThreshold && hitRet50)
-                                            || (diffApp100Ret618 < diffThreshold && hitRet62)
-                                            || (diffApp100Ret786 < diffThreshold && hitRet78))
-                                            ||
-                                        ((diffApp161Ret50 < diffThreshold && hitRet50)
-                                            || (diffApp161Ret618 < diffThreshold && hitRet62)
-                                            || (diffApp161Ret786 < diffThreshold && hitRet78))
-                                            ||
-                                        ((diffApp261Ret50 < diffThreshold && hitRet50)
-                                            || (diffApp261Ret618 < diffThreshold && hitRet62)
-                                            || (diffApp261Ret786 < diffThreshold && hitRet78));
-
-                                        if ((hitRet50 || hitRet62 || hitRet78) && doubleSupport)
-                                        //if (c.Low <= dif50 && /* changehere  ABC && */ pointCc > 0 && pointD > trednStartValue)
+                                        var pointA = pointACandle.High;
+                                        //var maxForCurrentDay = lowerTimeFrame.Where(a=>a.TimeStamp.Date== c.TimeStamp.da)
+                                        foreach (var bc in _cf.GetAllABCDBearTrend(higherTimeFrame, pointACandle, trend.TrendContinuationCandle))
                                         {
-                                            c.IsLeg1Open = true;
-                                            c.Trade = Trade.BUY;
-                                            c.AbCd = new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = bc.B, BTime = bc.BTime, C = bc.C, CTime = bc.CTime, D = pointD, DTime = trend.TrendContinuationCandle.TimeStamp };
-                                            if (true)
+                                            var ds = _cf.CheckDoubleSupport(bc, c, trend, pointA);
+
+                                            if (ds.SupportType != SupportType.None)
+                                            //if (c.Low <= dif50 && /* changehere  ABC && */ pointCc > 0 && pointD > trednStartValue)
                                             {
-                                                StringBuilder sb = new StringBuilder();
-                                                sb.Append("  Name : ");
-                                                sb.Append(c.Stock);
-                                                sb.Append("  TimeStamp : ");
-                                                sb.Append(c.TimeStamp);
-                                                sb.Append("  LT : ");
-                                                sb.Append(selctedIdea.Interval2);
-                                                sb.Append("  HT : ");
-                                                sb.Append(selctedIdea.Interval);
-                                                sb.Append("  TrendStartValue : ");
-                                                sb.Append(trend.TrendStartCandle.Low);
-                                                sb.Append("  TrendStartDate : ");
-                                                sb.Append(trend.TrendStartCandle.TimeStamp);
-                                                sb.Append("  A : ");
-                                                sb.Append(pointA);
-                                                sb.Append("  A Timestamp : ");
-                                                sb.Append(bc.ATime);
-                                                sb.Append("  B : ");
-                                                sb.Append(bc.B);
-                                                sb.Append("  B TimeStamp : ");
-                                                sb.Append(bc.BTime);
-                                                sb.Append("  C : ");
-                                                sb.Append(bc.C);
-                                                sb.Append("  C Timestamp : ");
-                                                sb.Append(bc.CTime);
-                                                sb.Append("  D : ");
-                                                sb.Append(pointD);
-                                                sb.Append("  D Timestamp : ");
-                                                sb.Append(bc.DTime);
-                                                sb.Append("  HigherTimeFrameReversal : ");
-                                                sb.Append(lastHigherReversal.TimeStamp);
-                                                sb.Append("  Trade : ");
-                                                sb.Append(c.Trade);
-                                                sb.Append(Environment.NewLine);
+                                                var majCount = higherTimeFrame.Count();
+                                                var cycleCouuntAB = higherTimeFrame.Where(a => a.TimeStamp >= bc.ATime && a.TimeStamp < bc.BTime).Count();
+                                                var indexC = higherTimeFrame.IndexOf(higherTimeFrame.Where(a => a.TimeStamp == bc.CTime).FirstOrDefault());
 
-                                                WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
-                                                goto CONTINUE;
+                                                var appCycleCount618 = Convert.ToInt32(cycleCouuntAB * 61.8 / 100);
+                                                if (majCount >= indexC + appCycleCount618 + 1)
+                                                    trend.TimeCycle.AppCycle618 = higherTimeFrame[indexC + appCycleCount618].TimeStamp;
+                                                var appCycleCount1000 = Convert.ToInt32(cycleCouuntAB * 100 / 100);
+                                                if (majCount >= indexC + appCycleCount1000 + 1)
+                                                    trend.TimeCycle.AppCycle1000 = higherTimeFrame[indexC + appCycleCount1000].TimeStamp;
+                                                var appCycleCount1618 = Convert.ToInt32(cycleCouuntAB * 161.8 / 100);
+                                                if (majCount >= indexC + appCycleCount1618 + 1)
+                                                    trend.TimeCycle.AppCycle1618 = higherTimeFrame[indexC + appCycleCount1618].TimeStamp;
+                                                //List<DateTime> dateTimes = new List<DateTime>();
+
+                                                if (((trend.TimeCycle != null && c.TimeStamp >= trend.TimeCycle.Cycle382 && trend.TimeCycle.Cycle382.Year > 1
+                                                    && c.TimeStamp <= trend.TimeCycle.Cycle618 && trend.TimeCycle.Cycle618.Year > 1
+                                                    ) && c.TimeStamp >= trend.TimeCycle.AppCycle618)
+
+                                                    )
+                                                {
+
+                                                    c.TimeCycle = trend.TimeCycle;
+                                                    c.IsLeg1Open = true;
+                                                    c.Trade = Trade.BUY;
+                                                    c.AbCd = new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = bc.B, BTime = bc.BTime, C = bc.C, CTime = bc.CTime, D = pointD, DTime = trend.TrendContinuationCandle.TimeStamp };
+                                                    if (true)
+                                                    {
+                                                        c.TrendStartCandle = trend.TrendStartCandle;
+                                                        c.ReversalCandle = c;
+                                                        c.InRet = ds.InternalRetracement._internalRetracementValue;
+                                                        if (ds.AlternatePriceProjection != null)
+                                                            c.App = ds.AlternatePriceProjection._alternatePriceProjectionValue;
+                                                        if (ds.ExternalRetracement != null)
+                                                            c.ExRet = ds.ExternalRetracement._externalRetracementValue;
+                                                        StringBuilder sb = new StringBuilder();
+                                                        if (ds.AlternatePriceProjection == null)
+                                                            sb.Append($"{c.Stock} , {c.Trade} , {Enum.GetName(typeof(InternalRetracementType), ds.InternalRetracement._internalRetracementType)} ," +
+                                                                $" {Enum.GetName(typeof(ExternalRetracementType), ds.ExternalRetracement._externalRetracementType)} ," +
+
+                                                                   $" {Enum.GetName(typeof(SupportType), ds.SupportType)} ," +
+                                                                $" {Math.Abs(c.Close - bc.D) * (500000 / c.Close)}");
+                                                        else if (ds.ExternalRetracement != null)
+                                                            sb.Append($"{c.Stock} , {c.Trade} , {Enum.GetName(typeof(InternalRetracementType), ds.InternalRetracement._internalRetracementType)} ," +
+                                                                $" {Enum.GetName(typeof(ExternalRetracementType), ds.ExternalRetracement._externalRetracementType)} ," +
+                                                                $" {Enum.GetName(typeof(AlternatePriceProjectionType), ds.AlternatePriceProjection._alternatePriceProjectionType)} ," +
+                                                                   $" {Enum.GetName(typeof(SupportType), ds.SupportType)} ," +
+                                                                $" {Math.Abs(c.Close - bc.D) * (500000 / c.Close)}");
+                                                        else
+                                                            sb.Append($"{c.Stock} , {c.Trade} , {Enum.GetName(typeof(InternalRetracementType), ds.InternalRetracement._internalRetracementType)} ," +
+
+                                                                 $" {Enum.GetName(typeof(AlternatePriceProjectionType), ds.AlternatePriceProjection._alternatePriceProjectionType)} ," +
+                                                                    $" {Enum.GetName(typeof(SupportType), ds.SupportType)} ," +
+                                                                 $" {Math.Abs(c.Close - bc.D) * (500000 / c.Close)}");
+
+                                                        sb.Append("  TimeStamp : ");
+                                                        sb.Append(c.TimeStamp);
+                                                        sb.Append("  LT : ");
+                                                        sb.Append(selctedIdea.Interval2);
+                                                        sb.Append("  HT : ");
+                                                        sb.Append(selctedIdea.Interval);
+
+                                                        sb.Append("  TrendStartValue : ");
+                                                        sb.Append(trend.TrendStartCandle.Low);
+                                                        sb.Append("  TrendStartDate : ");
+                                                        sb.Append(trend.TrendStartCandle.TimeStamp);
+                                                        sb.Append("  A : ");
+                                                        sb.Append(pointA);
+                                                        sb.Append("  A Timestamp : ");
+                                                        sb.Append(bc.ATime);
+                                                        sb.Append("  B : ");
+                                                        sb.Append(bc.B);
+                                                        sb.Append("  B TimeStamp : ");
+                                                        sb.Append(bc.BTime);
+                                                        sb.Append("  C : ");
+                                                        sb.Append(bc.C);
+                                                        sb.Append("  C Timestamp : ");
+                                                        sb.Append(bc.CTime);
+                                                        sb.Append("  D : ");
+                                                        sb.Append(pointD);
+                                                        sb.Append("  D Timestamp : ");
+                                                        sb.Append(bc.DTime);
+                                                        sb.Append("  HigherTimeFrameReversal : ");
+                                                        sb.Append(lastHigherReversal.TimeStamp);
+
+                                                        sb.Append(Environment.NewLine);
+
+                                                        WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
+                                                        goto CONTINUE;
+                                                    }
+                                                }
+
                                             }
-
                                         }
                                     }
                                 }
@@ -600,14 +611,14 @@ namespace BAL
                     }
                 }
 
-                else if (c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && c.AllIndicators.Stochastic?.OscillatorPriceRange != OscillatorPriceRange.Oversold)
+                else if ( c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && c.AllIndicators.Stochastic?.fast > 50)
                 {
                     var higherTimestamp = reverstalTimeStmap;
                     var g = higherTimeFrame.Where(b => b.TimeStamp < reverstalTimeStmap.Date).LastOrDefault();
 
                     if (g != null && g.AllIndicators != null && g.AllIndicators.Stochastic != null)
                     {
-                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish/* && g.AllIndicators.Stochastic.OscillatorPriceRange != OscillatorPriceRange.Oversold*/)
+                        if (g.AllIndicators.Stochastic.OscillatorStatus == OscillatorStatus.Bearish && g.AllIndicators.Stochastic.fast > 50)
                         {
                             var trend = _cf.GetMajorBearTrend(higherTimeFrame, reverstalTimeStmap, c);
                             var lastHigherReversal = trend?.TrendStartCandle;
@@ -638,7 +649,7 @@ namespace BAL
 
 
                                         var pointD = trend.TrendContinuationCandle.High;
-                                        double diffThreshold = _cf.GetThreshold(selctedIdea.Interval);
+                                        double diffThreshold = _cf.GetThreshold(c);
 
                                         double App100 = bc.C + (bc.B - pointA);
                                         double App1618 = bc.C + (bc.B - pointA) + (bc.B - pointA) * 0.618;
@@ -675,47 +686,48 @@ namespace BAL
 
                                         if ((hitRet50 || hitRet62 || hitRet78) && doubleSupport)
                                         {
-                                            c.Trade = Trade.SELL;
-                                            c.AbCd = new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = bc.B, BTime = bc.BTime, C = bc.C, CTime = bc.CTime, D = pointD, DTime = trend.TrendContinuationCandle.TimeStamp };
-                                            if (true)
+                                            if (Math.Abs(c.Close - bc.D) * (500000 / c.Close) < 15000)
                                             {
-                                                StringBuilder sb = new StringBuilder();
-                                                sb.Append("  Name : ");
-                                                sb.Append(c.Stock);
-                                                sb.Append("  TimeStamp : ");
-                                                sb.Append(c.TimeStamp);
-                                                sb.Append("  LT : ");
-                                                sb.Append((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
-                                                sb.Append("  HT : ");
-                                                sb.Append((higherTimeFrame.Last().TimeStamp - higherTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
-                                                sb.Append("  TrendStartValue : ");
-                                                sb.Append(trend.TrendStartCandle.High);
-                                                sb.Append("  TrendStartDate : ");
-                                                sb.Append(trend.TrendStartCandle.TimeStamp);
-                                                sb.Append("  A : ");
-                                                sb.Append(pointA);
-                                                sb.Append("  A Timestamp : ");
-                                                sb.Append(bc.ATime);
-                                                sb.Append("  B : ");
-                                                sb.Append(bc.B);
-                                                sb.Append("  B TimeStamp : ");
-                                                sb.Append(bc.BTime);
-                                                sb.Append("  C : ");
-                                                sb.Append(bc.C);
-                                                sb.Append("  C Timestamp : ");
-                                                sb.Append(bc.CTime);
-                                                sb.Append("  D : ");
-                                                sb.Append(pointD);
-                                                sb.Append("  D Timestamp : ");
-                                                sb.Append(bc.DTime);
-                                                sb.Append("  App : ");
-                                                sb.Append("  HigherTimeFrameReversal : ");
-                                                sb.Append(lastHigherReversal.TimeStamp);
-                                                sb.Append("  Trade : ");
-                                                sb.Append(c.Trade);
-                                                sb.Append(Environment.NewLine);
-                                                WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
-                                                goto CONTINUE;
+                                                c.Trade = Trade.SELL;
+                                                c.AbCd = new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = bc.B, BTime = bc.BTime, C = bc.C, CTime = bc.CTime, D = pointD, DTime = trend.TrendContinuationCandle.TimeStamp };
+                                                if (true)
+                                                {
+                                                    StringBuilder sb = new StringBuilder();
+                                                    sb.Append($"{c.Stock} , {c.Trade} , {Math.Abs(c.Close - bc.D) * (500000 / c.Close)}");
+                                                    sb.Append("  TimeStamp : ");
+                                                    sb.Append(c.TimeStamp);
+                                                    sb.Append("  LT : ");
+                                                    sb.Append((lowerTimeFrame.Last().TimeStamp - lowerTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  HT : ");
+                                                    sb.Append((higherTimeFrame.Last().TimeStamp - higherTimeFrame.Last().PreviousCandle.TimeStamp).TotalMinutes);
+                                                    sb.Append("  TrendStartValue : ");
+                                                    sb.Append(trend.TrendStartCandle.High);
+                                                    sb.Append("  TrendStartDate : ");
+                                                    sb.Append(trend.TrendStartCandle.TimeStamp);
+                                                    sb.Append("  A : ");
+                                                    sb.Append(pointA);
+                                                    sb.Append("  A Timestamp : ");
+                                                    sb.Append(bc.ATime);
+                                                    sb.Append("  B : ");
+                                                    sb.Append(bc.B);
+                                                    sb.Append("  B TimeStamp : ");
+                                                    sb.Append(bc.BTime);
+                                                    sb.Append("  C : ");
+                                                    sb.Append(bc.C);
+                                                    sb.Append("  C Timestamp : ");
+                                                    sb.Append(bc.CTime);
+                                                    sb.Append("  D : ");
+                                                    sb.Append(pointD);
+                                                    sb.Append("  D Timestamp : ");
+                                                    sb.Append(bc.DTime);
+                                                    sb.Append("  App : ");
+                                                    sb.Append("  HigherTimeFrameReversal : ");
+                                                    sb.Append(lastHigherReversal.TimeStamp);
+
+                                                    sb.Append(Environment.NewLine);
+                                                    WriteToFileThreadSafe(sb.ToString(), @"C:\Jai Sri Thakur Ji\Nifty Analysis\MyFinidings.txt");
+                                                    goto CONTINUE;
+                                                }
                                             }
                                         }
                                     }
@@ -1058,18 +1070,18 @@ namespace BAL
                     double close = gap.Value.Close;
                     double mtm = 0.0;
                     double stopLossRange = target.StopLossRange;
-            //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
+                    //int quantity = Convert.ToInt32(200000 / gap.Value.Close);
                     int quantity = Convert.ToInt32((double)(selectedIdea.Risk / stopLossRange <= 0 ? 1 : selectedIdea.Risk / stopLossRange));
                     int num5 = quantity;
                     double stoploss = target.Stoploss;
-            //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
+                    //stoploss = Convert.ToDouble(gap.Value.Trade == Trade.BUY ? gap.Value.Close - (6000 / quantity) : gap.Value.Close + (6000 / quantity));
                     double num7 = stoploss;
                     double num8 = target.BookProfit1;
                     double num9 = target.BookProfit2;
                     List<Candle> list = (from b in myTestData[gap.Value.Stock]
                                          where (b.TimeStamp.Date == gap.Value.Date.Date) && (b.TimeStamp > gap.Value.Date)
                                          select b).OrderBy(b => b.TimeStamp).ToList<Candle>();
-            //list.Remove(list.Last());
+                    //list.Remove(list.Last());
                     List<Candle> list2 = (from b in myTestData[gap.Value.Stock]
                                           where b.TimeStamp.Date == gap.Value.Date.Date
                                           select b).ToList<Candle>();

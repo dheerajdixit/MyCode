@@ -49,3 +49,13 @@ C:\h0\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
 C:\h0\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
 C:\h0\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
 C:\h0\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb
+C:\b\MyCode\CommonLayer\bin\Debug\CommonLayer.dll
+C:\b\MyCode\CommonLayer\bin\Debug\CommonLayer.pdb
+C:\b\MyCode\CommonLayer\bin\Debug\ModelLayer.dll
+C:\b\MyCode\CommonLayer\bin\Debug\Newtonsoft.Json.dll
+C:\b\MyCode\CommonLayer\bin\Debug\ModelLayer.pdb
+C:\b\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.AssemblyReference.cache
+C:\b\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CoreCompileInputs.cache
+C:\b\MyCode\CommonLayer\obj\Debug\CommonLayer.csproj.CopyComplete
+C:\b\MyCode\CommonLayer\obj\Debug\CommonLayer.dll
+C:\b\MyCode\CommonLayer\obj\Debug\CommonLayer.pdb

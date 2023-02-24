@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -186,133 +187,67 @@ namespace NSA
                 return false;
             }
         }
+        //private OscillatorReversal GetOscillatorReversal(OscillatorReversal oscillatorReversal)
+        //{
+        //    if (oscillatorReversal == OscillatorReversal.BullishReversal)
+        //        return OscillatorPriceRange.Oversold;
+        //    else if (oscillatorReversal == OscillatorReversal.BearishReversal)
+        //        return OscillatorPriceRange.Overbought;
 
-        public List<Trend> GetProbableBullTrends(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
+        //    return OscillatorPriceRange.NotIdentified;
+        //}
+
+        public OscillatorReversal GetReversal(Candle c)
         {
+            if (c.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BullishReversal)
+            {
+                return OscillatorReversal.BearishReversal;
+            }
+            else
+            {
+                return OscillatorReversal.BullishReversal;
+            }
+        }
+        public List<Trend> GetProbableTrends(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
+        {
+            object[] objects = new object[] { OscillatorReversal.BearishReversal, OscillatorReversal.BullishReversal };
 
             List<Trend> allPossibleTrends = new List<Trend>();
             Trend bullTrend;
-            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date &&
-                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal)).OrderBy(a => a.TimeStamp).LastOrDefault();
+            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp &&
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == GetReversal(reversalCandle))).OrderBy(a => a.TimeStamp).LastOrDefault();
 
             if (tradingPoint != null)
             {
-                var listofTradingpoints = higherTimeFrame.Where(b => b.Low < tradingPoint.Low && b.TimeStamp < reversalTimeStamp.Date &&
-                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal)).OrderByDescending(b => b.TimeStamp);
-                var l = double.MaxValue;
-                foreach (var tp in listofTradingpoints)
+                IEnumerable<Candle> listofTradingpoints;
+                if (reversalCandle.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BullishReversal)
+                    listofTradingpoints = higherTimeFrame.Where(b => b.Low < tradingPoint.Low);
+                else
+                    listofTradingpoints = higherTimeFrame.Where(b => b.High > tradingPoint.High);
+
+                listofTradingpoints = listofTradingpoints.Where(b => b.TimeStamp < reversalTimeStamp &&
+                    (b.AllIndicators.Stochastic?.OscillatorReversal == reversalCandle.AllIndicators.Stochastic.OscillatorReversal)).OrderByDescending(b => b.TimeStamp);
+
+
+                if (reversalCandle.AllIndicators.Stochastic.OscillatorReversal == OscillatorReversal.BullishReversal)
                 {
-                    if (tp.Low < l)
+                    var l = double.MaxValue;
+                    foreach (var tp in listofTradingpoints)
                     {
-                        bullTrend = new Trend();
-
-                        bullTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp.Date && c.TimeStamp.Date >= tradingPoint.TimeStamp.Date.AddDays(-4)).OrderBy(b => b.Low).FirstOrDefault();
-
-                        bullTrend.TrendStartCandle = higherTimeFrame.Where(a => a.TimeStamp >= tp.TimeStamp.AddDays(-4)
-                        && a.TimeStamp <= tp.TimeStamp.AddDays(4) && a.TimeStamp.Date < reversalTimeStamp.Date).OrderBy(a => a.Low).FirstOrDefault();
-                        var currentlow = bullTrend.TrendStartCandle.Low;
-
-                        var trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
-                        var trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
-                       && a.TimeStamp <= trendFinishtimestamp).Count();
-                        trendTimeFrame = Convert.ToInt32(trendTimeFrame + (trendTimeFrame * 61.8) / 100);
-                        trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
-                        trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
-                      && a.TimeStamp <= trendFinishtimestamp).Count();
-                        var tbfb = new TrendBasedFibTime();
-
-                        var checkIndex2 = higherTimeFrame.IndexOf(higherTimeFrame.Where(a => a.TimeStamp == trendFinishtimestamp).FirstOrDefault());
-                        var candleCount = higherTimeFrame.Count();
-                        var idxCycle382 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 38.2 / 100));
-                        var idxCycle500 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 50.0 / 100));
-                        var idxCycle618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 61.8 / 100));
-                        var idxCycle1000 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 100.0 / 100));
-                        var idxCycle1618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 161.8 / 100));
-                        if (candleCount > idxCycle382)
-                            tbfb.Cycle382 = higherTimeFrame[idxCycle382].TimeStamp;
-                        if (candleCount > idxCycle618)
-                            tbfb.Cycle618 = higherTimeFrame[idxCycle618].TimeStamp;
-                        if (candleCount > idxCycle500)
-                            tbfb.Cycle500 = higherTimeFrame[idxCycle500].TimeStamp;
-                        if (candleCount > idxCycle1000)
-                            tbfb.Cycle1000 = higherTimeFrame[idxCycle1000].TimeStamp;
-                        if (candleCount > idxCycle1618)
-                            tbfb.Cycle1618 = higherTimeFrame[idxCycle1618].TimeStamp;
-                        bullTrend.TimeCycle = tbfb;
-
-                        allPossibleTrends.Add(bullTrend);
-                        l = bullTrend.TrendStartCandle.Low;
-                    }
-                }
-            }
-            return allPossibleTrends;
-
-        }
-        public Trend GetMajorBullTrend(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
-        {
-            Trend bullTrend = new Trend();
-            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date &&
-                    (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal)).OrderBy(b => b.Low).LastOrDefault();
-
-
-
-            if (tradingPoint != null)
-            {
-                bullTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp.Date && c.TimeStamp.Date >= tradingPoint.TimeStamp.Date.AddDays(-4)).OrderBy(b => b.Low).FirstOrDefault();
-
-                var NootherReversals = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date
-            && b.TimeStamp > bullTrend.TrendContinuationCandle.TimeStamp).Count(c => c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal);
-                var currentStatus = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date).OrderBy(a => a.TimeStamp).LastOrDefault().AllIndicators.Stochastic?.OscillatorStatus;
-                var currentPriceRange = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date).OrderBy(a => a.TimeStamp).LastOrDefault().AllIndicators.Stochastic?.OscillatorPriceRange;
-                if ((currentPriceRange == OscillatorPriceRange.Oversold))
-                {
-                    var lastCorrectionReversal = higherTimeFrame.Where(b => b.TimeStamp < tradingPoint.TimeStamp &&
-                            (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
-                           ).LastOrDefault();
-                    if (lastCorrectionReversal != null)
-                    {
-
-                        var bullishReversal = higherTimeFrame.Where(b => b.TimeStamp < lastCorrectionReversal.TimeStamp &&
-                                (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BullishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Oversold)
-                               && b.Low <= bullTrend.TrendContinuationCandle.Low
-                               ).LastOrDefault();
-
-
-                        if (bullishReversal != null)
+                        if (tp.Low < l)
                         {
-                            bullTrend.TrendStartCandle = higherTimeFrame.Where(e => e.TimeStamp >= bullishReversal.TimeStamp.AddDays(-4) && e.TimeStamp < lastCorrectionReversal.TimeStamp).OrderBy(a => a.Low).FirstOrDefault();
-                            //bullTrend.ReversalCandle = tradingPoint;
+                            bullTrend = new Trend();
+
+                            bullTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp && c.TimeStamp >= tradingPoint.GetLast4thCandle.TimeStamp).OrderBy(b => b.Low).FirstOrDefault();
+
+                            bullTrend.TrendStartCandle = higherTimeFrame.Where(a => a.TimeStamp >= tp.GetLast4thCandle.TimeStamp
+                            && a.TimeStamp <= tp.GetNext4thCandle.TimeStamp && a.TimeStamp < reversalTimeStamp).OrderBy(a => a.Low).FirstOrDefault();
                             var currentlow = bullTrend.TrendStartCandle.Low;
 
                             var trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
                             var trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
                            && a.TimeStamp <= trendFinishtimestamp).Count();
                             trendTimeFrame = Convert.ToInt32(trendTimeFrame + (trendTimeFrame * 61.8) / 100);
-
-                            var checkIndex1 = higherTimeFrame.IndexOf(bullTrend.TrendStartCandle);
-
-                            if (checkIndex1 - trendTimeFrame < 0)
-                                return new Trend();
-                            var checkCandle = higherTimeFrame[checkIndex1 - trendTimeFrame];
-                            var checkLowCandle = higherTimeFrame.Where(a => a.TimeStamp < bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp >= checkCandle.TimeStamp).OrderBy(b => b.Low).FirstOrDefault();
-                            var checkLow = checkLowCandle.Low;
-
-
-
-                            while (checkLow < currentlow)
-                            {
-                                currentlow = checkLow;
-                                bullTrend.TrendStartCandle = checkLowCandle;
-
-                                trendFinishtimestamp = checkLowCandle.TimeStamp;
-                                checkIndex1 = higherTimeFrame.IndexOf(checkLowCandle);
-                                if (checkIndex1 - trendTimeFrame < 0)
-                                    return new Trend();
-                                checkCandle = higherTimeFrame[checkIndex1 - trendTimeFrame];
-                                checkLowCandle = higherTimeFrame.Where(a => a.TimeStamp < checkLowCandle.TimeStamp && a.TimeStamp >= checkCandle.TimeStamp).OrderBy(b => b.Low).FirstOrDefault();
-                                checkLow = checkLowCandle.Low;
-                            }
-
                             trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.High).LastOrDefault().TimeStamp;
                             trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
                           && a.TimeStamp <= trendFinishtimestamp).Count();
@@ -336,29 +271,68 @@ namespace NSA
                             if (candleCount > idxCycle1618)
                                 tbfb.Cycle1618 = higherTimeFrame[idxCycle1618].TimeStamp;
                             bullTrend.TimeCycle = tbfb;
+
+                            allPossibleTrends.Add(bullTrend);
+                            l = bullTrend.TrendStartCandle.Low;
                         }
                     }
+                }
+                else
+                {
+                    {
+                        var l = 0.0;
+                        foreach (var tp in listofTradingpoints)
+                        {
+                            if (tp.High > l)
+                            {
+                                bullTrend = new Trend();
 
+                                bullTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp && c.TimeStamp >= tradingPoint.GetLast4thCandle.TimeStamp).OrderByDescending(b => b.High).FirstOrDefault();
+
+                                bullTrend.TrendStartCandle = higherTimeFrame.Where(a => a.TimeStamp >= tp.GetLast4thCandle.TimeStamp
+                                && a.TimeStamp <= tp.GetNext4thCandle.TimeStamp && a.TimeStamp < reversalTimeStamp).OrderByDescending(a => a.High).FirstOrDefault();
+                                var currentHigh = bullTrend.TrendStartCandle.High;
+
+                                var trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.Low).FirstOrDefault().TimeStamp;
+                                var trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
+                               && a.TimeStamp <= trendFinishtimestamp).Count();
+                                trendTimeFrame = Convert.ToInt32(trendTimeFrame + (trendTimeFrame * 61.8) / 100);
+                                trendFinishtimestamp = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp && a.TimeStamp <= reversalTimeStamp).OrderBy(b => b.Low).FirstOrDefault().TimeStamp;
+                                trendTimeFrame = higherTimeFrame.Where(a => a.TimeStamp >= bullTrend.TrendStartCandle.TimeStamp
+                              && a.TimeStamp <= trendFinishtimestamp).Count();
+                                var tbfb = new TrendBasedFibTime();
+
+                                var checkIndex2 = higherTimeFrame.IndexOf(higherTimeFrame.Where(a => a.TimeStamp == trendFinishtimestamp).FirstOrDefault());
+                                var candleCount = higherTimeFrame.Count();
+                                var idxCycle382 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 38.2 / 100));
+                                var idxCycle500 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 50.0 / 100));
+                                var idxCycle618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 61.8 / 100));
+                                var idxCycle1000 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 100.0 / 100));
+                                var idxCycle1618 = Convert.ToInt32(checkIndex2 + (trendTimeFrame * 161.8 / 100));
+                                if (candleCount > idxCycle382)
+                                    tbfb.Cycle382 = higherTimeFrame[idxCycle382].TimeStamp;
+                                if (candleCount > idxCycle618)
+                                    tbfb.Cycle618 = higherTimeFrame[idxCycle618].TimeStamp;
+                                if (candleCount > idxCycle500)
+                                    tbfb.Cycle500 = higherTimeFrame[idxCycle500].TimeStamp;
+                                if (candleCount > idxCycle1000)
+                                    tbfb.Cycle1000 = higherTimeFrame[idxCycle1000].TimeStamp;
+                                if (candleCount > idxCycle1618)
+                                    tbfb.Cycle1618 = higherTimeFrame[idxCycle1618].TimeStamp;
+                                bullTrend.TimeCycle = tbfb;
+
+                                allPossibleTrends.Add(bullTrend);
+                                l = bullTrend.TrendStartCandle.High;
+                            }
+                        }
+                    }
                 }
             }
-
-            if (bullTrend.TrendStartCandle != null && bullTrend.TrendStartCandle.Low <= bullTrend.TrendContinuationCandle.Low)
-            {
-
-                return bullTrend;
-
-            }
-            else
-            {
-                return new Trend();
-            }
-
-
+            return allPossibleTrends;
         }
 
         public AlternatePriceProjection APPVerificaiton(APP app, Candle c, double inRetValue)
         {
-            double close = c.Close;
 
             if (Math.Abs(app.R618 - inRetValue) <= c.ATR * 1.5)
             {
@@ -375,7 +349,6 @@ namespace NSA
 
             return null;
         }
-
         public ExternalRetracement ExRetVerification(ExRet exRet, Candle c, double inRetValue)
         {
             double close = c.Close;
@@ -395,7 +368,6 @@ namespace NSA
 
             return null;
         }
-
         public ExternalRetracement ExRetVerification(ExRet exRet, Candle c, double inRet, double app)
         {
             double close = c.Close;
@@ -419,54 +391,88 @@ namespace NSA
 
             return null;
         }
-
-        public InternalRetracement InRetVerificaiton(InRet inRet, Candle c)
+        public InternalRetracement InRetVerificaiton(InRet inRet, Candle c, bool isBullish)
         {
             double close = c.Close;
-
-            if (close > inRet.R382)
+            if (isBullish)
             {
-                return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+                if (close > inRet.R382)
+                {
+                    return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+                }
+                else if (close > inRet.R500)
+                {
+                    return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+                }
+                else if (close > inRet.R618)
+                {
+                    return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
+                }
+                else if (close > inRet.R786)
+                {
+                    return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
+                }
+                else if (c.High > inRet.R382 && c.Low < inRet.R382)
+                {
+                    return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+                }
+                else if (c.High > inRet.R500 && c.Low < inRet.R500)
+                {
+                    return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+                }
+                else if (c.High > inRet.R618 && c.Low < inRet.R618)
+                {
+                    return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
+                }
+                else if (c.High > inRet.R786 && c.Low < inRet.R786)
+                {
+                    return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
+                }
             }
-            else if (close > inRet.R500)
+            else
             {
-                return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+                if (close < inRet.R382)
+                {
+                    return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+                }
+                else if (close < inRet.R500)
+                {
+                    return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+                }
+                else if (close < inRet.R618)
+                {
+                    return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
+                }
+                else if (close < inRet.R786)
+                {
+                    return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
+                }
+                else if (c.Low < inRet.R382 && c.High > inRet.R382)
+                {
+                    return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
+                }
+                else if (c.Low < inRet.R500 && c.High > inRet.R500)
+                {
+                    return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
+                }
+                else if (c.Low < inRet.R618 && c.High > inRet.R618)
+                {
+                    return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
+                }
+                else if (c.Low < inRet.R786 && c.High > inRet.R786)
+                {
+                    return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
+                }
             }
-            else if (close > inRet.R618)
-            {
-                return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
-            }
-            else if (close > inRet.R786)
-            {
-                return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
-            }
-            else if (c.High > inRet.R382 && c.Low < inRet.R382)
-            {
-                return new InternalRetracement(InternalRetracementType.R382, inRet.R382);
-            }
-            else if (c.High > inRet.R500 && c.Low < inRet.R500)
-            {
-                return new InternalRetracement(InternalRetracementType.R500, inRet.R500);
-            }
-            else if (c.High > inRet.R618 && c.Low < inRet.R618)
-            {
-                return new InternalRetracement(InternalRetracementType.R618, inRet.R618);
-            }
-            else if (c.High > inRet.R786 && c.Low < inRet.R786)
-            {
-                return new InternalRetracement(InternalRetracementType.R786, inRet.R786);
-            }
-
             return null;
         }
-
-        public PriceRetracement PriceRetracementAnalysis(InRet inRet, APP app, ExRet exRet, Candle c)
+        public PriceRetracement PriceRetracementAnalysis(InRet inRet, APP app, ExRet exRet, Candle c, bool isBullish)
         {
             PriceRetracement priceRetracement = new PriceRetracement();
             priceRetracement.SupportType = SupportType.None;
 
             //Priority 1 In-Ret
-            priceRetracement.InternalRetracement = InRetVerificaiton(inRet, c);
+            priceRetracement.InternalRetracement = InRetVerificaiton(inRet, c, isBullish);
 
             //priority -2 APP
             if (priceRetracement.InternalRetracement != null)
@@ -483,27 +489,57 @@ namespace NSA
             {
                 var cloud = priceRetracement.CloudDifference(SupportType.InAppEx);
                 double diff = cloud.Diff;
-                if (diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                if (isBullish)
                 {
-                    priceRetracement.SupportType = SupportType.InAppEx;
+                    if (diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                    {
+                        priceRetracement.SupportType = SupportType.InAppEx;
+                    }
+                }
+                else
+                {
+                    if (diff <= c.ATR * 1.5 && c.High >= cloud.Min)
+                    {
+                        priceRetracement.SupportType = SupportType.InAppEx;
+                    }
                 }
             }
 
             if (priceRetracement.SupportType == SupportType.None && priceRetracement.InternalRetracement != null && priceRetracement.AlternatePriceProjection != null)
             {
                 var cloud = priceRetracement.CloudDifference(SupportType.InApp);
-                if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                if (isBullish)
                 {
-                    priceRetracement.SupportType = SupportType.InApp;
+                    if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                    {
+                        priceRetracement.SupportType = SupportType.InApp;
+                    }
+                }
+                else
+                {
+                    if (cloud.Diff <= c.ATR * 1.5 && c.High >= cloud.Min)
+                    {
+                        priceRetracement.SupportType = SupportType.InApp;
+                    }
                 }
             }
 
             if (priceRetracement.SupportType == SupportType.None && priceRetracement.InternalRetracement != null && priceRetracement.ExternalRetracement != null)
             {
                 var cloud = priceRetracement.CloudDifference(SupportType.InEx);
-                if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                if (isBullish)
                 {
-                    priceRetracement.SupportType = SupportType.InEx;
+                    if (cloud.Diff <= c.ATR * 1.5 && c.Low <= cloud.Max)
+                    {
+                        priceRetracement.SupportType = SupportType.InEx;
+                    }
+                }
+                else
+                {
+                    if (cloud.Diff <= c.ATR * 1.5 && c.High >= cloud.Min)
+                    {
+                        priceRetracement.SupportType = SupportType.InEx;
+                    }
                 }
             }
 
@@ -511,7 +547,14 @@ namespace NSA
             return priceRetracement;
         }
 
-        public PriceRetracement CheckDoubleSupport(ABCD bc, Candle c, Trend trend, double pointA)
+        public PriceRetracement CheckDoubleSupport(ABCD bc, Candle c, Trend trend, double pointA, bool isBullish)
+        {
+            if (isBullish)
+                return CheckDoubleSupportBull(bc, c, trend, pointA, isBullish);
+            else
+                return CheckDoubleSupportBear(bc, c, trend, pointA, isBullish);
+        }
+        public PriceRetracement CheckDoubleSupportBull(ABCD bc, Candle c, Trend trend, double pointA, bool isBullish)
         {
 
             //retracement
@@ -542,31 +585,58 @@ namespace NSA
             exRet.R162 = bc.C - (waveB * 1.62);
             exRet.R262 = bc.C - (waveB * 2.62);
 
-            var pRet = PriceRetracementAnalysis(inRet, app, exRet, c);
-
-            //bool hitRet382 = trend.TrendContinuationCandle.Low <= pointA - ret382 && this.IsNearBy(c.High, (pointA - ret382), trend.TrendContinuationCandle.ATR, c.Low);
-            //bool hitRet50 = trend.TrendContinuationCandle.Low <= pointA - ret50 && this.IsNearBy(c.High, (pointA - ret50), trend.TrendContinuationCandle.ATR, c.Low);
-            //bool hitRet62 = trend.TrendContinuationCandle.Low <= pointA - ret618 && this.IsNearBy(c.High, (pointA - ret618), trend.TrendContinuationCandle.ATR, c.Low);
-            //bool hitRet78 = trend.TrendContinuationCandle.Low <= pointA - ret786 && this.IsNearBy(c.High, (pointA - ret786), trend.TrendContinuationCandle.ATR, c.Low);
-
-
+            var pRet = PriceRetracementAnalysis(inRet, app, exRet, c, isBullish);
             return pRet;
         }
 
+        public PriceRetracement CheckDoubleSupportBear(ABCD bc, Candle c, Trend trend, double pointA, bool isBullish)
+        {
+
+            //retracement
+            var trend1 = (trend.TrendStartCandle.High - pointA);
+            var ret382 = trend1 * 38.2 / 100;
+            var ret50 = trend1 * 50 / 100;
+            var ret618 = trend1 * 61.8 / 100;
+            var ret786 = trend1 * 78.6 / 100;
+
+
+            var pointD = trend.TrendContinuationCandle.High;
+            double diffThreshold = this.GetThreshold(trend.TrendContinuationCandle);
+
+            APP app = new APP();
+            app.R100 = bc.C + (Math.Abs(pointA - bc.B));
+            app.R162 = bc.C + (Math.Abs(pointA - bc.B) + Math.Abs(pointA - bc.B) * 0.62);
+            app.R618 = bc.C + (Math.Abs(pointA - bc.B) * 0.618);
+
+            InRet inRet = new InRet();
+            inRet.R786 = (pointA + ret786);
+            inRet.R618 = (pointA + ret618);
+            inRet.R500 = (pointA + ret50);
+            inRet.R382 = (pointA + ret382);
+
+            double waveB = Math.Abs(bc.B - bc.C);
+            ExRet exRet = new ExRet();
+            exRet.R127 = bc.C + (waveB * 1.27);
+            exRet.R162 = bc.C + (waveB * 1.62);
+            exRet.R262 = bc.C + (waveB * 2.62);
+
+            var pRet = PriceRetracementAnalysis(inRet, app, exRet, c, isBullish);
+            return pRet;
+        }
         public Trend GetMajorBearTrend(List<Candle> higherTimeFrame, DateTime reversalTimeStamp, Candle reversalCandle)
         {
             Trend bearTrend = new Trend();
-            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date &&
+            var tradingPoint = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp &&
                     (b.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal && b.AllIndicators.Stochastic?.OscillatorPriceRange == OscillatorPriceRange.Overbought)
                    ).LastOrDefault();
 
             if (tradingPoint != null)
             {
-                bearTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp.Date && c.TimeStamp.Date >= tradingPoint.TimeStamp.Date.AddDays(-4)).OrderBy(b => b.High).LastOrDefault();
+                bearTrend.TrendContinuationCandle = higherTimeFrame.Where(c => c.TimeStamp < reversalTimeStamp && c.TimeStamp >= tradingPoint.GetLast4thCandle.TimeStamp).OrderBy(b => b.High).LastOrDefault();
 
-                var NootherReversals = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date
+                var NootherReversals = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp
             && b.TimeStamp > bearTrend.TrendContinuationCandle.TimeStamp).Count(c => c.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal.BearishReversal);
-                var currentStatus = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp.Date).OrderBy(a => a.TimeStamp).LastOrDefault().AllIndicators.Stochastic?.OscillatorStatus;
+                var currentStatus = higherTimeFrame.Where(b => b.TimeStamp < reversalTimeStamp).OrderBy(a => a.TimeStamp).LastOrDefault().AllIndicators.Stochastic?.OscillatorStatus;
                 if (NootherReversals <= 1 && currentStatus == OscillatorStatus.Bearish)
                 {
                     var lastCorrectionReversal = higherTimeFrame.Where(b => b.TimeStamp < tradingPoint.TimeStamp &&
@@ -580,7 +650,7 @@ namespace NSA
                                ).LastOrDefault();
                         if (bearishReversal != null)
                         {
-                            bearTrend.TrendStartCandle = higherTimeFrame.Where(e => e.TimeStamp >= bearishReversal.TimeStamp.AddDays(-4) && e.TimeStamp < lastCorrectionReversal.TimeStamp).OrderBy(a => a.High).LastOrDefault();
+                            bearTrend.TrendStartCandle = higherTimeFrame.Where(e => e.TimeStamp >= bearishReversal.GetLast4thCandle.TimeStamp && e.TimeStamp < lastCorrectionReversal.TimeStamp).OrderBy(a => a.High).LastOrDefault();
                             //bearTrend.ReversalCandle = tradingPoint;
                         }
                     }
@@ -633,17 +703,25 @@ namespace NSA
 
         }
 
+        public List<ABCD> GetABCD(List<Candle> allData, Candle pointACandle, Candle pointDCandle, bool isBullish)
+
+        {
+            if (isBullish)
+                return GetAllABCDBearTrend(allData, pointACandle, pointDCandle);
+            else
+                return GetAllABCDBullTrend(allData, pointACandle, pointDCandle);
+        }
         public List<ABCD> GetAllABCDBearTrend(List<Candle> allData, Candle pointACandle, Candle pointDCandle)
         {
             var allAbcd = new List<ABCD>();
             //var minValue = allData.Where(a => a.TimeStamp >= pointACandle.TimeStamp && a.TimeStamp <= pointDCandle.TimeStamp)?.Min(b => b?.Low)??0;
             var pointA = pointACandle.High;
             //this is point C reversals
-            var cBearishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp.Date && a.TimeStamp < pointDCandle.TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+            var cBearishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < pointDCandle.TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
           .BearishReversal);
             if (cBearishReversals.Count() > 0)
             {
-                var bBullishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp.Date && a.TimeStamp < cBearishReversals.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                var bBullishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < cBearishReversals.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
               .BullishReversal);
                 double pointCc = 0;
                 DateTime pointCTimestamp = DateTime.Now;
@@ -702,62 +780,65 @@ namespace NSA
         {
             return Math.Abs(high - target) < c || Math.Abs(low - target) < c;
         }
-
         public List<ABCD> GetAllABCDBullTrend(List<Candle> allData, Candle pointACandle, Candle pointDCandle)
         {
             var allAbcd = new List<ABCD>();
-
+            //var minValue = allData.Where(a => a.TimeStamp >= pointACandle.TimeStamp && a.TimeStamp <= pointDCandle.TimeStamp)?.Min(b => b?.Low)??0;
+            var pointA = pointACandle.Low;
             //this is point C reversals
-            var cBullishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp.Date && a.TimeStamp < pointDCandle.TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+            var cBullishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < pointDCandle.TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
           .BullishReversal);
             if (cBullishReversals.Count() > 0)
             {
-                var bBearishReversal = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp.Date && a.TimeStamp < cBullishReversals.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
+                var bBearishReversals = allData.Where(a => a.TimeStamp > pointACandle.TimeStamp && a.TimeStamp < cBullishReversals.Last().TimeStamp && a.AllIndicators.Stochastic?.OscillatorReversal == OscillatorReversal
               .BearishReversal);
                 double pointCc = 0;
                 DateTime pointCTimestamp = DateTime.Now;
                 double pointB = 0;
                 DateTime pointBTimestamp = DateTime.Now;
-                if (bBearishReversal.Count() > 0)
+                int debugHitCount = 0;
+                if (bBearishReversals.Count() > 0)
                 {
-                    foreach (var bB in bBearishReversal)
+                    foreach (var bB in bBearishReversals)
                     {
 
-                        var big31 = new List<Candle> { bB, bB.PreviousCandle, bB.PreviousCandle.PreviousCandle };
-                        var finalCandle1 = big31.OrderBy(p => p.High).LastOrDefault();
-                        pointB = finalCandle1.High;
-                        pointBTimestamp = finalCandle1.TimeStamp;
-
-                        foreach (var xx in cBullishReversals.Where(tm => tm.TimeStamp > bB.TimeStamp))
+                        var big31 = new List<Candle> { bB, bB.PreviousCandle, bB.PreviousCandle.PreviousCandle, bB.NextCandle, bB.NextCandle.NextCandle, bB.NextCandle.NextCandle.NextCandle };
+                        var finalCandle1 = big31.Where(a => a.TimeStamp > pointACandle.TimeStamp).OrderByDescending(p => p.High).FirstOrDefault();
+                        if (finalCandle1 != null)
                         {
-                            var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle };
-                            var finalCandle = big3.OrderBy(p => p.Low).FirstOrDefault();
-                            if (finalCandle.Low > pointACandle.Low)
-                            {
-                                pointCc = finalCandle.Low;
-                                pointCTimestamp = finalCandle.TimeStamp;
-                            }
+                            pointB = finalCandle1.High;
+                            pointBTimestamp = finalCandle1.TimeStamp;
 
-                            if (pointACandle.Low > 0 && pointB > 0 && pointCc > 0)
+
+                            foreach (var xx in cBullishReversals.Where(tm => tm.TimeStamp > pointBTimestamp))
                             {
-                                bool ABC = Math.Abs(pointACandle.Low) - pointB <= Math.Abs(pointCc - pointDCandle.Low);
-                                if (ABC)
+                                var big3 = new List<Candle> { xx, xx.PreviousCandle, xx.PreviousCandle.PreviousCandle, xx.NextCandle, xx.NextCandle.NextCandle, xx.NextCandle.NextCandle.NextCandle };
+                                if (big3 != null && big3.Count() > 0 && big3.All(a => a != null && a.TimeStamp != null))
                                 {
-                                    var maxBetweenAC = allData.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp)?.Max(d => d?.High) ?? double.MaxValue;
-
+                                    var finalCandle = big3.Where(a => a.TimeStamp > pointBTimestamp).OrderBy(p => p.Low).FirstOrDefault();
+                                    if (finalCandle.Low > pointA)
+                                    {
+                                        pointCc = finalCandle.Low;
+                                        pointCTimestamp = finalCandle.TimeStamp;
+                                    }
+                                }
+                                if (pointA > 0 && pointB > 0 && pointCc > 0 && pointDCandle.High > pointB)
+                                {
+                                    Console.WriteLine($"HitCount {debugHitCount}");
+                                    debugHitCount++;
+                                    var maxBetweenAC = allData.Where(d => d.TimeStamp > pointACandle.TimeStamp && d.TimeStamp < pointCTimestamp)?.Max(d => d?.High) ?? Double.MaxValue;
                                     var minBetweenCD = allData.Where(d => d.TimeStamp > pointCTimestamp && d.TimeStamp < pointDCandle.TimeStamp)?.Min(d => d?.Low) ?? 0;
                                     var minBetweenBC = allData.Where(d => d.TimeStamp <= pointCTimestamp && d.TimeStamp >= pointBTimestamp)?.Min(d => d?.Low) ?? 0;
-                                    if (maxBetweenAC <= pointB && pointCc <= minBetweenCD && pointCc <= minBetweenBC)
-                                    {
-                                        allAbcd.Add(new ABCD { A = pointACandle.Low, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.High, DTime = pointDCandle.TimeStamp });
-                                    }
+                                    if (pointB >= maxBetweenAC && pointCc <= minBetweenCD && pointCc <= minBetweenBC)
+                                        allAbcd.Add(new ABCD { A = pointA, ATime = pointACandle.TimeStamp, B = pointB, BTime = pointBTimestamp, C = pointCc, CTime = pointCTimestamp, D = pointDCandle.High, DTime = pointDCandle.TimeStamp });
+
+
                                 }
                             }
                         }
                     }
                 }
             }
-
             return allAbcd.OrderBy(a => Math.Abs(Math.Abs(a.A - a.B) - Math.Abs(a.C - a.D))).ToList();
         }
     }

@@ -240,6 +240,37 @@ namespace Model
 
         public double curWeekClose { get; set; }
 
+        public Candle GetLast4thCandle { get { return this.PreviousCandle?.PreviousCandle?.PreviousCandle?.PreviousCandle; } }
+        public Candle GetNext4thCandle
+        {
+            get
+            {
+                var output = this;
+                if (this.NextCandle != null)
+                {
+                    output = output.NextCandle;
+                }
+                else
+                {
+                    return output;
+                }
+                if (this.NextCandle.NextCandle != null)
+                {
+                    output = output.NextCandle;
+                }
+                else
+                {
+                    return output;
+                }
+                if (this.NextCandle.NextCandle.NextCandle != null)
+                {
+                    output = output.NextCandle;
+                }
+                return output;
+
+            }
+        }
+
     }
 
 

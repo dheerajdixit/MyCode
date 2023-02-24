@@ -113,7 +113,7 @@ namespace _15MCE
         {
             get
             {
-                //return Common.GetStocks().Where(a => a.StockName == "FSL").Select(a => a.StockName).ToArray();
+                //return Common.GetStocks().Where(a => a.StockName == "PAGEIND").Select(a => a.StockName).ToArray();
 
                 return Common.GetStocks().Select(a => a.StockName).ToArray();
                 //return Common.GetStocks().Select(a => a.StockName).ToArray();
@@ -1008,8 +1008,10 @@ namespace _15MCE
             if (Convert.ToInt32(txtTam.Text) >= -3)
             {
                 List<StockData> sGap = new List<StockData>();
-
-                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First(), null);
+                var idea = Common.GetIdeas().Where(a => a.Name == "Dual_Time_Frame_Momentum").First();
+                idea.HigherTimeFrame = higherTimeFrame.ToString();
+                idea.LowerTimeFrame = lowerTimeFrame.ToString();
+                Dictionary<Guid, Model.StrategyModel> getTradedStocks = new StockOHLC().ApplyDualMomentumStrategyModel(CurrentTradingDate, allData[HT], allData[LT], idea, null);
 
                 var finalStocks = getTradedStocks.Where(b => b.Value.Date == TokenChannel.GetTimeStamp(Convert.ToInt32(txtTam.Text), CurrentTradingDate, lowerTimeFrame)).ToList();
                 //if (finalStocks != null && finalStocks.Count > 0)
@@ -1135,12 +1137,12 @@ namespace _15MCE
 
                 orderDetails.Clear();
 
-                //if (true)
-                //{
-                //    GetDualTimeFrameStocks(100, 60);
+                if (true)
+                {
+                    GetDualTimeFrameStocks(60, 15);
 
 
-                //}
+                }
                 if (candleTime == -3)
                 {
                     if (!DONT_DELETE)
@@ -1174,8 +1176,6 @@ namespace _15MCE
                     if (!DONT_DELETE) LoadDataCommon(5);
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
-
-
                     GetDualTimeFrameStocks(60, 5);
                     stopwatch.Stop();
                     LogStatus(Environment.NewLine + "Refreshed in :" + stopwatch.ElapsedMilliseconds / 1000 + Environment.NewLine);
@@ -1188,8 +1188,6 @@ namespace _15MCE
                     if (!DONT_DELETE) LoadDataCommon(15);
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
-
-
                     GetDualTimeFrameStocks(60, 15);
                     stopwatch.Stop();
                     LogStatus(Environment.NewLine + "Refreshed in :" + stopwatch.ElapsedMilliseconds / 1000 + Environment.NewLine);

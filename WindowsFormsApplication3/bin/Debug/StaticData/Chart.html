@@ -12,18 +12,25 @@
             ], true);
 
             var options = {
+                explorer: {
+                    actions: ['dragToZoom', 'rightClickToReset'],
+                    axis: 'horizontal',
+                    keepInBounds: true,
+                    maxZoomIn: 4.0
+                },
+                interpolateNulls: true,
                 legend: 'none',
                 candlestick: {
                     risingColor: { stroke: 'green', fill: 'green' },
                     fallingColor: { stroke: 'red', fill: 'red' }
-                }, colors: ['magenta'],
+                }, /*colors: ['magenta'],*/
                 series: {
-                    0: { type: 'line', color: 'black' }
-                    , 1: { type: 'line', color: 'blue' }
-                    , 2: { type: 'line', color: 'yellow' }
-                    , 3: { type: 'line', color: 'orange' }
-                    , 4: { type: 'line', color: 'green' }
-                    , 5: { type: 'line', color: 'red' }
+                    0: { type: 'line', color: 'blue' }
+                    , 1: { type: 'line', color: 'magenta' }
+                    , 2: { type: 'line', color: 'black' }
+                    , 3: { type: 'line', color: 'red' }
+                    /*, 4: { type: 'line', color: 'green' }
+                    , 5: { type: 'line', color: 'red' }*/
                 }
             };
 
